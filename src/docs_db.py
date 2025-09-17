@@ -27,6 +27,11 @@ except:
     print("I am unable to connect to the database")
 
 def insert_doc(conn: psycopg2.extensions.connection, doc: UploadFile):
+    """
+    For insterting data in doc table
+    conn: connection to db;
+    doc: fastapi uploadfile object.
+    """
     name = doc.filename
     size = doc.size / 1048576
     try:
@@ -41,12 +46,14 @@ def insert_doc(conn: psycopg2.extensions.connection, doc: UploadFile):
     except Exception as e:
         logger.error(f"Failed to insert document {name} with size {size}: {e}")
 
-from io import BytesIO
-file_bytes = BytesIO(b"Hello World!")
-file = UploadFile(
-    file=file_bytes,
-    filename="test.txt",
-    size=len("Hello World!"),
-    headers={"content-type": "text/plain"}
-)
-insert_doc(conn, file)
+# def 
+
+# from io import BytesIO
+# file_bytes = BytesIO(b"Hello World!")
+# file = UploadFile(
+#     file=file_bytes,
+#     filename="test.txt",
+#     size=len("Hello World!"),
+#     headers={"content-type": "text/plain"}
+# )
+# insert_doc(conn, file)

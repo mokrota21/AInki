@@ -26,7 +26,7 @@ try:
 except:
     print("I am unable to connect to the database")
 
-def insert_doc(conn: psycopg2.extensions.connection, doc: UploadFile):
+def insert_doc(doc: UploadFile):
     """
     For insterting data in doc table
     conn: connection to db;
@@ -34,17 +34,17 @@ def insert_doc(conn: psycopg2.extensions.connection, doc: UploadFile):
     """
     name = doc.filename
     size = doc.size / 1048576
-    try:
-        with conn.cursor() as cursor:
-            insert_sql = """
-            INSERT INTO public.docs_metadata (name, size_mb)
-            VALUES (%s, %s);
-            """
-            cursor.execute(insert_sql, (name, size))
-            conn.commit()
-            logger.info(f"Succesfully inserted document {name} with size {size}")
-    except Exception as e:
-        logger.error(f"Failed to insert document {name} with size {size}: {e}")
+    # try:
+    with conn.cursor() as cursor:
+        insert_sql = """
+        INSERT INTO public.docs_metadata (name, size_mb)
+        VALUES (%s, %s);
+        """
+        cursor.execute(insert_sql, (name, size))
+        conn.commit()
+        # logger.info(f"Succesfully inserted document {name} with size {size}")
+    # except Exception as e:
+        # logger.error(f"Failed to insert document {name} with size {size}: {e}")
 
 # def 
 

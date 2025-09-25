@@ -26,7 +26,7 @@ try:
 except:
     print("I am unable to connect to the database")
 
-def insert_doc(doc: UploadFile):
+def insert_doc(doc: UploadFile) -> int:
     """
     For insterting data in doc table
     conn: connection to db;
@@ -38,13 +38,16 @@ def insert_doc(doc: UploadFile):
     with conn.cursor() as cursor:
         insert_sql = """
         INSERT INTO public.docs_metadata (name, size_mb)
-        VALUES (%s, %s);
+        VALUES (%s, %s)
+        RETURNING id;
         """
         cursor.execute(insert_sql, (name, size))
+        id = cursor.fetchone()[0]
         conn.commit()
         # logger.info(f"Succesfully inserted document {name} with size {size}")
     # except Exception as e:
         # logger.error(f"Failed to insert document {name} with size {size}: {e}")
+    return id
 
 # def 
 

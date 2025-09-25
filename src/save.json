@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Peano axioms",
+    "type": "axiom",
+    "doc_id": 0,
+    "chunk_id_s": 4,
+    "chunk_id_e": 4
+  },
+  {
+    "name": "Peano axioms",
+    "type": "axiom",
+    "doc_id": 0,
+    "chunk_id_s": 7,
+    "chunk_id_e": 7
+  },
+  {
+    "name": "Natural number",
+    "type": "definition",
+    "doc_id": 0,
+    "chunk_id_s": 9,
+    "chunk_id_e": 9
+  },
+  {
+    "name": "positive integers",
+    "type": "definition",
+    "doc_id": 0,
+    "chunk_id_s": 12,
+    "chunk_id_e": 12
+  },
+  {
+    "name": "Natural numbers",
+    "type": "definition",
+    "doc_id": 0,
+    "chunk_id_s": 13,
+    "chunk_id_e": 13
+  },
+  {
+    "name": "definition of natural numbers",
+    "type": "definition",
+    "doc_id": 0,
+    "chunk_id_s": 14,
+    "chunk_id_e": 14
+  }
+]

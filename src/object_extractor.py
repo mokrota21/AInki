@@ -1,15 +1,71 @@
-from openai import AzureOpenAI
+from langfuse.openai import AzureOpenAI
 from dotenv import load_dotenv
 import os
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import json
+from neo4j_graph import (
+    add_definition, add_property, add_theorem, add_lemma, add_axiom,
+    add_corollary, add_conjecture, add_example, add_proof
+)
+from tqdm import tqdm
 
 load_dotenv()
 
 model_name = os.getenv("MODEL_NAME")
 client = AzureOpenAI()
+# prompts = {
+#     "object_detection_prompt": """
+#         Analyze the following text chunk and determine if it contains any of these mathematical objects:
+#         - Definition: A formal statement that explains the meaning of a term
+#         - Theorem: A statement that has been proven to be true
+#         - Lemma: A smaller result used to prove a larger theorem
+#         - Axiom: A fundamental assumption that is accepted without proof
+#         - Property: A characteristic or attribute of a mathematical object
+#         - Corollary: A direct consequence of a theorem
+#         - Conjecture: A statement that is believed to be true but not yet proven
+#         - Example: A specific instance illustrating a concept
+#         - Proof: A logical argument demonstrating the truth of a statement
+        
+#         Text chunk:
+#         {current_chunk}
+        
+#         Respond with a JSON object in this exact format:
+#         {{
+#             "contains_object": true/false,
+#             "object_type": "definition"/"theorem"/"lemma"/"axiom"/"property"/"corollary"/"conjecture"/"example"/"proof"/null,
+#             "object_name": "name of the object"/null
+#         }}
+        
+#         If contains_object is false, set object_type and object_name to null.
+#         """,
+#     "implicit_knowledge_detection_prompt": """
+#         Analyze the following text chunk and determine important information that user should remember. Such information could be explicit, i.e. algorithm, or implicit, like subtle property implied by the text, small note mentioned by author, etc.
+#         - Definition: A formal statement that explains the meaning of a term
+#         - Theorem: A statement that has been proven to be true
+#         - Lemma: A smaller result used to prove a larger theorem
+#         - Axiom: A fundamental assumption that is accepted without proof
+#         - Property: A characteristic or attribute of a mathematical object
+#         - Corollary: A direct consequence of a theorem
+#         - Conjecture: A statement that is believed to be true but not yet proven
+#         - Example: A specific instance illustrating a concept
+#         - Proof: A logical argument demonstrating the truth of a statement
+#         - Other: Any other information that user should remember
+        
+#         Text chunk:
+#         {current_chunk}
 
-def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str, Any]]:
+#         Respond with a JSON object in this exact format:
+#         {{
+#             "contains_object": true/false,
+#             "object_type": "definition"/"theorem"/"lemma"/"axiom"/"property"/"corollary"/"conjecture"/"example"/"proof"/"other"/null,
+#             "object_name": "name of the object"/null
+#         }}
+        
+#         If contains_object is false, set object_type and object_name to null.
+#         """
+# }
+
+def extract_objects_from_chunks(chunks: List[Tuple[str, int]], doc_id: int) -> List[Dict[str, Any]]:
     """
     Process chunks to extract definitions, theorems, and properties using OpenAI.
     
@@ -23,12 +79,13 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
     extracted_objects = []
     i = 0
     
+    pbar = tqdm(total=len(chunks))
     while i < len(chunks):
-        current_chunk = chunks[i]
+        current_chunk = chunks[i][0]
         
         # Ask if current chunk contains any mathematical objects
         object_detection_prompt = f"""
-        Analyze the following text chunk and determine if it contains any of these mathematical objects:
+        Analyze the following text chunk and determine information that user should remember. Such information could be explicit, i.e. algorithm, or implicit, like subtle property implied by the text, small note mentioned by author, etc.
         - Definition: A formal statement that explains the meaning of a term
         - Theorem: A statement that has been proven to be true
         - Lemma: A smaller result used to prove a larger theorem
@@ -38,6 +95,7 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
         - Conjecture: A statement that is believed to be true but not yet proven
         - Example: A specific instance illustrating a concept
         - Proof: A logical argument demonstrating the truth of a statement
+        - Other: Any other information that user should remember
         
         Text chunk:
         {current_chunk}
@@ -45,7 +103,7 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
         Respond with a JSON object in this exact format:
         {{
             "contains_object": true/false,
-            "object_type": "definition"/"theorem"/"lemma"/"axiom"/"property"/"corollary"/"conjecture"/"example"/"proof"/null,
+            "object_type": "definition"/"theorem"/"lemma"/"axiom"/"property"/"corollary"/"conjecture"/"example"/"proof"/"other"/null,
             "object_name": "name of the object"/null
         }}
         
@@ -63,10 +121,11 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
                     "content": object_detection_prompt
                 }
             ],
-            max_completion_tokens=1000,
+            max_completion_tokens=10000,
             model=model_name
         )
-        
+    
+        pbar.update(1)
         try:
             detection_result = json.loads(response.choices[0].message.content)
         except json.JSONDecodeError:
@@ -80,8 +139,8 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
             
             if object_type and object_name:
                 # Found an object, now check for continuation in subsequent chunks
-                chunk_id_s = i
-                chunk_id_e = i
+                chunk_id_s = chunks[i][1]
+                chunk_id_e = chunks[i][1]
                 
                 # Check if next chunks are continuations
                 j = i + 1
@@ -91,7 +150,7 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
                     
                     Previous context: {current_chunk}
                     
-                    Current chunk to analyze: {chunks[j]}
+                    Current chunk to analyze: {chunks[j][0]}
                     
                     Determine if this current chunk is a continuation of the {object_type} "{object_name}".
                     
@@ -112,14 +171,16 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
                                 "content": continuation_prompt
                             }
                         ],
-                        max_completion_tokens=100,
+                        max_completion_tokens=10000,
                         model=model_name
                     )
                     
+                    pbar.update(1)
                     try:
                         continuation_result = json.loads(continuation_response.choices[0].message.content)
                         if continuation_result.get("is_continuation", False):
-                            chunk_id_e = j
+                            chunk_id_e = chunks[i][1] + j - i
+                            current_chunk += chunks[j][0]
                             j += 1
                         else:
                             break
@@ -137,28 +198,21 @@ def extract_objects_from_chunks(chunks: List[str], doc_id: int) -> List[Dict[str
                 extracted_objects.append(extracted_object)
                 
                 # Move to the next unprocessed chunk
-                i = chunk_id_e + 1
+                i = j
             else:
                 i += 1
         else:
             i += 1
-    
+
     return extracted_objects
 
-def process_chunks_and_store(chunks: List[str], doc_id: int):
+def insert_objects(extracted_objects: List[Dict[str, Any]]):
     """
     Process chunks to extract objects and store them in Neo4j.
     
     Args:
-        chunks: List of text chunks to process
-        doc_id: Document ID for tracking
+        extracted_objects: List of objects to insert
     """
-    from neo4j_graph import (
-        add_definition, add_property, add_theorem, add_lemma, add_axiom,
-        add_corollary, add_conjecture, add_example, add_proof
-    )
-    
-    extracted_objects = extract_objects_from_chunks(chunks, doc_id)
     
     # Mapping of object types to their corresponding Neo4j functions
     type_to_function = {
@@ -183,5 +237,5 @@ def process_chunks_and_store(chunks: List[str], doc_id: int):
                 obj["chunk_id_e"]
             )
     
-    return extracted_objects
+    return True
 

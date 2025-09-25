@@ -2,10 +2,20 @@ from neo4j import GraphDatabase
 from neo4j.graph import Node
 from dotenv import load_dotenv
 import os
-load_dotenv()
+from .repetition import RepeatState
+from datetime import timezone, datetime
+
+dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path=dotenv_path)
 # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
-URI = "neo4j+s://e5703e68.databases.neo4j.io"
+URI = os.getenv("NEO4J_URI")
 AUTH = (os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD"))
+with GraphDatabase.driver(URI, auth=AUTH) as driver:
+    # driver.verify_authentication()
+    driver.verify_connectivity()
+    print("✅ Successfully connected to Neo4j!")
+
+tz = timezone.utc
 
 driver = GraphDatabase.driver(URI, auth=AUTH)
 
@@ -168,3 +178,48 @@ def add_relation(node1: Node, node2: Node):
         id1 = node1.id, id2 = node2.id
     )
     return summary.records[0]["r"]
+
+def add_other(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
+    """
+    Add other information to the NEO4j graph.
+    name: Name of the other information;
+    doc_id: id of document it is taken from;
+    chunk_id_s: starting chunk id where implicit knowledge begins;
+    chunk_id_e: ending chunk id where implicit knowledge ends;
+    """
+    assert chunk_id_e >= chunk_id_s
+
+    summary = driver.execute_query(
+        "CREATE (i:ImplicitKnowledge {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN i",
+        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
+    )
+    return summary.records[0]["i"]
+
+
+# TODO: test this
+def merge_repetition_state(connected_to: Node, state: RepeatState):
+    state_val = state.state
+    next_repeat = state.get_next_repeat()
+    result = driver.execute_query(
+        """
+        MATCH (n)
+        WHERE elementId(n) = $n_id
+        MERGE (n)-[c:LAST_REPEATED]->(r:RepetitionState {state: $state})
+        ON CREATE SET r.last_repeated = datetime({year: 1, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'})
+        ON MATCH SET r.last_repeated = datetime()
+        SET r.next_repeat = $next_repeat
+        RETURN r, c
+        """,
+        n_id=connected_to.element_id, state=state_val, next_repeat=next_repeat
+    )
+    return result.records[0]["r"], result.records[0]["c"]
+
+def get_all_pending():
+    result = driver.execute_query(
+        """
+        MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
+        WHERE r.next_repeat < datetime()
+        RETURN n, c, r
+        """
+    )
+    return result.records

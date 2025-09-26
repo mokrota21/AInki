@@ -195,22 +195,40 @@ def add_other(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
     )
     return summary.records[0]["i"]
 
+def init_graph():
+    # Make constraint on userid
+    try:
+        driver.execute_query(
+            "CREATE CONSTRAINT userid_constraint FOR (n:User) REQUIRE n.userid IS UNIQUE"
+        )
+    except:
+        pass
+    
 
 # TODO: test this
 def merge_repetition_state(connected_to: Node, state: RepeatState):
     state_val = state.state
+    userid = state.userid
     next_repeat = state.get_next_repeat()
     result = driver.execute_query(
         """
         MATCH (n)
         WHERE elementId(n) = $n_id
-        MERGE (n)-[c:LAST_REPEATED]->(r:RepetitionState {state: $state})
+        MERGE (n)-[c:LAST_REPEATED]->(r:RepetitionState {state: $state, userid: $userid})
         ON CREATE SET r.last_repeated = datetime({year: 1, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'})
         ON MATCH SET r.last_repeated = datetime()
         SET r.next_repeat = $next_repeat
         RETURN r, c
         """,
-        n_id=connected_to.element_id, state=state_val, next_repeat=next_repeat
+        n_id=connected_to.element_id, state=state_val, next_repeat=next_repeat, userid=userid
+    )
+    driver.execute_query(
+        """
+        MATCH (R)
+        WHERE elementId(R) = $r_id
+        MERGE (R)-[:of]->(U:User {userid: $userid})
+        """,
+        r_id=result.records[0]["r"].element_id, userid=userid
     )
     return result.records[0]["r"], result.records[0]["c"]
 

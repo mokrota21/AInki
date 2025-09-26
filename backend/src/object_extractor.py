@@ -3,9 +3,9 @@ from dotenv import load_dotenv
 import os
 from typing import List, Dict, Any, Optional, Tuple
 import json
-from neo4j_graph import (
+from .neo4j_graph import (
     add_definition, add_property, add_theorem, add_lemma, add_axiom,
-    add_corollary, add_conjecture, add_example, add_proof
+    add_corollary, add_conjecture, add_example, add_proof, add_other
 )
 from tqdm import tqdm
 
@@ -224,7 +224,8 @@ def insert_objects(extracted_objects: List[Dict[str, Any]]):
         "corollary": add_corollary,
         "conjecture": add_conjecture,
         "example": add_example,
-        "proof": add_proof
+        "proof": add_proof,
+        "other": add_other
     }
     
     for obj in extracted_objects:

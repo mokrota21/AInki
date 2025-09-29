@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
 
   const login = async (usernameOrGmail, password) => {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('auth/login', {
         username_or_gmail: usernameOrGmail,
         password: password
       })
@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
 
   const register = async (username, password, gmail) => {
     try {
-      const response = await api.post('/auth/register', {
+      const response = await api.post('auth/register', {
         username,
         password,
         gmail

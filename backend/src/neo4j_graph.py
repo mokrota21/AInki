@@ -5,13 +5,12 @@ import os
 from .repetition import RepeatState
 from datetime import timezone, datetime
 
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-load_dotenv(dotenv_path=dotenv_path)
+# dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv()
 # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
 URI = os.getenv("NEO4J_URI")
 AUTH = (os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD"))
 with GraphDatabase.driver(URI, auth=AUTH) as driver:
-    # driver.verify_authentication()
     driver.verify_connectivity()
     print("✅ Successfully connected to Neo4j!")
 
@@ -163,7 +162,7 @@ def add_proof(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
     )
     return summary.records[0]["p"]
 
-def add_relation(node1: Node, node2: Node):
+def add_relation(node1_id: str, node2_id: str):
     """
     Connects two nodes as related. Relation is symmetric property
     """
@@ -175,7 +174,7 @@ def add_relation(node1: Node, node2: Node):
         CREATE (a)-[r:Related_to]-(b)
         RETURN r
         """,
-        id1 = node1.id, id2 = node2.id
+        id1 = node1_id, id2 = node2_id
     )
     return summary.records[0]["r"]
 
@@ -206,7 +205,7 @@ def init_graph():
     
 
 # TODO: test this
-def merge_repetition_state(connected_to: Node, state: RepeatState):
+def merge_repetition_state(connected_to_id: str, state: RepeatState):
     state_val = state.state
     userid = state.userid
     next_repeat = state.get_next_repeat()
@@ -214,30 +213,33 @@ def merge_repetition_state(connected_to: Node, state: RepeatState):
         """
         MATCH (n)
         WHERE elementId(n) = $n_id
-        MERGE (n)-[c:LAST_REPEATED]->(r:RepetitionState {state: $state, userid: $userid})
+        MERGE (n)-[c:LAST_REPEATED]->(r:RepetitionState {userid: $userid})
         ON CREATE SET r.last_repeated = datetime({year: 1, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'})
         ON MATCH SET r.last_repeated = datetime()
         SET r.next_repeat = $next_repeat
+        SET r.state = $state
         RETURN r, c
         """,
-        n_id=connected_to.element_id, state=state_val, next_repeat=next_repeat, userid=userid
+        n_id=connected_to_id, next_repeat=next_repeat, userid=userid, state=state_val
     )
     driver.execute_query(
         """
         MATCH (R)
         WHERE elementId(R) = $r_id
-        MERGE (R)-[:of]->(U:User {userid: $userid})
+        MERGE (U:User {userid: $userid})
+        MERGE (R)-[:of]->(U)
         """,
         r_id=result.records[0]["r"].element_id, userid=userid
     )
     return result.records[0]["r"], result.records[0]["c"]
 
-def get_all_pending():
+def get_all_pending(userid: str):
     result = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
-        WHERE r.next_repeat < datetime()
+        WHERE r.next_repeat < datetime({year: 9999, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'}) AND r.userid = $userid
         RETURN n, c, r
-        """
+        """,
+        userid=userid
     )
     return result.records

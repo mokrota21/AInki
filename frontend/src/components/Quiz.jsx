@@ -127,7 +127,7 @@ function Quiz() {
             fontSize: '0.9rem',
             color: '#6c757d'
           }}>
-            <strong>Source:</strong> Document {currentItem.doc_id}, Chunks {currentItem.chunk_start}-{currentItem.chunk_end}
+            {/* <strong>Source:</strong> {currentItem.context} */}
           </div>
         </div>
 

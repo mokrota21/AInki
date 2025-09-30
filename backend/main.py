@@ -2,16 +2,19 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
-from typing import List, Optional
-import src
-import os
-import asyncio
+from typing import List
+from src import *
+from dotenv import load_dotenv
 from datetime import datetime
 import uvicorn
 import logging
 import traceback
 
+load_dotenv()
+
 app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
+context_diff = 2
+truncate_after = 100
 
 # Configure logging
 logging.basicConfig(
@@ -45,10 +48,6 @@ class UserLogin(BaseModel):
     username_or_gmail: str
     password: str
 
-class QuizAnswer(BaseModel):
-    node_id: str
-    correct: bool
-
 class PendingItem(BaseModel):
     node_id: str
     name: str
@@ -57,13 +56,12 @@ class PendingItem(BaseModel):
     chunk_start: int
     chunk_end: int
 
-# Initialize graph constraints
-@app.on_event("startup")
-async def startup_event():
-    src.init_graph()
+def lifespan(app: FastAPI):
+    init_graph()
+    yield
 
 # Authentication dependency
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         userid = credentials.credentials
         # Verify user exists (you might want to add a proper token validation here)
@@ -73,9 +71,9 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 # Routes
 @app.post("/api/auth/register")
-async def register(user_data: UserRegister):
+def register(user_data: UserRegister):
     try:
-        userid = src.add_user(user_data.gmail, user_data.password, user_data.username)
+        userid = insert_user(user_data.gmail, user_data.password, user_data.username)
         logger.info(f"User registered successfully: {user_data.username}")
         return {"userid": userid, "message": "User registered successfully"}
     except Exception as e:
@@ -84,9 +82,11 @@ async def register(user_data: UserRegister):
         raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
 
 @app.post("/api/auth/login")
-async def login(user_data: UserLogin):
+def login(user_data: UserLogin):
     try:
-        userid = src.login(user_data.password, user_data.username_or_gmail)
+        userid = login(user_data.password, user_data.username_or_gmail)
+        if userid is None:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
         logger.info(f"User logged in successfully: {user_data.username_or_gmail}")
         return {"userid": userid, "message": "Login successful"}
     except Exception as e:
@@ -94,29 +94,47 @@ async def login(user_data: UserLogin):
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=401, detail=f"Login failed: {str(e)}")
 
+@app.get("/api/docs")
+def get_docs():
+    try:
+        docs = get_all_docs()
+        return {"docs": docs}
+    except Exception as e:
+        logger.error(f"Docs error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to get docs: {str(e)}")
+
+
 @app.post("/api/upload")
-async def upload_file(
+def upload_file(
     file: UploadFile = File(...),
     current_user: str = Depends(get_current_user)
 ):
     try:
         logger.info(f"Uploading file: {file.filename} for user: {current_user}")
         
-        # Read file content
-        content = await file.read()
-        logger.info(f"File size: {len(content)} bytes")
-        
         # Process file using your existing pipeline
-        doc_id = src.insert_doc(content)
+        doc_id = insert_doc(file)
+        if doc_id == -1:
+            raise HTTPException(status_code=400, detail="File already exists")
         logger.info(f"Document inserted with ID: {doc_id}")
+
+        # Read file content
+        content = DefaultReader().read_file(file)
         
-        chunks = src.DefaultChunker().chunk(content)
+        chunks = DefaultChunker().chunk(content)
+        for chunk in chunks:
+            insert_chunk(chunk, doc_id, chunks.index(chunk))
         logger.info(f"Created {len(chunks)} chunks")
+
+        # Enumerate chunks
+        chunks = [(chunk, chunks.index(chunk)) for chunk in chunks]
         
-        objects = src.extract_objects_from_chunks(chunks, doc_id)
+        objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
         logger.info(f"Extracted {len(objects)} objects")
         
-        src.insert_objects(objects)
+        object_nodes = insert_objects(objects)
+        for object in object_nodes: merge_repetition_state(object.element_id, RepeatState(current_user, 0))
         logger.info("Objects inserted successfully")
         
         return {
@@ -131,38 +149,28 @@ async def upload_file(
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 @app.get("/api/pending", response_model=List[PendingItem])
-async def get_pending_items(current_user: str = Depends(get_current_user)):
+def get_pending_items(current_user: str = Depends(get_current_user)):
     try:
         logger.info(f"Getting pending items for user: {current_user}")
-        pending_records = src.get_all_pending()
+        pending_records = get_all_pending(current_user)
         logger.info(f"Found {len(pending_records)} pending records")
         pending_items = []
         
         for record in pending_records:
             node = record["n"]
-            repetition_state = record["r"]
-            
-            # Get node details
-            node_details = src.driver.execute_query(
-                """
-                MATCH (n)
-                WHERE elementId(n) = $node_id
-                RETURN n.name as name, n.doc_id as doc_id, 
-                       n.chunk_id_s as chunk_start, n.chunk_id_e as chunk_end
-                """,
-                node_id=node.element_id
-            )
-            
-            if node_details.records:
-                details = node_details.records[0]
-                pending_items.append(PendingItem(
-                    node_id=node.element_id,
-                    name=details["name"],
-                    content=f"Content from chunks {details['chunk_start']}-{details['chunk_end']}",
-                    doc_id=details["doc_id"],
-                    chunk_start=details["chunk_start"],
-                    chunk_end=details["chunk_end"]
-                ))
+            content = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
+            context = chunk_maper(node["doc_id"], node["chunk_id_s"] - context_diff, node["chunk_id_e"] + context_diff)
+            context = context[:truncate_after] + " ... " + context[-truncate_after:] if len(context) > 2 * truncate_after else context
+
+            pending_items.append(PendingItem(
+                node_id=node.element_id,
+                name=node["name"],
+                content=content,
+                context=context,
+                doc_id=node["doc_id"],
+                chunk_start=node["chunk_id_s"],
+                chunk_end=node["chunk_id_e"]
+            ))
         
         logger.info(f"Returning {len(pending_items)} pending items")
         return pending_items
@@ -172,27 +180,14 @@ async def get_pending_items(current_user: str = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
 
 @app.post("/api/quiz/answer")
-async def submit_answer(
-    answer: QuizAnswer,
-    current_user: str = Depends(get_current_user)
+def submit_answer(
+    answer: QuizAnswer
 ):
     try:
         logger.info(f"Submitting answer for node {answer.node_id}, correct: {answer.correct}")
         
-        # Get the node by element_id
-        node_result = src.driver.execute_query(
-            "MATCH (n) WHERE elementId(n) = $node_id RETURN n",
-            node_id=answer.node_id
-        )
-        
-        if not node_result.records:
-            logger.error(f"Node not found: {answer.node_id}")
-            raise HTTPException(status_code=404, detail="Node not found")
-        
-        node = node_result.records[0]["n"]
-        
         # Process the answer using your existing logic
-        src.check_answer(node, answer.correct)
+        check_answer(answer)
         logger.info("Answer processed successfully")
         
         return {"message": "Answer recorded successfully"}
@@ -202,12 +197,12 @@ async def submit_answer(
         raise HTTPException(status_code=500, detail=f"Failed to submit answer: {str(e)}")
 
 @app.get("/api/health")
-async def health_check():
+def health_check():
     return {"status": "healthy", "timestamp": datetime.now()}
 
 # Debug endpoint to see all available routes
 @app.get("/api/debug/routes")
-async def debug_routes():
+def debug_routes():
     routes = []
     for route in app.routes:
         if hasattr(route, 'methods') and hasattr(route, 'path'):
@@ -219,7 +214,7 @@ async def debug_routes():
 
 # Debug endpoint to test logging
 @app.get("/api/debug/log")
-async def debug_log():
+def debug_log():
     logger.info("Debug log test - INFO level")
     logger.warning("Debug log test - WARNING level")
     logger.error("Debug log test - ERROR level")
@@ -227,7 +222,7 @@ async def debug_log():
 
 # Global exception handler
 @app.exception_handler(Exception)
-async def global_exception_handler(request, exc):
+def global_exception_handler(request, exc):
     logger.error(f"Unhandled exception: {str(exc)}")
     logger.error(f"Traceback: {traceback.format_exc()}")
     return HTTPException(

@@ -70,7 +70,7 @@ def extract_objects_from_chunks(chunks: List[Tuple[str, int]], doc_id: int) -> L
     Process chunks to extract definitions, theorems, and properties using OpenAI.
     
     Args:
-        chunks: List of text chunks to process
+        chunks: List of tuples (text chunk, chunk id)
         doc_id: Document ID for tracking
     
     Returns:
@@ -213,7 +213,8 @@ def insert_objects(extracted_objects: List[Dict[str, Any]]):
     Args:
         extracted_objects: List of objects to insert
     """
-    
+    result = []
+
     # Mapping of object types to their corresponding Neo4j functions
     type_to_function = {
         "definition": add_definition,
@@ -231,12 +232,12 @@ def insert_objects(extracted_objects: List[Dict[str, Any]]):
     for obj in extracted_objects:
         obj_type = obj["type"]
         if obj_type in type_to_function:
-            type_to_function[obj_type](
+            result.append(type_to_function[obj_type](
                 obj["name"], 
                 obj["doc_id"], 
                 obj["chunk_id_s"], 
                 obj["chunk_id_e"]
-            )
+            ))
     
-    return True
+    return result
 

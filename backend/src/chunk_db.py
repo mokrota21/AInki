@@ -1,19 +1,10 @@
 import os
 from dotenv import load_dotenv
 import psycopg2
-
-load_dotenv()
-dbname = os.getenv("PG_DBNAME")
-user = os.getenv("PG_USER")
-host = os.getenv("PG_HOST")
-password = os.getenv("PG_PASSWORD")
-
-try:
-    conn = psycopg2.connect(f"dbname='{dbname}' user='{user}' host='{host}' password='{password}'")
-except:
-    print("I am unable to connect to the database")
+from .pg_connection import get_connection
 
 def insert_chunk(chunk: str, doc_id: int, order_idx: int) -> int:
+    conn = get_connection()
     char_count = len(chunk)
     with conn.cursor() as cursor:
         cursor.execute(

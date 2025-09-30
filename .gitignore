@@ -3,3 +3,5 @@
 **/*.pyc
 **/__pycache__
 **/node_modules
+backend/uploads/*
+backend/output/*

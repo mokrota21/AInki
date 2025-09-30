@@ -6,6 +6,8 @@ import toast from 'react-hot-toast'
 function Dashboard() {
   const [uploading, setUploading] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
+  const [docs, setDocs] = useState([])
+  const [docsLoading, setDocsLoading] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleFileUpload = async (file) => {
@@ -23,6 +25,7 @@ function Dashboard() {
       })
       
       toast.success(`File processed successfully! Found ${response.data.objects_count} objects.`)
+      fetchDocs()
       checkPendingItems()
     } catch (error) {
       toast.error('Upload failed: ' + (error.response?.data?.detail || error.message))
@@ -59,7 +62,30 @@ function Dashboard() {
     }
   }
 
+  const fetchDocs = async () => {
+    try {
+      setDocsLoading(true)
+      const response = await api.get('/docs')
+      const docsData = response.data?.docs || []
+      const normalized = docsData.map((d) => {
+        if (d && typeof d === 'object' && !Array.isArray(d)) {
+          return { id: d.id ?? d.doc_id ?? null, name: d.name ?? 'Unnamed' }
+        }
+        if (Array.isArray(d)) {
+          return { id: d[0] ?? null, name: d[1] ?? 'Unnamed' }
+        }
+        return { id: null, name: String(d) }
+      })
+      setDocs(normalized)
+    } catch (error) {
+      console.error('Failed to fetch docs:', error)
+    } finally {
+      setDocsLoading(false)
+    }
+  }
+
   React.useEffect(() => {
+    fetchDocs()
     checkPendingItems()
     const interval = setInterval(checkPendingItems, 60000) // Check every minute
     return () => clearInterval(interval)
@@ -120,7 +146,7 @@ function Dashboard() {
           <div className="card" style={{ textAlign: 'center' }}>
             <FileText size={32} style={{ color: '#28a745', marginBottom: '1rem' }} />
             <h3>Documents Processed</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#28a745' }}>0</p>
+            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#28a745' }}>{docs.length}</p>
           </div>
           
           <div className="card" style={{ textAlign: 'center' }}>
@@ -140,6 +166,30 @@ function Dashboard() {
             <h3>Completed Reviews</h3>
             <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#17a2b8' }}>0</p>
           </div>
+        </div>
+
+        {/* Docs Gallery */}
+        <div className="card" style={{ marginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FileText size={24} />
+            Your Documents
+          </h2>
+          {docsLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+              <div className="spinner"></div>
+            </div>
+          ) : docs.length === 0 ? (
+            <p style={{ color: '#6c757d' }}>No documents yet. Upload one to get started.</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+              {docs.map((doc, index) => (
+                <div key={doc.id != null ? `doc-${doc.id}` : `doc-${doc.name}-${index}`} className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <FileText size={20} style={{ color: '#667eea' }} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Quick Actions */}

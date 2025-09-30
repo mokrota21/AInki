@@ -2,8 +2,8 @@ import psycopg2
 from fastapi import UploadFile
 from io import BytesIO
 import logging
-from dotenv import load_dotenv
-import os
+from .pg_connection import get_connection
+from typing import List, Dict
 
 logging.basicConfig(
     level=logging.INFO,
@@ -13,18 +13,7 @@ logging.basicConfig(
     ]
 )
 
-load_dotenv()
-dbname = os.getenv("PG_DBNAME")
-user = os.getenv("PG_USER")
-host = os.getenv("PG_HOST")
-password = os.getenv("PG_PASSWORD")
-
 logger = logging.getLogger(__name__)
-
-try:
-    conn = psycopg2.connect(f"dbname='{dbname}' user='{user}' host='{host}' password='{password}'")
-except:
-    print("I am unable to connect to the database")
 
 def insert_doc(doc: UploadFile) -> int:
     """
@@ -32,9 +21,24 @@ def insert_doc(doc: UploadFile) -> int:
     conn: connection to db;
     doc: fastapi uploadfile object.
     """
+    conn = get_connection()
     name = doc.filename
     size = doc.size / 1048576
-    # try:
+
+    # Check if doc already exists
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT * FROM public.docs_metadata WHERE name = %s
+            """,
+            (name,)
+        )
+        result = cursor.fetchone()
+        if result:
+            logger.info(f"Doc {name} already exists")
+            return -1
+
+    # Otherwise insert
     with conn.cursor() as cursor:
         insert_sql = """
         INSERT INTO public.docs_metadata (name, size_mb)
@@ -44,19 +48,17 @@ def insert_doc(doc: UploadFile) -> int:
         cursor.execute(insert_sql, (name, size))
         id = cursor.fetchone()[0]
         conn.commit()
-        # logger.info(f"Succesfully inserted document {name} with size {size}")
-    # except Exception as e:
-        # logger.error(f"Failed to insert document {name} with size {size}: {e}")
+    
     return id
 
-# def 
-
-# from io import BytesIO
-# file_bytes = BytesIO(b"Hello World!")
-# file = UploadFile(
-#     file=file_bytes,
-#     filename="test.txt",
-#     size=len("Hello World!"),
-#     headers={"content-type": "text/plain"}
-# )
-# insert_doc(conn, file)
+def get_all_docs() -> List[Dict]:
+    """
+    Return a list of document metadata with stable field names.
+    Only returns the minimal fields needed by the frontend to avoid relying on
+    implicit column order from SELECT *.
+    """
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT id, name FROM public.docs_metadata ORDER BY id")
+        rows = cursor.fetchall()
+        return [{"id": row[0], "name": row[1]} for row in rows]

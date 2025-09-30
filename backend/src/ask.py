@@ -1,21 +1,26 @@
 from .neo4j_graph import Node, driver, merge_repetition_state
 from .repetition import RepeatState
+from pydantic import BaseModel
 
-def check_answer(node: Node, correct_answer: bool):
+class QuizAnswer(BaseModel):
+    node_id: str
+    correct: bool
+
+def check_answer(answer: QuizAnswer):
     state_node = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
         WHERE elementId(n) = $node_id
         RETURN r
         """,
-        node_id = node.element_id
+        node_id = answer.node_id
     )
     state_node = state_node.records[0]["r"]
     state = int(state_node.get("state"))
-    if correct_answer:
+    if answer.correct:
         state += 1
     else:
         state = max(state - 1, 0)
-    state = RepeatState(state)
-    merge_repetition_state(node, state)
+    state = RepeatState(state_node.get("userid"), state)
+    merge_repetition_state(answer.node_id, state)
 

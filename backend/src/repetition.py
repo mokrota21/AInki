@@ -7,7 +7,7 @@ l_boxes_ratios = [1, 2, 3, 1000, 10000]
 
 class RepeatState:
     def __init__(self, userid: str, state: int = 0) -> None:
-        self.state = state
+        self.state = min(state, len(l_boxes_ratios) - 1)
         self.userid = userid
 
     def get_state_val(self):
@@ -20,4 +20,4 @@ class RepeatState:
         return range(len(l_boxes_ratios))
 
     def set_state(self, state):
-        self.state = state
+        self.state = min(state, len(l_boxes_ratios) - 1)

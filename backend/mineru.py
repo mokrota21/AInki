@@ -14,5 +14,5 @@ if not os.path.exists(output_path):
     os.makedirs(output_path)
 
 result = subprocess.run(
-    ["mineru", "-p", files[0], "-o", output_path, "-m", "txt", "-l", "en", "-d", "cuda", "--vram", "5"]
+    ["mineru", "-p", files[1], "-o", output_path, "-m", "txt", "-l", "en", "-d", "cuda", "--vram", "5"]
 )

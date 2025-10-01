@@ -34,3 +34,10 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// Convenience helpers
+export async function fetchFileContent(docId) {
+  // Backend implemented as GET /api/file_content?doc_id=ID
+  const response = await api.get(`/file_content`, { params: { doc_id: docId } })
+  return response.data
+}

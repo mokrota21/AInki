@@ -36,6 +36,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+readers = {
+    "DefaultReader": DefaultReader,
+    "PDFReader": PDFReader,
+    "MineruReader": MineruReader
+}
+
 security = HTTPBearer()
 
 # Pydantic models
@@ -104,27 +110,43 @@ def get_docs():
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to get docs: {str(e)}")
 
+@app.get("/api/file_content")
+def get_file_content(
+    doc_id: int
+):
+    try:
+        response = {}
+        _, response['name'], response['folder'] = list(get_doc(doc_id).values())
+        response['chunks'] = get_chunks(doc_id)
+        return response
+    except Exception as e:
+        logger.error(f"File content error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to get file content: {str(e)}")
 
 @app.post("/api/upload")
 def upload_file(
     file: UploadFile = File(...),
-    current_user: str = Depends(get_current_user)
+    current_user: str = Depends(get_current_user),
+    reader: str = "DefaultReader"
 ):
     try:
+        reader = readers[reader]
         logger.info(f"Uploading file: {file.filename} for user: {current_user}")
         
         # Process file using your existing pipeline
-        doc_id = insert_doc(file)
+
+        # Read file content
+        content, result_folder = reader().read_file(file)
+
+        doc_id = insert_doc(file, result_folder, force=True)
         if doc_id == -1:
             raise HTTPException(status_code=400, detail="File already exists")
         logger.info(f"Document inserted with ID: {doc_id}")
-
-        # Read file content
-        content = DefaultReader().read_file(file)
         
         chunks = DefaultChunker().chunk(content)
         for chunk in chunks:
-            insert_chunk(chunk, doc_id, chunks.index(chunk))
+            insert_chunk(chunk, doc_id, chunks.index(chunk), DefaultReader().name)
         logger.info(f"Created {len(chunks)} chunks")
 
         # Enumerate chunks

@@ -1,13 +1,18 @@
 import React, { useState, useRef } from 'react'
 import { Upload, FileText, Brain, Clock, CheckCircle } from 'lucide-react'
 import { api } from '../services/api'
+import { fetchFileContent } from '../services/api'
 import toast from 'react-hot-toast'
+import ReactMarkdown from 'react-markdown'
 
 function Dashboard() {
   const [uploading, setUploading] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [docs, setDocs] = useState([])
   const [docsLoading, setDocsLoading] = useState(false)
+  const [selectedDoc, setSelectedDoc] = useState(null)
+  const [docContent, setDocContent] = useState('')
+  const [docLoading, setDocLoading] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleFileUpload = async (file) => {
@@ -81,6 +86,38 @@ function Dashboard() {
       console.error('Failed to fetch docs:', error)
     } finally {
       setDocsLoading(false)
+    }
+  }
+
+  const handleOpenDoc = async (doc) => {
+    if (!doc?.id) return
+    try {
+      setDocLoading(true)
+      setSelectedDoc(doc)
+      const data = await fetchFileContent(doc.id)
+      const name = data?.name || doc.name || 'Document'
+      const folder = data?.folder || ''
+      const chunks = Array.isArray(data?.chunks) ? data.chunks : []
+
+      const md = chunks.map((c) => (typeof c?.content === 'string' ? c.content : '')).join(' ')
+
+      // Adjust image references: backend says images are referenced from os.path.join(folder, name + ".md")
+      // We rewrite relative image URLs in markdown to absolute URLs pointing to the backend static path if needed.
+      const resolvedMd = md.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (match, p1) => {
+        if (/^https?:\/\//i.test(p1)) return match
+        const base = folder ? `${folder.replace(/\\/g, '/')}/${name}.md` : `${name}.md`
+        // Resolve path by prefixing folder path's directory
+        const baseDir = base.substring(0, base.lastIndexOf('/'))
+        const joined = baseDir ? `${baseDir}/${p1}` : p1
+        // Let the browser request as-is; if backend serves from /api, you might need a static route
+        return match.replace(p1, joined)
+      })
+
+      setDocContent(resolvedMd)
+    } catch (error) {
+      toast.error('Failed to load document: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setDocLoading(false)
     }
   }
 
@@ -183,7 +220,12 @@ function Dashboard() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
               {docs.map((doc, index) => (
-                <div key={doc.id != null ? `doc-${doc.id}` : `doc-${doc.name}-${index}`} className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div
+                  key={doc.id != null ? `doc-${doc.id}` : `doc-${doc.name}-${index}`}
+                  className="card"
+                  style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+                  onClick={() => handleOpenDoc(doc)}
+                >
                   <FileText size={20} style={{ color: '#667eea' }} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</span>
                 </div>
@@ -191,6 +233,19 @@ function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Selected Document Viewer */}
+        {selectedDoc && (
+          <div className="card" style={{ marginTop: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ marginBottom: '0.75rem' }}>{selectedDoc.name}</h2>
+              {docLoading && <div className="spinner" />}
+            </div>
+            <div style={{ borderTop: '1px solid #eee', paddingTop: '1rem' }}>
+              <ReactMarkdown>{docContent}</ReactMarkdown>
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         {pendingCount > 0 && (

@@ -17,7 +17,7 @@ def insert_user(gmail: str, password: str, username: str):
         conn.commit()
     return id
 
-def login(password: str, name_or_gmail: str):
+def authorize_user(password: str, name_or_gmail: str):
     assert name_or_gmail is not None
     conn = get_connection()
     with conn.cursor() as cursor:

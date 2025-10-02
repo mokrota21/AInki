@@ -6,6 +6,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
 import Quiz from './components/Quiz'
+import Document from './components/Document'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import './index.css'
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+            <Route path="/docs/:id" element={<ProtectedRoute><Document /></ProtectedRoute>} />
           </Routes>
         </div>
       </Router>

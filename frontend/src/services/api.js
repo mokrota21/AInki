@@ -41,3 +41,9 @@ export async function fetchFileContent(docId) {
   const response = await api.get(`/file_content`, { params: { doc_id: docId } })
   return response.data
 }
+
+// Track page navigation
+export async function trackPage({ docId, page }) {
+  // Backend expects POST /api/track with query params doc_id and page
+  return api.post(`/track`, null, { params: { doc_id: docId, page } })
+}

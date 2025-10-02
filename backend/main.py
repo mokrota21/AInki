@@ -90,7 +90,7 @@ def register(user_data: UserRegister):
 @app.post("/api/auth/login")
 def login(user_data: UserLogin):
     try:
-        userid = login(user_data.password, user_data.username_or_gmail)
+        userid = authorize_user(user_data.password, user_data.username_or_gmail)
         if userid is None:
             raise HTTPException(status_code=401, detail="Invalid username or password")
         logger.info(f"User logged in successfully: {user_data.username_or_gmail}")
@@ -151,7 +151,7 @@ def upload_file(
 
         # Enumerate chunks
         chunks = [(chunk, chunks.index(chunk)) for chunk in chunks]
-        
+
         objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
         logger.info(f"Extracted {len(objects)} objects")
         
@@ -169,6 +169,21 @@ def upload_file(
         logger.error(f"Upload error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+@app.post("/api/track")
+def track_page(
+    doc_id: int,
+    page: int,
+    current_user: str = Depends(get_current_user)
+):
+    try:
+        logger.info(f"Tracking page {page} for doc {doc_id} for user {current_user}")
+        logger.info("Page tracked successfully")
+        return {"message": "Page tracked successfully"}
+    except Exception as e:
+        logger.error(f"Track page error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to track page: {str(e)}")
 
 @app.get("/api/pending", response_model=List[PendingItem])
 def get_pending_items(current_user: str = Depends(get_current_user)):

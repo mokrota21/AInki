@@ -1,6 +1,6 @@
 from .chunk_db import insert_chunk, get_chunks
 from .docs_db import insert_doc, get_all_docs, get_doc
-from .user_db import insert_user, login
+from .user_db import insert_user, authorize_user
 from .neo4j_graph import init_graph
 from .object_extractor import insert_objects, extract_objects_from_chunks
 from .repetition import RepeatState
@@ -17,7 +17,7 @@ __all__ = [
     "get_doc",
     "get_chunks",
     "insert_user",
-    "login",
+    "authorize_user",
     "init_graph",
     "insert_objects",
     "extract_objects_from_chunks",

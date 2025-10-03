@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
 from src import *
@@ -9,6 +10,7 @@ from datetime import datetime
 import uvicorn
 import logging
 import traceback
+import os
 
 load_dotenv()
 
@@ -35,6 +37,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files for PDF access
+uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
+if os.path.exists(uploads_dir):
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 readers = {
     "DefaultReader": DefaultReader,
@@ -137,7 +144,9 @@ def upload_file(
         # Process file using your existing pipeline
 
         # Read file content
-        content, result_folder = reader().read_file(file)
+        result = reader().read_file(file)
+        content = result["content"]
+        result_folder = result["result_folder"]
 
         doc_id = insert_doc(file, result_folder, force=True)
         if doc_id == -1:
@@ -177,6 +186,21 @@ def track_page(
     current_user: str = Depends(get_current_user)
 ):
     try:
+        assign_objects(current_user, chunk_id_end, doc_id)
+        return {"message": "Page tracked successfully"}
+    except Exception as e:
+        logger.error(f"Track page error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to track page: {str(e)}")
+
+@app.post("/api/track_page")
+def track_page(
+    doc_id: int,
+    page_number: int,
+    current_user: str = Depends(get_current_user)
+):
+    try:
+        
         assign_objects(current_user, chunk_id_end, doc_id)
         return {"message": "Page tracked successfully"}
     except Exception as e:

@@ -253,4 +253,5 @@ def get_objects(chunk_id: int, doc_id: int):
         """,
         chunk_id=chunk_id, doc_id=doc_id
     )
-    return result.records
+    nodes = [record["n"] for record in result.records]
+    return nodes

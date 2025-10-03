@@ -18,12 +18,17 @@ class PDFReader(FileReader):
     def __init__(self) -> None:
         super().__init__()
         self.name = "PDFReader"
-    
+
     def read_file(self, file: UploadFile) -> Any:
         bytes = file.file.read()
         pages = PdfReader(BytesIO(bytes)).pages
-        contents = " ".join([page.extract_text() for page in pages])
-        return (contents, None)
+        contents = ""
+        page_sizes = []
+        for page in pages:
+            content = page.extract_text()
+            contents += content + " "
+            page_sizes.append(len(content))
+        return {"content": contents, "page_sizes": page_sizes}
 
 import subprocess
 import os
@@ -48,10 +53,10 @@ class MineruReader(FileReader):
         file_path = os.path.join(self.upload_path, file.filename)
         with open(file_path, "wb") as f:
             f.write(file.file.read())
-        subprocess.run(["mineru", "-p", file_path, "-o", self.output_path, "-m", "auto", "-l", "en", "-d", "cuda", "--vram", "5"])
+        subprocess.run(["mineru", "-p", file_path, "-o", self.output_path, "-m", "auto", "-l", "en", "-d", "cuda", "--vram", "5", "-b", "vlm-transformers"])
         result_folder = os.path.join(self.output_path, os.path.basename(file_path).split(".")[0], "auto")
         with open(os.path.join(result_folder, os.path.basename(file_path).replace(".pdf", ".md")), "r", encoding="utf-8") as f:
             contents = f.read()
-        return (contents, result_folder)
+        return {"content": contents, "result_folder": result_folder}
 
 DefaultReader = MineruReader

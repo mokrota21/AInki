@@ -51,7 +51,7 @@ def insert_doc(doc: UploadFile, folder: str = None, force: bool = False) -> int:
                 logger.info(f"No document with name {name} found")
 
     # Otherwise insert
-    with conn.cursor() as cursor:
+    with conn.cursor() as cursor: # TODO: fix pathing
         insert_sql = """
         INSERT INTO public.docs_metadata (name, size_mb, folder)
         VALUES (%s, %s, %s)

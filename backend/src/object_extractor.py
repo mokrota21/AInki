@@ -3,13 +3,18 @@ from dotenv import load_dotenv
 import os
 from typing import List, Dict, Any, Optional, Tuple
 import json
+import logging
 from .neo4j_graph import (
     add_definition, add_property, add_theorem, add_lemma, add_axiom,
     add_corollary, add_conjecture, add_example, add_proof, add_other
 )
+from .repetition import RepeatState
+from .neo4j_graph import merge_repetition_state
 from tqdm import tqdm
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 model_name = os.getenv("MODEL_NAME")
 client = AzureOpenAI()
@@ -241,3 +246,9 @@ def insert_objects(extracted_objects: List[Dict[str, Any]]):
     
     return result
 
+def make_study_object(chunk_ids: List[int], doc_id: int):
+    objects = extract_objects_from_chunks(chunk_ids, doc_id)
+    logger.info(f"Extracted {len(objects)} objects")
+
+    object_nodes = insert_objects(objects)
+    logger.info("Objects inserted successfully")

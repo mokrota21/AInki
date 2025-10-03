@@ -390,29 +390,47 @@ function Document() {
     setCurrentPage(0)
   }, [id, markdown])
 
+  const sendTrackForCurrentPage = async () => {
+    try {
+      const range = pageChunkRanges[currentPage]
+      if (!range) return
+      await trackPage({ docId: Number(id), chunkEnd: range.endChunk })
+    } catch (e) {
+      console.error('Tracking failed', e)
+    }
+  }
+
   const handlePrev = async () => {
     const prev = Math.max(0, currentPage - 1)
     if (prev !== currentPage) {
+      // Track the page we're leaving (current page)
+      await sendTrackForCurrentPage()
       setCurrentPage(prev)
-      try {
-        await trackPage({ docId: Number(id), page: prev + 1 })
-      } catch (e) {
-        console.error('Tracking failed', e)
-      }
     }
   }
 
   const handleNext = async () => {
     const next = Math.min(totalPages - 1, currentPage + 1)
     if (next !== currentPage) {
+      // Track the page we're leaving (current page)
+      await sendTrackForCurrentPage()
       setCurrentPage(next)
-      try {
-        await trackPage({ docId: Number(id), page: next + 1 })
-      } catch (e) {
-        console.error('Tracking failed', e)
-      }
     }
   }
+
+  // Track when user leaves the page or navigates back/away
+  React.useEffect(() => {
+    const handleBeforeUnload = () => {
+      const range = pageChunkRanges[currentPage]
+      if (!range) return
+      // Fire-and-forget; navigator.sendBeacon preferable but our API requires auth header
+      trackPage({ docId: Number(id), chunkEnd: range.endChunk }).catch(() => {})
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [id, currentPage, pageChunkRanges])
 
 
   return (
@@ -444,13 +462,13 @@ function Document() {
                 style={{
                   lineHeight: 1.6,
                 height: '100%',
-                overflow: 'hidden',
+                overflow: 'auto',
                   paddingRight: '0.5rem',
                   backgroundAttachment: 'local',
                 }}
               >
               <div
-                style={{ height: '100%', overflow: 'hidden' }}
+                style={{ height: '100%', overflow: 'auto' }}
                 dangerouslySetInnerHTML={{ __html: pagesHtml[currentPage] || '' }}
               />
             </div>

@@ -20,9 +20,12 @@ def insert_chunk(chunk: str, doc_id: int, order_idx: int, reader_name: str) -> i
         conn.commit()
     return id
 
-def get_chunks(doc_id: int) -> List[Dict]:
+def get_chunks(doc_id: int, chunk_ids: List[int] = None) -> List[Dict]:
     conn = get_connection()
     with conn.cursor() as cursor:
-        cursor.execute("SELECT id, content, order_idx FROM public.chunks WHERE doc_id = %s ORDER BY order_idx ASC", (doc_id,))
+        if chunk_ids is None:
+            cursor.execute("SELECT id, content, order_idx FROM public.chunks WHERE doc_id = %s ORDER BY order_idx ASC", (doc_id,))
+        else:
+            cursor.execute("SELECT id, content, order_idx FROM public.chunks WHERE doc_id = %s AND id IN %s ORDER BY order_idx ASC", (doc_id, tuple(chunk_ids)))
         rows = cursor.fetchall()
         return [{"id": row[0], "content": row[1], "order_idx": row[2]} for row in rows]

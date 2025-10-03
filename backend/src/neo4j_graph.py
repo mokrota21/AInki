@@ -243,3 +243,14 @@ def get_all_pending(userid: str):
         userid=userid
     )
     return result.records
+
+def get_objects(chunk_id: int, doc_id: int):
+    result = driver.execute_query(
+        """
+        MATCH (n)
+        WHERE n.chunk_id_e >= $chunk_id AND n.doc_id = $doc_id
+        RETURN n
+        """,
+        chunk_id=chunk_id, doc_id=doc_id
+    )
+    return result.records

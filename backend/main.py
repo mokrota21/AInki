@@ -152,33 +152,32 @@ def upload_file(
         # Enumerate chunks
         chunks = [(chunk, chunks.index(chunk)) for chunk in chunks]
 
-        objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
-        logger.info(f"Extracted {len(objects)} objects")
+        # objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
+        # logger.info(f"Extracted {len(objects)} objects")
         
-        object_nodes = insert_objects(objects)
-        for object in object_nodes: merge_repetition_state(object.element_id, RepeatState(current_user, 0))
-        logger.info("Objects inserted successfully")
+        # object_nodes = insert_objects(objects)
+        # for object in object_nodes: merge_repetition_state(object.element_id, RepeatState(current_user, 0))
+        # logger.info("Objects inserted successfully")
         
         return {
             "message": "File processed successfully",
             "doc_id": doc_id,
-            "chunks_count": len(chunks),
-            "objects_count": len(objects)
+            "chunks_count": len(chunks)
         }
     except Exception as e:
         logger.error(f"Upload error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
+#TODO: implement in frontend logic to ask user if they have actually read the page when stayed on page less than parameter time
 @app.post("/api/track")
 def track_page(
     doc_id: int,
-    page: int,
+    chunk_id_end: int,
     current_user: str = Depends(get_current_user)
 ):
     try:
-        logger.info(f"Tracking page {page} for doc {doc_id} for user {current_user}")
-        logger.info("Page tracked successfully")
+        assign_objects(current_user, chunk_id_end, doc_id)
         return {"message": "Page tracked successfully"}
     except Exception as e:
         logger.error(f"Track page error: {str(e)}")

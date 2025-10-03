@@ -42,8 +42,8 @@ export async function fetchFileContent(docId) {
   return response.data
 }
 
-// Track page navigation
-export async function trackPage({ docId, page }) {
-  // Backend expects POST /api/track with query params doc_id and page
-  return api.post(`/track`, null, { params: { doc_id: docId, page } })
+// Track reading progress by last read chunk
+export async function trackPage({ docId, chunkEnd }) {
+  // Backend expects POST /api/track with query params doc_id and chunk_id_end
+  return api.post(`/track`, null, { params: { doc_id: docId, chunk_id_end: chunkEnd } })
 }

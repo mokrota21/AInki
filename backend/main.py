@@ -1,6 +1,8 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List
 from src import *
@@ -15,6 +17,13 @@ load_dotenv()
 app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100
+
+# Add validation error handler to see detailed error messages
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"Validation error: {exc}")
+    logger.error(f"Request body: {await request.body()}")
+    return HTTPException(status_code=422, detail=f"Validation error: {exc}")
 
 # Configure logging
 logging.basicConfig(
@@ -36,9 +45,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files for serving PDFs
+app.mount("/api/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 readers = {
     "DefaultReader": DefaultReader,
-    "PDFReader": PDFReader,
     "MineruReader": MineruReader
 }
 
@@ -61,6 +72,11 @@ class PendingItem(BaseModel):
     doc_id: int
     chunk_start: int
     chunk_end: int
+
+class TrackRequest(BaseModel):
+    doc_id: int
+    track_element_end_idx: int | List[int]
+    frontend_reader_type: str = "md"
 
 def lifespan(app: FastAPI):
     init_graph()
@@ -118,6 +134,10 @@ def get_file_content(
         response = {}
         _, response['name'], response['folder'] = list(get_doc(doc_id).values())
         response['chunks'] = get_chunks(doc_id)
+        log_info = []
+        for chunk in response['chunks']:
+            log_info.append(chunk['content'][:50] + "..." + chunk['content'][-50:]) if len(chunk['content']) > 100 else chunk['content']
+            log_info[-1] = (log_info[-1], chunk['order_idx'])
         return response
     except Exception as e:
         logger.error(f"File content error: {str(e)}")
@@ -145,12 +165,8 @@ def upload_file(
         logger.info(f"Document inserted with ID: {doc_id}")
         
         chunks = DefaultChunker().chunk(content)
-        for chunk in chunks:
-            insert_chunk(chunk, doc_id, chunks.index(chunk), DefaultReader().name)
+        insert_doc_chunks(chunks, doc_id, DefaultReader().name)
         logger.info(f"Created {len(chunks)} chunks")
-
-        # Enumerate chunks
-        chunks = [(chunk, chunks.index(chunk)) for chunk in chunks]
 
         # objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
         # logger.info(f"Extracted {len(objects)} objects")
@@ -172,12 +188,17 @@ def upload_file(
 #TODO: implement in frontend logic to ask user if they have actually read the page when stayed on page less than parameter time
 @app.post("/api/track")
 def track_page(
-    doc_id: int,
-    chunk_id_end: int,
+    request: TrackRequest,
     current_user: str = Depends(get_current_user)
 ):
+    logger.info(f"Received track request - doc_id: {request.doc_id}, track_element_end_idx: {request.track_element_end_idx}, frontend_reader_type: {request.frontend_reader_type}")
+    assert request.frontend_reader_type in ["md", "pdf"]
+    if request.frontend_reader_type == "pdf":
+        chunks_ids = chunks_in_page(request.track_element_end_idx, request.doc_id)
+    else:
+        chunks_ids = list(range(request.track_element_end_idx[0], request.track_element_end_idx[1] + 1))
     try:
-        assign_objects(current_user, chunk_id_end, doc_id)
+        for chunk_id in chunks_ids: assign_objects(current_user, chunk_id, request.doc_id)
         return {"message": "Page tracked successfully"}
     except Exception as e:
         logger.error(f"Track page error: {str(e)}")

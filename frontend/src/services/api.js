@@ -42,8 +42,21 @@ export async function fetchFileContent(docId) {
   return response.data
 }
 
-// Track reading progress by last read chunk
-export async function trackPage({ docId, chunkEnd }) {
-  // Backend expects POST /api/track with query params doc_id and chunk_id_end
-  return api.post(`/track`, null, { params: { doc_id: docId, chunk_id_end: chunkEnd } })
+// Track reading progress - supports both MD and PDF views
+export async function trackPage({ docId, chunkEnd, chunkStart, pageNumber, readerType = 'md' }) {
+  if (readerType === 'md') {
+    // For markdown: send both start and end chunk indexes
+    return api.post(`/track`, {
+      doc_id: docId,
+      track_element_end_idx: [chunkStart, chunkEnd],
+      frontend_reader_type: 'md'
+    })
+  } else {
+    // For PDF: send only page number
+    return api.post(`/track`, {
+      doc_id: docId,
+      track_element_end_idx: pageNumber,
+      frontend_reader_type: 'pdf'
+    })
+  }
 }

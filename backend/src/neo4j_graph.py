@@ -10,9 +10,14 @@ load_dotenv()
 # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
 URI = os.getenv("NEO4J_URI")
 AUTH = (os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD"))
+
+# TODO: make fallback when driver fails.
 with GraphDatabase.driver(URI, auth=AUTH) as driver:
-    driver.verify_connectivity()
-    print("✅ Successfully connected to Neo4j!")
+    try:
+        driver.verify_connectivity()
+        print("✅ Successfully connected to Neo4j!")
+    except Exception as e:
+        print(f"❌ Error connecting to Neo4j: {e}")
 
 tz = timezone.utc
 

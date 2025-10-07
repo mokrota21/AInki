@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
 from src import *
@@ -23,7 +24,10 @@ truncate_after = 100
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.error(f"Validation error: {exc}")
     logger.error(f"Request body: {await request.body()}")
-    return HTTPException(status_code=422, detail=f"Validation error: {exc}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": f"Validation error: {exc}"}
+    )
 
 # Configure logging
 logging.basicConfig(
@@ -120,7 +124,9 @@ def login(user_data: UserLogin):
 def get_docs():
     try:
         docs = get_all_docs()
-        return {"docs": docs}
+        has_quiz = len(get_all_pending()) > 0
+        logger.info(f"Has quiz: {has_quiz}")
+        return {"docs": docs, "has_quiz": has_quiz}
     except Exception as e:
         logger.error(f"Docs error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
@@ -184,6 +190,47 @@ def upload_file(
         logger.error(f"Upload error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+@app.post("/api/extract_objects_parameter")
+def extract_objects_parameter():
+    return [
+        {
+            "name": "Type of prompt",
+            "type": "select",
+            "values": prompts_available,
+            "fetch_name": "prompt_key"
+        }
+        ]
+
+#TODO: investigate why doesn't work
+@app.post("/api/price_approximation")
+def price_approx(
+    doc_id: int,
+    prompt_key: str = "general_textbook_prompt",
+    model_name: str = "gpt-5-nano"
+):
+    chunks_full = get_chunks(doc_id)
+    chunks = [chunk['content'] for chunk in chunks_full]
+    price = price_approximation(chunks, prompt_key, model_name)
+    return {"price": price}
+
+# TODO: Test this 
+@app.post("/api/extract_objects")
+def extract_objects(
+    doc_id: int,
+    prompt_key: str = "general_textbook_prompt",
+    **kwargs
+):
+    try:
+        chunks_full = get_chunks(doc_id)
+        chunks = [(chunk['content'], chunk['order_idx']) for chunk in chunks_full]
+        make_study_object(chunks, doc_id, prompt_key)
+        return True
+    except Exception as e:
+        logger.error(f"Extract objects error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to extract objects: {str(e)}")
+
 
 #TODO: implement in frontend logic to ask user if they have actually read the page when stayed on page less than parameter time
 @app.post("/api/track")
@@ -282,9 +329,9 @@ def debug_log():
 def global_exception_handler(request, exc):
     logger.error(f"Unhandled exception: {str(exc)}")
     logger.error(f"Traceback: {traceback.format_exc()}")
-    return HTTPException(
-        status_code=500, 
-        detail=f"Internal server error: {str(exc)}"
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"}
     )
 
 if __name__ == "__main__":

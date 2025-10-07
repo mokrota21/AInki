@@ -51,7 +51,8 @@ class MineruReader(FileReader):
         with open(file_path, "wb") as f:
             f.write(file.file.read())
         backend = "pipeline"
-        if not os.path.exists(output_path):
+        final_path = os.path.join(output_path, file.filename)
+        if not os.path.exists(final_path):
             subprocess.run(["mineru", "-p", file_path, "-o", output_path, "-m", "auto", "-l", "en", "-d", "cuda", "--vram", "5", "-b", backend]) #, "-b", "vlm-transformers")
         else:
             logger.info(f"Found existing processed file in path: {output_path}")

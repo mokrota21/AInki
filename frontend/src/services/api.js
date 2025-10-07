@@ -60,3 +60,22 @@ export async function trackPage({ docId, chunkEnd, chunkStart, pageNumber, reade
     })
   }
 }
+
+// Quiz generation endpoints
+export async function getQuizParameters() {
+  return api.post('/extract_objects_parameter')
+}
+
+export async function getPriceApproximation(docId, promptKey = "general_textbook_prompt", modelName = "gpt-5-nano") {
+  return api.post(`/price_approximation?doc_id=${docId}&prompt_key=${promptKey}&model_name=${modelName}`)
+}
+
+export async function extractObjects(docId, promptKey = "general_textbook_prompt", additionalParams = {}) {
+  const queryParams = new URLSearchParams({
+    doc_id: docId,
+    prompt_key: promptKey,
+    kwargs: '', // FastAPI requires this parameter due to **kwargs in the function signature
+    ...additionalParams
+  })
+  return api.post(`/extract_objects?${queryParams}`)
+}

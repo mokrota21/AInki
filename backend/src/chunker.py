@@ -39,7 +39,9 @@ class SentenceChunker:
         self.abbrev_pattern = re.compile(
             r'(?:' + '|'.join(map(re.escape, self.abbreviations)) + r')\s*$'
         )
-        self.sentence_end_re = re.compile(r'[.!?]+')
+        self.sentence_end_re = re.compile(
+            r'[.!?]+(?:[\'")\]]+)?(?=(?:\s*\n*\s*[A-Z]|$))'
+        )
 
     def chunk(self, text: str) -> List[str]:
         if not text:
@@ -75,4 +77,23 @@ class SentenceChunker:
             return True
         return False
 
-DefaultChunker = SentenceChunker
+# TODO: figure out how to automatically keep one topic in one chunk.
+class LowerBoundChunker(SentenceChunker):
+    def __init__(self, lower_bound: int = 1000) -> None:
+        self.lower_bound = lower_bound
+        super().__init__()
+    
+    def chunk(self, text: str) -> List[str]:
+        chunks = super().chunk(text)
+        new_chunks = []
+        current_chunk = ""
+        for chunk in chunks:
+            if len(current_chunk) >= self.lower_bound:
+                new_chunks.append(current_chunk)
+                current_chunk = ""
+            current_chunk += chunk
+        if current_chunk:
+            new_chunks.append(current_chunk)
+        return new_chunks
+
+DefaultChunker = LowerBoundChunker

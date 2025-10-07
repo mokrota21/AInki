@@ -1,17 +1,18 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import toast from 'react-hot-toast'
 import { fetchFileContent, trackPage } from '../services/api'
 import PDFViewer from './PDFViewer'
+import QuizPopup from './QuizPopup'
 import 'katex/dist/katex.min.css'
-import Dashboard from './Dashboard'
 
 function Document() {
   const SENTINEL = '\u2063'
   const { id } = useParams()
+  const navigate = useNavigate()
   const [loading, setLoading] = React.useState(true)
   const [name, setName] = React.useState('')
   const [markdown, setMarkdown] = React.useState('')
@@ -26,7 +27,6 @@ function Document() {
   const [viewerHeight, setViewerHeight] = React.useState(0)
   const [currentPage, setCurrentPage] = React.useState(0)
   const [totalPages, setTotalPages] = React.useState(1)
-  const [drawerOpen, setDrawerOpen] = React.useState(false)
   const controlsRef = React.useRef(null)
   const [controlsHeight, setControlsHeight] = React.useState(0)
   const [viewMode, setViewMode] = React.useState('markdown') // 'markdown' or 'pdf'
@@ -35,6 +35,12 @@ function Document() {
   const [pdfUrl, setPdfUrl] = React.useState('')
   const [mdPageInput, setMdPageInput] = React.useState('')
   const [pdfPageInput, setPdfPageInput] = React.useState('')
+  
+  // Quiz popup state
+  const [quizPopupOpen, setQuizPopupOpen] = React.useState(false)
+  const [quizTimer, setQuizTimer] = React.useState(null)
+  const [lastQuizTime, setLastQuizTime] = React.useState(Date.now())
+  
   // Track only on explicit page change via buttons
 
   React.useEffect(() => {
@@ -526,26 +532,117 @@ function Document() {
     }
   }, [id, currentPage, pageChunkRanges, viewMode, pdfCurrentPage])
 
+  // Quiz popup timer logic
+  React.useEffect(() => {
+    if (loading) return
+
+    // Clear existing timer
+    if (quizTimer) {
+      clearInterval(quizTimer)
+    }
+
+    // Set up new timer for 1 minute intervals
+    const timer = setInterval(() => {
+      const now = Date.now()
+      const timeSinceLastQuiz = now - lastQuizTime
+      
+      // Show quiz popup if 1 minute (60000ms) has passed
+      if (timeSinceLastQuiz >= 60000) {
+        setQuizPopupOpen(true)
+        setLastQuizTime(now)
+      }
+    }, 10000) // Check every 10 seconds
+
+    setQuizTimer(timer)
+
+    return () => {
+      if (timer) clearInterval(timer)
+    }
+  }, [loading, lastQuizTime])
+
+  // Clean up timer on unmount
+  React.useEffect(() => {
+    return () => {
+      if (quizTimer) {
+        clearInterval(quizTimer)
+      }
+    }
+  }, [quizTimer])
+
+  // Debug function to manually trigger quiz popup
+  const triggerQuizPopup = () => {
+    setQuizPopupOpen(true)
+  }
+
+  // Handle quiz popup close
+  const handleQuizPopupClose = () => {
+    setQuizPopupOpen(false)
+  }
+
+  // Handle quiz completion
+  const handleQuizComplete = () => {
+    setLastQuizTime(Date.now()) // Reset timer after quiz completion
+  }
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#fff' }}>
-      {/* Menu button */}
-      <button
-        className="btn btn-secondary"
-        onClick={() => setDrawerOpen(true)}
-        style={{ position: 'fixed', top: '1rem', left: '1rem', zIndex: 1001 }}
-      >
-        Menu
-      </button>
+      {/* Header section with shadow */}
+      <div style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        height: '4rem', 
+        background: '#fff', 
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', 
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 1rem'
+      }}>
+        {/* Back button */}
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate('/dashboard')}
+          style={{ marginRight: '1rem' }}
+        >
+          ← Back
+        </button>
 
-      {/* Reader name (visually subtle) */}
-      <div style={{ position: 'fixed', top: '1.2rem', left: '5.5rem', right: '12rem', color: '#6c757d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {name}
+        {/* Reader name (visually subtle) */}
+        <div style={{ 
+          flex: 1, 
+          color: '#6c757d', 
+          whiteSpace: 'nowrap', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          textAlign: 'center', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          margin: '0 1rem'
+        }}>
+          {name}
         </div>
 
-      {/* View mode toggle */}
-      <div style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 1001 }}>
+        {/* View mode toggle and debug button */}
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {/* DEBUG BUTTON - Remove this in production */}
+          <button
+            className="btn btn-secondary"
+            onClick={triggerQuizPopup}
+            style={{ 
+              fontSize: '0.75rem', 
+              padding: '0.4rem 0.6rem',
+              background: '#ffc107',
+              color: '#000',
+              border: '1px solid #ffc107'
+            }}
+            title="Debug: Trigger Quiz Popup"
+          >
+            🧠 Quiz
+          </button>
+          
           <button
             className={`btn ${viewMode === 'markdown' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setViewMode('markdown')}
@@ -677,32 +774,12 @@ function Document() {
         </div>
       </div>
 
-      {/* Overlay */}
-      {drawerOpen && (
-        <div
-          onClick={() => setDrawerOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000,
-          }}
-        />
-      )}
-
-      {/* Drawer */}
-      <div
-        style={{
-          position: 'fixed', top: 0, left: 0, height: '100%', width: '420px', maxWidth: '90vw', background: '#fff',
-          boxShadow: '0 0 20px rgba(0,0,0,0.2)', transform: drawerOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 250ms ease', zIndex: 1002, display: 'flex', flexDirection: 'column'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderBottom: '1px solid #eee' }}>
-          <strong>Dashboard</strong>
-          <button className="btn btn-secondary" onClick={() => setDrawerOpen(false)}>Close</button>
-        </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          <Dashboard />
-        </div>
-      </div>
+      {/* Quiz Popup */}
+      <QuizPopup 
+        isOpen={quizPopupOpen}
+        onClose={handleQuizPopupClose}
+        onComplete={handleQuizComplete}
+      />
     </div>
   )
 }

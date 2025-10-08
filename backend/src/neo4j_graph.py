@@ -5,7 +5,7 @@ import os
 from .repetition import RepeatState
 from datetime import timezone, datetime
 from .neo4j_connection import driver
-
+from random import choice
 
 
 tz = timezone.utc
@@ -53,14 +53,15 @@ def add_knowledge_object(name: str, label: str, doc_id: int, chunk_id_s: int, ch
     )
     return summary.records[0]["n"]
 
-def add_review_question(node_id: str, question: str, question_type: str):
+def add_review_question(node_id: str, question: str, question_type: str, difficulty: str, cognitive_focus: str):
     """
     Create a ReviewQuestion and link it to an existing BookKnowledge node.
     Fails cleanly if the BookKnowledge node doesn't exist.
     """
     query = """
-    MATCH (m:BookKnowledge {id: $node_id})
-    CREATE (n:ReviewQuestion {type: $type, question: $question})
+    MATCH (m)
+    WHERE elementId(m) = $node_id
+    CREATE (n:ReviewQuestion {type: $type, question: $question, difficulty: $difficulty, cognitive_focus: $cognitive_focus, asked: $asked, correct: $correct, asked_at: $asked_at})
     CREATE (n)-[:QUESTION_FOR]->(m)
     RETURN n
     """
@@ -69,6 +70,11 @@ def add_review_question(node_id: str, question: str, question_type: str):
         node_id=node_id,
         type=question_type,
         question=question,
+        difficulty=difficulty,
+        cognitive_focus=cognitive_focus,
+        asked=0,
+        correct=0,
+        asked_at=datetime.now(tz)
     )
     records = result.records
     if not records:
@@ -136,3 +142,15 @@ def get_objects(chunk_id: int, doc_id: int):
         chunk_id=chunk_id, doc_id=doc_id
     )
     return [record['n'] for record in result.records]
+
+def get_rand_review_question(node_id: str, question_nodes: list = None):
+    if question_nodes is None:
+        result = driver.execute_query(
+            """
+            MATCH (n:ReviewQuestion)-[:QUESTION_FOR]->(m:BookKnowledge {id: $node_id})
+            RETURN n
+            """,
+            node_id=node_id
+        )
+        question_nodes = [record['n'] for record in result.records]
+    return choice(question_nodes)

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import RequestValidationError
@@ -12,12 +12,14 @@ from datetime import datetime
 import uvicorn
 import logging
 import traceback
+from random import sample
 
 load_dotenv()
 
 app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100
+PENDING_QUIZ_LIMIT = 5
 
 # Add validation error handler to see detailed error messages
 @app.exception_handler(RequestValidationError)
@@ -72,6 +74,10 @@ class UserLogin(BaseModel):
 class PendingItem(BaseModel):
     node_id: str
     name: str
+    question: str
+    question_type: str
+    difficulty: str
+    cognitive_focus: str
     content: str
     doc_id: int
     chunk_start: int
@@ -232,45 +238,67 @@ def extract_objects(
         raise HTTPException(status_code=500, detail=f"Failed to extract objects: {str(e)}")
 
 
+def process_track_background(current_user: str, request: TrackRequest):
+    """Background task to process page tracking without blocking the response"""
+    try:
+        logger.info(f"Processing background track - doc_id: {request.doc_id}, user: {current_user}")
+        
+        if request.frontend_reader_type == "pdf":
+            chunks_ids = chunks_in_page(request.track_element_end_idx, request.doc_id)
+        else:
+            chunks_ids = list(range(request.track_element_end_idx[0], request.track_element_end_idx[1] + 1))
+        
+        for chunk_id in chunks_ids: 
+            assign_objects(current_user, chunk_id, request.doc_id)
+        
+        logger.info(f"Background tracking completed for user {current_user}, doc {request.doc_id}")
+    except Exception as e:
+        logger.error(f"Background track error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+
 #TODO: implement in frontend logic to ask user if they have actually read the page when stayed on page less than parameter time
 @app.post("/api/track")
 def track_page(
     request: TrackRequest,
+    background_tasks: BackgroundTasks,
     current_user: str = Depends(get_current_user)
 ):
     logger.info(f"Received track request - doc_id: {request.doc_id}, track_element_end_idx: {request.track_element_end_idx}, frontend_reader_type: {request.frontend_reader_type}")
     assert request.frontend_reader_type in ["md", "pdf"]
-    if request.frontend_reader_type == "pdf":
-        chunks_ids = chunks_in_page(request.track_element_end_idx, request.doc_id)
-    else:
-        chunks_ids = list(range(request.track_element_end_idx[0], request.track_element_end_idx[1] + 1))
-    try:
-        for chunk_id in chunks_ids: assign_objects(current_user, chunk_id, request.doc_id)
-        return {"message": "Page tracked successfully"}
-    except Exception as e:
-        logger.error(f"Track page error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to track page: {str(e)}")
+    
+    # Add background task - this returns immediately
+    background_tasks.add_task(process_track_background, current_user, request)
+    
+    # Return immediately without waiting for processing
+    return {"message": "Page tracking started in background"}
 
 @app.get("/api/pending", response_model=List[PendingItem])
 def get_pending_items(current_user: str = Depends(get_current_user)):
     try:
         logger.info(f"Getting pending items for user: {current_user}")
         pending_records = get_all_pending(current_user)
-        logger.info(f"Found {len(pending_records)} pending records")
+        if len(pending_records) > PENDING_QUIZ_LIMIT:
+            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
+        logger.info(f"Sampled {len(pending_records)} pending records")
         pending_items = []
-        
+
         for record in pending_records:
             node = record["n"]
-            content = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
-            context = chunk_maper(node["doc_id"], node["chunk_id_s"] - context_diff, node["chunk_id_e"] + context_diff)
-            context = context[:truncate_after] + " ... " + context[-truncate_after:] if len(context) > 2 * truncate_after else context
+            question_type = sample_question_type(node.element_id)
+            logger.info(f"Question type: {question_type} ({type(question_type)})")
+            question_nodes = make_review_questions(node.element_id, question_type)
+            question = get_rand_review_question(node.element_id, question_nodes)
+            logger.info(f"Question: {question}")
+            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
 
             pending_items.append(PendingItem(
                 node_id=node.element_id,
                 name=node["name"],
-                content=content,
-                context=context,
+                question=question["question_text"],
+                question_type=question["question_type"],
+                difficulty=question["difficulty"],
+                cognitive_focus=question["cognitive_focus"],
+                content=reference,
                 doc_id=node["doc_id"],
                 chunk_start=node["chunk_id_s"],
                 chunk_end=node["chunk_id_e"]
@@ -282,6 +310,11 @@ def get_pending_items(current_user: str = Depends(get_current_user)):
         logger.error(f"Pending items error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
+
+@app.get("/api/total_pending")
+def get_total_pending(current_user: str = Depends(get_current_user)):
+    pending = get_all_pending(current_user)
+    return len(pending)
 
 @app.post("/api/quiz/answer")
 def submit_answer(

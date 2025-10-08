@@ -65,8 +65,8 @@ function Dashboard() {
 
   const checkPendingItems = async () => {
     try {
-      const response = await api.get('/pending')
-      setPendingCount(response.data.length)
+      const response = await api.get('/total_pending')
+      setPendingCount(response.data)
     } catch (error) {
       console.error('Failed to check pending items:', error)
     }

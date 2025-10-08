@@ -8,6 +8,7 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [answerRevealed, setAnswerRevealed] = useState(false)
 
   const currentItem = pendingItems[currentIndex]
 
@@ -44,6 +45,7 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
       // Move to next item or finish
       if (currentIndex < pendingItems.length - 1) {
         setCurrentIndex(currentIndex + 1)
+        setAnswerRevealed(false) // Reset answer reveal for next question
       } else {
         toast.success('Review session completed!')
         onComplete?.()
@@ -59,7 +61,12 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
   const handleClose = () => {
     setCurrentIndex(0)
     setPendingItems([])
+    setAnswerRevealed(false)
     onClose()
+  }
+
+  const toggleAnswer = () => {
+    setAnswerRevealed(!answerRevealed)
   }
 
   if (!isOpen) return null
@@ -160,54 +167,90 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
                 fontSize: '1.5rem',
                 fontWeight: '600'
               }}>
-                {currentItem.name}
+                {currentItem.question}
               </h2>
               
+              {/* Question metadata */}
               <div style={{ 
+                marginBottom: '1.5rem', 
+                padding: '0.75rem', 
                 background: '#f8f9fa', 
-                padding: '1.5rem', 
                 borderRadius: '8px',
-                marginBottom: '2rem',
-                lineHeight: '1.6'
-              }}>
-                <p style={{ margin: 0, color: '#495057' }}>{currentItem.content}</p>
-              </div>
-
-              {/* Answer Buttons */}
-              <div style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                justifyContent: 'center',
+                fontSize: '0.9rem',
+                color: '#6c757d',
+                display: 'flex',
+                gap: '1rem',
                 flexWrap: 'wrap'
               }}>
-                <button
-                  onClick={() => handleAnswer(false)}
-                  className="btn btn-danger"
-                  disabled={submitting}
-                  style={{ 
-                    padding: '1rem 2rem', 
-                    fontSize: '1rem',
-                    minWidth: '140px'
-                  }}
-                >
-                  <XCircle size={18} style={{ marginRight: '0.5rem' }} />
-                  I Don't Know
-                </button>
-                
-                <button
-                  onClick={() => handleAnswer(true)}
-                  className="btn btn-success"
-                  disabled={submitting}
-                  style={{ 
-                    padding: '1rem 2rem', 
-                    fontSize: '1rem',
-                    minWidth: '140px'
-                  }}
-                >
-                  <CheckCircle size={18} style={{ marginRight: '0.5rem' }} />
-                  I Know This
-                </button>
+                <span><strong>Type:</strong> {currentItem.question_type}</span>
+                <span><strong>Difficulty:</strong> {currentItem.difficulty}</span>
+                <span><strong>Focus:</strong> {currentItem.cognitive_focus}</span>
               </div>
+
+              {/* Answer section */}
+              {answerRevealed && (
+                <div style={{ 
+                  marginBottom: '2rem', 
+                  padding: '1rem', 
+                  background: '#e9ecef', 
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  color: '#495057'
+                }}>
+                  <strong>Answer:</strong> {currentItem.content}
+                </div>
+              )}
+
+              {/* Show Answer Button */}
+              {!answerRevealed && (
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                  <button
+                    onClick={toggleAnswer}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
+                  >
+                    Show Answer
+                  </button>
+                </div>
+              )}
+
+              {/* Answer Buttons - only show when answer is revealed */}
+              {answerRevealed && (
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '1rem', 
+                  justifyContent: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <button
+                    onClick={() => handleAnswer(false)}
+                    className="btn btn-danger"
+                    disabled={submitting}
+                    style={{ 
+                      padding: '1rem 2rem', 
+                      fontSize: '1rem',
+                      minWidth: '140px'
+                    }}
+                  >
+                    <XCircle size={18} style={{ marginRight: '0.5rem' }} />
+                    I Don't Know
+                  </button>
+                  
+                  <button
+                    onClick={() => handleAnswer(true)}
+                    className="btn btn-success"
+                    disabled={submitting}
+                    style={{ 
+                      padding: '1rem 2rem', 
+                      fontSize: '1rem',
+                      minWidth: '140px'
+                    }}
+                  >
+                    <CheckCircle size={18} style={{ marginRight: '0.5rem' }} />
+                    I Know This
+                  </button>
+                </div>
+              )}
 
               {submitting && (
                 <div style={{ textAlign: 'center', marginTop: '1rem' }}>

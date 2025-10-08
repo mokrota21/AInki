@@ -9,6 +9,8 @@ from .ask import check_answer, QuizAnswer
 from .chunker import DefaultChunker
 from .file_reader import DefaultReader, MineruReader
 from .chunk_maper import chunk_maper, map_to_pages, chunks_in_page
+from .question_maker import make_review_questions, sample_question_type
+from .neo4j_graph import get_rand_review_question
 
 __all__ = [
     "insert_chunk",
@@ -34,5 +36,8 @@ __all__ = [
     "QuizAnswer",
     "assign_objects",
     "map_to_pages",
-    "chunks_in_page"
+    "chunks_in_page",
+    "make_review_questions",
+    "sample_question_type",
+    "get_rand_review_question"
 ]

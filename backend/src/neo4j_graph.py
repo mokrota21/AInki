@@ -4,163 +4,12 @@ from dotenv import load_dotenv
 import os
 from .repetition import RepeatState
 from datetime import timezone, datetime
+from .neo4j_connection import driver
+from random import choice
 
-# dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-load_dotenv()
-# URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
-URI = os.getenv("NEO4J_URI")
-AUTH = (os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD"))
-with GraphDatabase.driver(URI, auth=AUTH) as driver:
-    driver.verify_connectivity()
-    print("✅ Successfully connected to Neo4j!")
 
 tz = timezone.utc
 
-driver = GraphDatabase.driver(URI, auth=AUTH)
-
-def add_definition(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add definition to the NEO4j graph.
-    name: Name of the definition;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where definition begins;
-    chunk_id_e: ending chunk id where definition ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (d:Definition {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN d",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["d"]
-
-def add_property(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add property to the NEO4j graph.
-    name: Name of the property;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where property begins;
-    chunk_id_e: ending chunk id where property ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (p:Property {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN p",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["p"]
-
-def add_theorem(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add theorem to the NEO4j graph.
-    name: Name of the theorem;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where theorem begins;
-    chunk_id_e: ending chunk id where theorem ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (t:Theorem {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN t",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["t"]
-
-def add_lemma(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add lemma to the NEO4j graph.
-    name: Name of the lemma;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where lemma begins;
-    chunk_id_e: ending chunk id where lemma ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (l:Lemma {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN l",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["l"]
-
-def add_axiom(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add axiom to the NEO4j graph.
-    name: Name of the axiom;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where axiom begins;
-    chunk_id_e: ending chunk id where axiom ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (a:Axiom {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN a",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["a"]
-
-def add_corollary(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add corollary to the NEO4j graph.
-    name: Name of the corollary;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where corollary begins;
-    chunk_id_e: ending chunk id where corollary ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (c:Corollary {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN c",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["c"]
-
-def add_conjecture(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add conjecture to the NEO4j graph.
-    name: Name of the conjecture;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where conjecture begins;
-    chunk_id_e: ending chunk id where conjecture ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (c:Conjecture {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN c",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["c"]
-
-def add_example(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add example to the NEO4j graph.
-    name: Name of the example;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where example begins;
-    chunk_id_e: ending chunk id where example ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (e:Example {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN e",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["e"]
-
-def add_proof(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
-    """
-    Add proof to the NEO4j graph.
-    name: Name of the proof;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where proof begins;
-    chunk_id_e: ending chunk id where proof ends;
-    """
-    assert chunk_id_e >= chunk_id_s
-
-    summary = driver.execute_query(
-        "CREATE (p:Proof {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN p",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
-    )
-    return summary.records[0]["p"]
 
 def add_relation(node1_id: str, node2_id: str):
     """
@@ -178,21 +27,60 @@ def add_relation(node1_id: str, node2_id: str):
     )
     return summary.records[0]["r"]
 
-def add_other(name: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
+def add_knowledge_object(name: str, label: str, doc_id: int, chunk_id_s: int, chunk_id_e: int):
     """
-    Add other information to the NEO4j graph.
-    name: Name of the other information;
-    doc_id: id of document it is taken from;
-    chunk_id_s: starting chunk id where implicit knowledge begins;
-    chunk_id_e: ending chunk id where implicit knowledge ends;
+    Add a knowledge object to the NEO4j graph with the specified label.
+    
+    Args:
+        name: Name of the object
+        label: Neo4j label for the object (e.g., 'Definition', 'Theorem', 'Fact', etc.)
+        doc_id: ID of document it is taken from
+        chunk_id_s: Starting chunk ID where object begins
+        chunk_id_e: Ending chunk ID where object ends
+    
+    Returns:
+        The created node
     """
     assert chunk_id_e >= chunk_id_s
+    assert label is not None and label.strip() != ""
 
+    # Use parameterized query to prevent injection
+    query = f"CREATE (n:BookKnowledge {{type: $type, name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}}) RETURN n"
+    
     summary = driver.execute_query(
-        "CREATE (i:ImplicitKnowledge {name: $name, doc_id: $doc_id, chunk_id_s: $chunk_id_s, chunk_id_e: $chunk_id_e}) RETURN i",
-        name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
+        query,
+        type=label, name=name, doc_id=doc_id, chunk_id_s=chunk_id_s, chunk_id_e=chunk_id_e
     )
-    return summary.records[0]["i"]
+    return summary.records[0]["n"]
+
+def add_review_question(node_id: str, question: str, question_type: str, cognitive_focus: str, answer: str):
+    """
+    Create a ReviewQuestion and link it to an existing BookKnowledge node.
+    Fails cleanly if the BookKnowledge node doesn't exist.
+    """
+    query = """
+    MATCH (m)
+    WHERE elementId(m) = $node_id
+    CREATE (n:ReviewQuestion {type: $type, question: $question, answer: $answer, cognitive_focus: $cognitive_focus, asked: $asked, correct: $correct, asked_at: $asked_at})
+    CREATE (n)-[:QUESTION_FOR]->(m)
+    RETURN n
+    """
+    result = driver.execute_query(
+        query,
+        node_id=node_id,
+        type=question_type,
+        question=question,
+        answer=answer,
+        cognitive_focus=cognitive_focus,
+        asked=0,
+        correct=0,
+        asked_at=datetime.now(tz)
+    )
+    records = result.records
+    if not records:
+        raise ValueError(f"No BookKnowledge node found with id={node_id!r}")
+    return records[0]["n"]
+
 
 def init_graph():
     # Make constraint on userid
@@ -233,13 +121,119 @@ def merge_repetition_state(connected_to_id: str, state: RepeatState):
     )
     return result.records[0]["r"], result.records[0]["c"]
 
-def get_all_pending(userid: str):
+def get_all_pending(userid: str = None):
     result = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
-        WHERE r.next_repeat < datetime({year: 9999, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'}) AND r.userid = $userid
+        WHERE r.next_repeat < datetime({year: 9999, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'}) AND (r.userid = $userid OR $userid IS NULL)
         RETURN n, c, r
         """,
         userid=userid
     )
     return result.records
+
+def get_objects(chunk_id: int, doc_id: int):
+    result = driver.execute_query(
+        """
+        MATCH (n)
+        WHERE n.chunk_id_e <= $chunk_id AND n.doc_id = $doc_id
+        RETURN n
+        """,
+        chunk_id=chunk_id, doc_id=doc_id
+    )
+    return [record['n'] for record in result.records]
+
+def get_rand_review_question(node_id: str, question_nodes: list = None):
+    if question_nodes is None:
+        result = driver.execute_query(
+            """
+            MATCH (n:ReviewQuestion)-[:QUESTION_FOR]->(m)
+            WHERE elementId(m) = $node_id
+            RETURN n
+            """,
+            node_id=node_id
+        )
+        question_nodes = [record['n'] for record in result.records]
+    return choice(question_nodes)
+
+import numpy as np
+def interpolate(array: list):
+    array = np.array(array, dtype=float)
+    x = np.arange(len(array))
+    nans = np.isnan(array)
+    array[nans] = np.interp(x[nans], x[~nans], array[~nans])
+    return array.tolist()
+
+
+def get_chunk_mastery(userid: str, doc_id: int):
+    result = driver.execute_query(
+        """
+        MATCH (n)-[:LAST_REPEATED]->(r:RepetitionState)
+        WHERE r.userid = $userid AND n.doc_id = $doc_id
+        ORDER BY n.chunk_id_s ASC
+        RETURN r, n
+        """,
+        userid=userid, doc_id=doc_id
+    )
+
+    chunk_index_mastery = []
+    current_chunk_index = 0
+    for record in result.records:
+        r = record["r"]
+        n = record["n"]
+        state = int(r.get("state"))
+        if n.get("chunk_id_s") > current_chunk_index:
+            while n.get("chunk_id_s") > current_chunk_index:
+                chunk_index_mastery.append(None)
+                current_chunk_index += 1
+        while n.get("chunk_id_e") >= current_chunk_index:
+            chunk_index_mastery.append(state)
+            current_chunk_index += 1
+    chunk_index_mastery = interpolate(chunk_index_mastery)
+    return chunk_index_mastery
+
+from .chunk_maper import chunk_to_page
+# Only works for pdf documents
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # This makes it show in terminal
+    ]
+)
+
+logger = logging.getLogger(__name__)
+def get_page_mastery(userid: str, doc_id: int):
+    chunk_mastery = get_chunk_mastery(userid, doc_id)
+    page_mastery = []
+    current_page = 0
+    total_mastery = 0
+    total_chunks = 0
+    logger.info("Computing page mastery: userid=%s doc_id=%s chunk_count=%s", userid, doc_id, len(chunk_mastery))
+    for chunk_idx, mastery in enumerate(chunk_mastery):
+        total_mastery += mastery
+        total_chunks += 1
+        try:
+            mapped_page = chunk_to_page(chunk_idx, doc_id)
+        except Exception as e:
+            logger.error(
+                "chunk_to_page failed: doc_id=%s chunk_idx=%s current_page=%s total_chunks_in_page=%s error=%s",
+                doc_id, chunk_idx, current_page, total_chunks, repr(e), exc_info=True
+            )
+            raise
+        if mapped_page is None:
+            logger.error(
+                "chunk_to_page returned None: doc_id=%s chunk_idx=%s (no page mapping found)",
+                doc_id, chunk_idx
+            )
+            raise ValueError(f"No page mapping for chunk_idx={chunk_idx} doc_id={doc_id}")
+        if mapped_page > current_page:
+            page_mastery.append(total_mastery / total_chunks)
+            current_page += 1
+            total_mastery = 0
+            total_chunks = 0
+    page_mastery.append(total_mastery / total_chunks)
+    page_mastery = np.array(page_mastery, dtype=float)
+    page_mastery = page_mastery / page_mastery.max()
+    return page_mastery.tolist()

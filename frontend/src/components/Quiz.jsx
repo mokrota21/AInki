@@ -9,6 +9,7 @@ function Quiz() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [answerRevealed, setAnswerRevealed] = useState(false)
   const navigate = useNavigate()
 
   const currentItem = pendingItems[currentIndex]
@@ -43,6 +44,7 @@ function Quiz() {
       // Move to next item or finish
       if (currentIndex < pendingItems.length - 1) {
         setCurrentIndex(currentIndex + 1)
+        setAnswerRevealed(false) // Reset answer reveal for next question
       } else {
         toast.success('Review session completed!')
         navigate('/dashboard')
@@ -54,8 +56,13 @@ function Quiz() {
     }
   }
 
+  const toggleAnswer = () => {
+    setAnswerRevealed(!answerRevealed)
+  }
+
   const resetSession = () => {
     setCurrentIndex(0)
+    setAnswerRevealed(false)
     loadPendingItems()
   }
 
@@ -116,43 +123,78 @@ function Quiz() {
         </div>
 
         {/* Question */}
-        <h1 className="quiz-title">{currentItem.name}</h1>
         <div className="quiz-content">
-          <p>{currentItem.content}</p>
+          <h1 className="quiz-title">{currentItem.question}</h1>
+          
+          {/* Question metadata */}
           <div style={{ 
-            marginTop: '1rem', 
-            padding: '1rem', 
+            marginBottom: '1.5rem', 
+            padding: '0.75rem', 
             background: '#f8f9fa', 
             borderRadius: '8px',
             fontSize: '0.9rem',
-            color: '#6c757d'
+            color: '#6c757d',
+            display: 'flex',
+            gap: '1rem',
+            flexWrap: 'wrap'
           }}>
-            {/* <strong>Source:</strong> {currentItem.context} */}
+            <span><strong>Type:</strong> {currentItem.question_type}</span>
+            <span><strong>Difficulty:</strong> {currentItem.difficulty}</span>
+            <span><strong>Focus:</strong> {currentItem.cognitive_focus}</span>
           </div>
+
+          {/* Answer section */}
+          {answerRevealed && (
+            <div style={{ 
+              marginTop: '1rem', 
+              padding: '1rem', 
+              background: '#e9ecef', 
+              borderRadius: '8px',
+              fontSize: '0.9rem',
+              color: '#495057'
+            }}>
+              <strong>Answer:</strong> {currentItem.content}
+            </div>
+          )}
         </div>
 
-        {/* Answer Buttons */}
-        <div className="quiz-actions">
-          <button
-            onClick={() => handleAnswer(false)}
-            className="btn btn-danger"
-            disabled={submitting}
-            style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
-          >
-            <XCircle size={20} style={{ marginRight: '0.5rem' }} />
-            I Don't Know
-          </button>
-          
-          <button
-            onClick={() => handleAnswer(true)}
-            className="btn btn-success"
-            disabled={submitting}
-            style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
-          >
-            <CheckCircle size={20} style={{ marginRight: '0.5rem' }} />
-            I Know This
-          </button>
-        </div>
+        {/* Show Answer Button */}
+        {!answerRevealed && (
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+            <button
+              onClick={toggleAnswer}
+              className="btn btn-secondary"
+              style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
+            >
+              Show Answer
+            </button>
+          </div>
+        )}
+
+        {/* Answer Buttons - only show when answer is revealed */}
+        {answerRevealed && (
+          <div className="quiz-actions">
+            <button
+              onClick={() => handleAnswer(false)}
+              className="btn btn-danger"
+              disabled={submitting}
+              style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+            >
+              <XCircle size={20} style={{ marginRight: '0.5rem' }} />
+              I Don't Know
+            </button>
+            
+            <button
+              onClick={() => handleAnswer(true)}
+              className="btn btn-success"
+              disabled={submitting}
+              style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+            >
+              <CheckCircle size={20} style={{ marginRight: '0.5rem' }} />
+              I Know This
+            </button>
+          </div>
+        )}
 
         {submitting && (
           <div style={{ textAlign: 'center', marginTop: '1rem' }}>

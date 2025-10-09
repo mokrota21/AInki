@@ -1,6 +1,9 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.exceptions import RequestValidationError
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
 from src import *
@@ -9,12 +12,25 @@ from datetime import datetime
 import uvicorn
 import logging
 import traceback
+from random import sample
 
 load_dotenv()
 
 app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100
+PENDING_QUIZ_LIMIT = 5
+NO_QUESTION_GENERATION=True
+
+# Add validation error handler to see detailed error messages
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"Validation error: {exc}")
+    logger.error(f"Request body: {await request.body()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": f"Validation error: {exc}"}
+    )
 
 # Configure logging
 logging.basicConfig(
@@ -36,9 +52,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files for serving PDFs
+app.mount("/api/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 readers = {
     "DefaultReader": DefaultReader,
-    "PDFReader": PDFReader,
     "MineruReader": MineruReader
 }
 
@@ -57,10 +75,19 @@ class UserLogin(BaseModel):
 class PendingItem(BaseModel):
     node_id: str
     name: str
-    content: str
+    question: str
+    question_type: str
+    cognitive_focus: str
+    answer: str
+    reference: str
     doc_id: int
     chunk_start: int
     chunk_end: int
+
+class TrackRequest(BaseModel):
+    doc_id: int
+    track_element_end_idx: int | List[int]
+    frontend_reader_type: str = "md"
 
 def lifespan(app: FastAPI):
     init_graph()
@@ -104,7 +131,9 @@ def login(user_data: UserLogin):
 def get_docs():
     try:
         docs = get_all_docs()
-        return {"docs": docs}
+        has_quiz = len(get_all_pending()) > 0
+        logger.info(f"Has quiz: {has_quiz}")
+        return {"docs": docs, "has_quiz": has_quiz}
     except Exception as e:
         logger.error(f"Docs error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
@@ -118,6 +147,10 @@ def get_file_content(
         response = {}
         _, response['name'], response['folder'] = list(get_doc(doc_id).values())
         response['chunks'] = get_chunks(doc_id)
+        log_info = []
+        for chunk in response['chunks']:
+            log_info.append(chunk['content'][:50] + "..." + chunk['content'][-50:]) if len(chunk['content']) > 100 else chunk['content']
+            log_info[-1] = (log_info[-1], chunk['order_idx'])
         return response
     except Exception as e:
         logger.error(f"File content error: {str(e)}")
@@ -145,76 +178,155 @@ def upload_file(
         logger.info(f"Document inserted with ID: {doc_id}")
         
         chunks = DefaultChunker().chunk(content)
-        for chunk in chunks:
-            insert_chunk(chunk, doc_id, chunks.index(chunk), DefaultReader().name)
+        insert_doc_chunks(chunks, doc_id, DefaultReader().name)
         logger.info(f"Created {len(chunks)} chunks")
 
-        # Enumerate chunks
-        chunks = [(chunk, chunks.index(chunk)) for chunk in chunks]
-
-        objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
-        logger.info(f"Extracted {len(objects)} objects")
+        # objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
+        # logger.info(f"Extracted {len(objects)} objects")
         
-        object_nodes = insert_objects(objects)
-        for object in object_nodes: merge_repetition_state(object.element_id, RepeatState(current_user, 0))
-        logger.info("Objects inserted successfully")
+        # object_nodes = insert_objects(objects)
+        # for object in object_nodes: merge_repetition_state(object.element_id, RepeatState(current_user, 0))
+        # logger.info("Objects inserted successfully")
         
         return {
             "message": "File processed successfully",
             "doc_id": doc_id,
-            "chunks_count": len(chunks),
-            "objects_count": len(objects)
+            "chunks_count": len(chunks)
         }
     except Exception as e:
         logger.error(f"Upload error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
-@app.post("/api/track")
-def track_page(
+@app.post("/api/extract_objects_parameter")
+def extract_objects_parameter():
+    return [
+        {
+            "name": "Type of prompt",
+            "type": "select",
+            "values": prompts_available,
+            "fetch_name": "prompt_key"
+        }
+        ]
+
+#TODO: investigate why doesn't work
+@app.post("/api/price_approximation")
+def price_approx(
     doc_id: int,
-    page: int,
-    current_user: str = Depends(get_current_user)
+    prompt_key: str = "general_textbook_prompt",
+    model_name: str = "gpt-5-nano"
+):
+    chunks_full = get_chunks(doc_id)
+    chunks = [chunk['content'] for chunk in chunks_full]
+    price = price_approximation(chunks, prompt_key, model_name)
+    return {"price": price}
+
+# TODO: Test this 
+@app.post("/api/extract_objects")
+def extract_objects(
+    doc_id: int,
+    prompt_key: str = "general_textbook_prompt",
+    **kwargs
 ):
     try:
-        logger.info(f"Tracking page {page} for doc {doc_id} for user {current_user}")
-        logger.info("Page tracked successfully")
-        return {"message": "Page tracked successfully"}
+        chunks_full = get_chunks(doc_id)
+        chunks = [(chunk['content'], chunk['order_idx']) for chunk in chunks_full]
+        make_study_object(chunks, doc_id, prompt_key)
+        return True
     except Exception as e:
-        logger.error(f"Track page error: {str(e)}")
+        logger.error(f"Extract objects error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to track page: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to extract objects: {str(e)}")
+
+
+def process_track_background(current_user: str, request: TrackRequest):
+    """Background task to process page tracking without blocking the response"""
+    try:
+        logger.info(f"Processing background track - doc_id: {request.doc_id}, user: {current_user}")
+        
+        if request.frontend_reader_type == "pdf":
+            chunks_ids = chunks_in_page(request.track_element_end_idx, request.doc_id)
+        else:
+            chunks_ids = list(range(request.track_element_end_idx[0], request.track_element_end_idx[1] + 1))
+        
+        for chunk_id in chunks_ids: 
+            assign_objects(current_user, chunk_id, request.doc_id)
+        
+        logger.info(f"Background tracking completed for user {current_user}, doc {request.doc_id}")
+    except Exception as e:
+        logger.error(f"Background track error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+
+#TODO: implement in frontend logic to ask user if they have actually read the page when stayed on page less than parameter time
+@app.post("/api/track")
+def track_page(
+    request: TrackRequest,
+    background_tasks: BackgroundTasks,
+    current_user: str = Depends(get_current_user)
+):
+    logger.info(f"Received track request - doc_id: {request.doc_id}, track_element_end_idx: {request.track_element_end_idx}, frontend_reader_type: {request.frontend_reader_type}")
+    assert request.frontend_reader_type in ["md", "pdf"]
+    
+    # Add background task - this returns immediately
+    background_tasks.add_task(process_track_background, current_user, request)
+    
+    # Return immediately without waiting for processing
+    return {"message": "Page tracking started in background"}
 
 @app.get("/api/pending", response_model=List[PendingItem])
 def get_pending_items(current_user: str = Depends(get_current_user)):
     try:
         logger.info(f"Getting pending items for user: {current_user}")
         pending_records = get_all_pending(current_user)
-        logger.info(f"Found {len(pending_records)} pending records")
+        if len(pending_records) > PENDING_QUIZ_LIMIT:
+            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
+        logger.info(f"Sampled {len(pending_records)} pending records")
         pending_items = []
-        
+
         for record in pending_records:
             node = record["n"]
-            content = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
-            context = chunk_maper(node["doc_id"], node["chunk_id_s"] - context_diff, node["chunk_id_e"] + context_diff)
-            context = context[:truncate_after] + " ... " + context[-truncate_after:] if len(context) > 2 * truncate_after else context
+            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
+            logger.info(f"Question type: {question_type} ({type(question_type)})")
+            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
+            try:
+                question = get_rand_review_question(node.element_id, question_nodes)
+            except Exception as e:
+                question = None
+            if question is None:
+                logger.error(f"No questions generated for node {node.element_id}")
+                continue
+            logger.info(f"Question: {question}")
+            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
 
             pending_items.append(PendingItem(
                 node_id=node.element_id,
                 name=node["name"],
-                content=content,
-                context=context,
+                question_id=question.element_id,
+                question=question["question"],
+                question_type=question["type"],
+                cognitive_focus=question["cognitive_focus"],
+                answer=question["answer"],
+                reference=reference,
                 doc_id=node["doc_id"],
                 chunk_start=node["chunk_id_s"],
                 chunk_end=node["chunk_id_e"]
             ))
-        
+
         logger.info(f"Returning {len(pending_items)} pending items")
         return pending_items
     except Exception as e:
         logger.error(f"Pending items error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
+
+@app.get("/api/total_pending")
+def get_total_pending(current_user: str = Depends(get_current_user)):
+    pending = get_all_pending(current_user)
+    return len(pending)
+
+@app.get("/api/mastery")
+def get_mastery(current_user: str = Depends(get_current_user), doc_id: int = 0):
+    return get_page_mastery(current_user, doc_id)
 
 @app.post("/api/quiz/answer")
 def submit_answer(
@@ -262,9 +374,9 @@ def debug_log():
 def global_exception_handler(request, exc):
     logger.error(f"Unhandled exception: {str(exc)}")
     logger.error(f"Traceback: {traceback.format_exc()}")
-    return HTTPException(
-        status_code=500, 
-        detail=f"Internal server error: {str(exc)}"
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"}
     )
 
 if __name__ == "__main__":

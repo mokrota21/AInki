@@ -1,14 +1,17 @@
 import React, { useState, useRef } from 'react'
-import { Upload, FileText, Brain, Clock, CheckCircle } from 'lucide-react'
+import { Upload, FileText, Brain, Clock, CheckCircle, Plus, AlertCircle } from 'lucide-react'
 import { api } from '../services/api'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import QuizGenerationModal from './QuizGenerationModal'
 
 function Dashboard() {
   const [uploading, setUploading] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [docs, setDocs] = useState([])
   const [docsLoading, setDocsLoading] = useState(false)
+  const [quizModalOpen, setQuizModalOpen] = useState(false)
+  const [selectedDoc, setSelectedDoc] = useState(null)
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
 
@@ -26,7 +29,12 @@ function Dashboard() {
         },
       })
       
-      toast.success(`File processed successfully! Found ${response.data.objects_count} objects.`)
+      const chunksCount = response?.data?.chunks_count
+      toast.success(
+        chunksCount != null
+          ? `File processed successfully! Split into ${chunksCount} chunks.`
+          : 'File processed successfully!'
+      )
       fetchDocs()
       checkPendingItems()
     } catch (error) {
@@ -57,8 +65,8 @@ function Dashboard() {
 
   const checkPendingItems = async () => {
     try {
-      const response = await api.get('/pending')
-      setPendingCount(response.data.length)
+      const response = await api.get('/total_pending')
+      setPendingCount(response.data)
     } catch (error) {
       console.error('Failed to check pending items:', error)
     }
@@ -69,14 +77,31 @@ function Dashboard() {
       setDocsLoading(true)
       const response = await api.get('/docs')
       const docsData = response.data?.docs || []
+      const globalHasQuiz = response.data?.has_quiz ?? false
+      
       const normalized = docsData.map((d) => {
         if (d && typeof d === 'object' && !Array.isArray(d)) {
-          return { id: d.id ?? d.doc_id ?? null, name: d.name ?? 'Unnamed' }
+          return { 
+            id: d.id ?? d.doc_id ?? null, 
+            name: d.name ?? 'Unnamed',
+            has_quiz: globalHasQuiz, // Use global has_quiz for all docs
+            status: globalHasQuiz ? 'ready' : 'no_quiz'
+          }
         }
         if (Array.isArray(d)) {
-          return { id: d[0] ?? null, name: d[1] ?? 'Unnamed' }
+          return { 
+            id: d[0] ?? null, 
+            name: d[1] ?? 'Unnamed',
+            has_quiz: globalHasQuiz, // Use global has_quiz for all docs
+            status: globalHasQuiz ? 'ready' : 'no_quiz'
+          }
         }
-        return { id: null, name: String(d) }
+        return { 
+          id: null, 
+          name: String(d),
+          has_quiz: globalHasQuiz, // Use global has_quiz for all docs
+          status: globalHasQuiz ? 'ready' : 'no_quiz'
+        }
       })
       setDocs(normalized)
     } catch (error) {
@@ -89,6 +114,38 @@ function Dashboard() {
   const handleOpenDoc = (doc) => {
     if (!doc?.id) return
     navigate(`/docs/${doc.id}`)
+  }
+
+  const handleGenerateQuiz = (doc, e) => {
+    e.stopPropagation() // Prevent opening the document
+    setSelectedDoc(doc)
+    setQuizModalOpen(true)
+  }
+
+  const handleQuizGenerationSuccess = () => {
+    fetchDocs() // Refresh the docs list to update status
+    checkPendingItems() // Refresh pending count
+  }
+
+  const getStatusColor = (doc) => {
+    if (doc.has_quiz) return '#28a745' // Green for has quiz
+    if (doc.status === 'processing') return '#ffc107' // Yellow for processing
+    if (doc.status === 'error') return '#dc3545' // Red for error
+    return '#6c757d' // Gray for no quiz
+  }
+
+  const getStatusIcon = (doc) => {
+    if (doc.has_quiz) return <CheckCircle size={16} />
+    if (doc.status === 'processing') return <Clock size={16} />
+    if (doc.status === 'error') return <AlertCircle size={16} />
+    return null
+  }
+
+  const getStatusText = (doc) => {
+    if (doc.has_quiz) return 'Quiz Ready'
+    if (doc.status === 'processing') return 'Generating Quiz...'
+    if (doc.status === 'error') return 'Generation Failed'
+    return 'No Quiz'
   }
 
   React.useEffect(() => {
@@ -188,16 +245,63 @@ function Dashboard() {
           ) : docs.length === 0 ? (
             <p style={{ color: '#6c757d' }}>No documents yet. Upload one to get started.</p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
               {docs.map((doc, index) => (
                 <div
                   key={doc.id != null ? `doc-${doc.id}` : `doc-${doc.name}-${index}`}
                   className="card"
-                  style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+                  style={{ 
+                    padding: '1rem', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.75rem', 
+                    cursor: 'pointer',
+                    position: 'relative',
+                    border: `2px solid ${getStatusColor(doc)}`,
+                    borderRadius: '12px'
+                  }}
                   onClick={() => handleOpenDoc(doc)}
                 >
                   <FileText size={20} style={{ color: '#667eea' }} />
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ 
+                      overflow: 'hidden', 
+                      textOverflow: 'ellipsis', 
+                      whiteSpace: 'nowrap',
+                      fontWeight: '500',
+                      marginBottom: '0.25rem'
+                    }}>
+                      {doc.name}
+                    </div>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '0.5rem',
+                      fontSize: '0.875rem',
+                      color: getStatusColor(doc)
+                    }}>
+                      {getStatusIcon(doc)}
+                      <span>{getStatusText(doc)}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Quiz Generation Button */}
+                  <button
+                    onClick={(e) => handleGenerateQuiz(doc, e)}
+                    className="btn btn-primary"
+                    style={{ 
+                      padding: '0.5rem',
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      minWidth: 'auto'
+                    }}
+                    title="Generate Quiz"
+                  >
+                    <Plus size={16} />
+                    Quiz
+                  </button>
                 </div>
               ))}
             </div>
@@ -218,6 +322,15 @@ function Dashboard() {
             </a>
           </div>
         )}
+
+        {/* Quiz Generation Modal */}
+        <QuizGenerationModal
+          isOpen={quizModalOpen}
+          onClose={() => setQuizModalOpen(false)}
+          docId={selectedDoc?.id}
+          docName={selectedDoc?.name}
+          onSuccess={handleQuizGenerationSuccess}
+        />
       </div>
     </div>
   )

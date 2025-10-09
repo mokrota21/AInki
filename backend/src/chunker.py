@@ -28,88 +28,72 @@ class SimpleChunker(Chunker):
 import re
 from typing import List
 
-class SentenceChunker(Chunker):
-    def __init__(
-        self,
-        stop_symbols: List[str] = ['.', '?', '!'],
-        abbreviations: List[str] = ["i.e.", "e.g.", "etc.", "Mr.", "Mrs.", "Dr.", "Prof.", "Inc.", "Ltd."]
-    ) -> None:
-        self.abbreviations = abbreviations
-        self.stop_symbols = stop_symbols
-
-        # Heuristics:
-        # - Always merge after titles/latin abbreviations (Mr., Dr., i.e., e.g., etc.)
-        # - Conditionally merge after corporate suffixes (Inc., Ltd.) only if the next chunk
-        #   starts with lowercase (e.g., "Inc. announced ..."), but allow a true sentence end:
-        self.always_merge_after = {
-            "Mr.", "Mrs.", "Ms.", "Mx.", "Dr.", "Prof.", "Sr.", "Jr.", "i.e.", "e.g.", "etc."
+class SentenceChunker:
+    def __init__(self) -> None:
+        self.abbreviations = {
+            'e.g.', 'i.e.', 'etc.', 'vs.', 'cf.', 'viz.', 'ex.', 'inc.',
+            'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.', 'Sr.', 'Jr.', 'St.',
+            'Ltd.', 'Co.', 'Corp.', 'Inc.', 'LLC', 'U.S.', 'U.K.',
+            'D.C.', 'E.U.', 'A.I.'
         }
-        self.conditional_merge_after = {"Inc.", "Ltd.", "Co.", "No.", "St.", "Dept."}
-
-        super().__init__()
-
-    def _should_merge(self, left: str, right: str) -> bool:
-        """
-        Decide if `right` should be merged into `left` (i.e., we split after an abbreviation/initial).
-        """
-        if not right:
-            return False
-
-        # Strip trailing quotes/brackets from the left when checking the last token
-        left_clean = left.rstrip().rstrip('"\')]}›»”’)}')
-
-        # Last "word" before the boundary
-        m = re.search(r'(\S+)$', left_clean)
-        tok = m.group(1) if m else ""
-
-        # cases like "Mr." / "Dr." / "i.e." / "e.g." / "etc."
-        if tok in self.always_merge_after:
-            return True
-
-        # "Inc." / "Ltd." often continue, but can end a sentence: merge only if next starts lowercase
-        if tok in self.conditional_merge_after:
-            return bool(re.match(r'^[a-z]', right.strip()))
-
-        # Handle initials like "A." in "A. B. Smith"
-        if re.search(r'\b[A-Z]\.$', left_clean):
-            return True
-
-        return False
+        self.abbrev_pattern = re.compile(
+            r'(?:' + '|'.join(map(re.escape, self.abbreviations)) + r')\s*$'
+        )
+        self.sentence_end_re = re.compile(
+            r'[.!?]+(?:[\'")\]]+)?(?=(?:\s*\n*\s*[A-Z]|$))'
+        )
 
     def chunk(self, text: str) -> List[str]:
         if not text:
             return []
 
-        # Build a safe character class for stop symbols and capture any trailing closing quotes/parens
-        stop_chars = re.escape("".join(self.stop_symbols))
-        # Match: [.!?]+ possibly followed by closing quotes/brackets, then whitespace,
-        # and ensure the next sentence starts with a capital letter.
-        pattern = re.compile(rf'([{stop_chars}]+(?:["\')\]]*))\s+(?=[A-Z])')
+        sentences = []
+        start = 0
 
-        parts = re.split(pattern, text)
+        for match in self.sentence_end_re.finditer(text):
+            end = match.end()
+            candidate = text[start:end]
 
-        # Re-attach the captured punctuation to the left chunk
-        stitched: List[str] = []
-        i = 0
-        while i < len(parts):
-            seg = parts[i]
-            if i + 1 < len(parts):
-                seg = f"{seg}{parts[i + 1]}"
-                i += 2
+            # check if this punctuation is part of an abbreviation
+            if self._ends_with_abbreviation(candidate):
+                continue  # don't split yet
             else:
-                i += 1
-            if seg.strip():
-                stitched.append(seg.strip())
+                # include everything up to end of punctuation
+                sentences.append(text[start:end])
+                start = end
 
-        # Merge false splits caused by abbreviations/initials
-        result: List[str] = []
-        for seg in stitched:
-            if result and self._should_merge(result[-1], seg):
-                result[-1] = f"{result[-1]} {seg}"
-            else:
-                result.append(seg)
+        # append the rest
+        if start < len(text):
+            sentences.append(text[start:])
 
-        return result
+        return sentences
 
+    def _ends_with_abbreviation(self, text: str) -> bool:
+        if self.abbrev_pattern.search(text):
+            return True
+        if re.search(r'\b[A-Z]\.\s*$', text):
+            return True
+        if re.search(r'\b(?:[A-Z]\.){2,}\s*$', text):
+            return True
+        return False
 
-DefaultChunker = SentenceChunker
+# TODO: figure out how to automatically keep one topic in one chunk.
+class LowerBoundChunker(SentenceChunker):
+    def __init__(self, lower_bound: int = 1000) -> None:
+        self.lower_bound = lower_bound
+        super().__init__()
+    
+    def chunk(self, text: str) -> List[str]:
+        chunks = super().chunk(text)
+        new_chunks = []
+        current_chunk = ""
+        for chunk in chunks:
+            if len(current_chunk) >= self.lower_bound:
+                new_chunks.append(current_chunk)
+                current_chunk = ""
+            current_chunk += chunk
+        if current_chunk:
+            new_chunks.append(current_chunk)
+        return new_chunks
+
+DefaultChunker = LowerBoundChunker

@@ -42,8 +42,40 @@ export async function fetchFileContent(docId) {
   return response.data
 }
 
-// Track page navigation
-export async function trackPage({ docId, page }) {
-  // Backend expects POST /api/track with query params doc_id and page
-  return api.post(`/track`, null, { params: { doc_id: docId, page } })
+// Track reading progress - supports both MD and PDF views
+export async function trackPage({ docId, chunkEnd, chunkStart, pageNumber, readerType = 'md' }) {
+  if (readerType === 'md') {
+    // For markdown: send both start and end chunk indexes
+    return api.post(`/track`, {
+      doc_id: docId,
+      track_element_end_idx: [chunkStart, chunkEnd],
+      frontend_reader_type: 'md'
+    })
+  } else {
+    // For PDF: send only page number
+    return api.post(`/track`, {
+      doc_id: docId,
+      track_element_end_idx: pageNumber,
+      frontend_reader_type: 'pdf'
+    })
+  }
+}
+
+// Quiz generation endpoints
+export async function getQuizParameters() {
+  return api.post('/extract_objects_parameter')
+}
+
+export async function getPriceApproximation(docId, promptKey = "general_textbook_prompt", modelName = "gpt-5-nano") {
+  return api.post(`/price_approximation?doc_id=${docId}&prompt_key=${promptKey}&model_name=${modelName}`)
+}
+
+export async function extractObjects(docId, promptKey = "general_textbook_prompt", additionalParams = {}) {
+  const queryParams = new URLSearchParams({
+    doc_id: docId,
+    prompt_key: promptKey,
+    kwargs: '', // FastAPI requires this parameter due to **kwargs in the function signature
+    ...additionalParams
+  })
+  return api.post(`/extract_objects?${queryParams}`)
 }

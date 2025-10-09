@@ -139,7 +139,6 @@ function Quiz() {
             flexWrap: 'wrap'
           }}>
             <span><strong>Type:</strong> {currentItem.question_type}</span>
-            <span><strong>Difficulty:</strong> {currentItem.difficulty}</span>
             <span><strong>Focus:</strong> {currentItem.cognitive_focus}</span>
           </div>
 
@@ -153,7 +152,7 @@ function Quiz() {
               fontSize: '0.9rem',
               color: '#495057'
             }}>
-              <strong>Answer:</strong> {currentItem.content}
+              <strong>Answer:</strong> {currentItem.answer}
             </div>
           )}
         </div>

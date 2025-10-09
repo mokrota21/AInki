@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import toast from 'react-hot-toast'
-import { fetchFileContent, trackPage } from '../services/api'
+import { fetchFileContent, trackPage, api } from '../services/api'
 import PDFViewer from './PDFViewer'
 import QuizPopup from './QuizPopup'
 import 'katex/dist/katex.min.css'
@@ -29,17 +29,63 @@ function Document() {
   const [totalPages, setTotalPages] = React.useState(1)
   const controlsRef = React.useRef(null)
   const [controlsHeight, setControlsHeight] = React.useState(0)
-  const [viewMode, setViewMode] = React.useState('markdown') // 'markdown' or 'pdf'
+  const [viewMode, setViewMode] = React.useState('pdf') // 'markdown' or 'pdf'
   const [pdfCurrentPage, setPdfCurrentPage] = React.useState(0)
   const [pdfTotalPages, setPdfTotalPages] = React.useState(1)
   const [pdfUrl, setPdfUrl] = React.useState('')
   const [mdPageInput, setMdPageInput] = React.useState('')
   const [pdfPageInput, setPdfPageInput] = React.useState('')
+  const [pdfSliderValue, setPdfSliderValue] = React.useState(1)
+  const [pageMastery, setPageMastery] = React.useState([])
   
   // Quiz popup state
   const [quizPopupOpen, setQuizPopupOpen] = React.useState(false)
   const [quizTimer, setQuizTimer] = React.useState(null)
   const [lastQuizTime, setLastQuizTime] = React.useState(Date.now())
+  const lastQuizTimeRef = React.useRef(Date.now())
+  const pendingLockRef = React.useRef(false)
+  const quizOpenRef = React.useRef(false)
+  const [quizItems, setQuizItems] = React.useState([])
+  const pageEnterTimeRef = React.useRef(Date.now())
+  const MIN_DWELL_MS = 30000
+
+  // Configurable pending timer (defaults with overrides)
+  const getNumber = (val, fallback) => {
+    const num = Number(val)
+    return Number.isFinite(num) && num > 0 ? num : fallback
+  }
+  const defaultPendingCheckIntervalMs = getNumber(import.meta?.env?.VITE_PENDING_CHECK_INTERVAL_MS, 10000)
+  const defaultPendingThresholdMs = getNumber(import.meta?.env?.VITE_PENDING_THRESHOLD_MS, 6000000) // Change this later
+  const [pendingCheckIntervalMs, setPendingCheckIntervalMs] = React.useState(() =>
+    getNumber(localStorage.getItem('AINKI_PENDING_CHECK_INTERVAL_MS'), defaultPendingCheckIntervalMs)
+  )
+  const [pendingThresholdMs, setPendingThresholdMs] = React.useState(() =>
+    getNumber(localStorage.getItem('AINKI_PENDING_THRESHOLD_MS'), defaultPendingThresholdMs)
+  )
+
+  // Expose runtime override API for tests: window.__AInkiSetPendingTimer({ checkIntervalMs, thresholdMs })
+  React.useEffect(() => {
+    window.__AInkiSetPendingTimer = (config = {}) => {
+      if (config.checkIntervalMs !== undefined) {
+        const v = getNumber(config.checkIntervalMs, pendingCheckIntervalMs)
+        setPendingCheckIntervalMs(v)
+      }
+      if (config.thresholdMs !== undefined) {
+        const v = getNumber(config.thresholdMs, pendingThresholdMs)
+        setPendingThresholdMs(v)
+      }
+      if (config.persist) {
+        if (config.checkIntervalMs !== undefined) localStorage.setItem('AINKI_PENDING_CHECK_INTERVAL_MS', String(config.checkIntervalMs))
+        if (config.thresholdMs !== undefined) localStorage.setItem('AINKI_PENDING_THRESHOLD_MS', String(config.thresholdMs))
+      }
+    }
+    return () => { try { delete window.__AInkiSetPendingTimer } catch (_) {} }
+  }, [pendingCheckIntervalMs, pendingThresholdMs])
+
+  // Mirror popup visibility in a ref for timer closure
+  React.useEffect(() => {
+    quizOpenRef.current = quizPopupOpen
+  }, [quizPopupOpen])
   
   // Track only on explicit page change via buttons
 
@@ -411,6 +457,8 @@ function Document() {
     if (viewMode === 'pdf') {
       setPdfCurrentPage(0)
     }
+    // Reset dwell timer on view change
+    pageEnterTimeRef.current = Date.now()
   }, [viewMode])
 
   // Update input values when pages change
@@ -422,8 +470,62 @@ function Document() {
     setPdfPageInput('')
   }, [pdfCurrentPage])
 
+  // Sync slider with current PDF page and total pages
+  React.useEffect(() => {
+    setPdfSliderValue(Math.min(pdfTotalPages, Math.max(1, pdfCurrentPage + 1)))
+  }, [pdfCurrentPage, pdfTotalPages])
+
+  // Fetch per-page mastery once per document id
+  React.useEffect(() => {
+    let cancelled = false
+    const fetchMastery = async () => {
+      try {
+        const response = await api.get('/mastery', { params: { doc_id: Number(id) } })
+        if (!cancelled) {
+          const data = Array.isArray(response?.data) ? response.data : []
+          setPageMastery(data)
+        }
+      } catch (e) {
+        console.error('Failed to load page mastery', e)
+        if (!cancelled) setPageMastery([])
+      }
+    }
+    if (id) fetchMastery()
+    return () => { cancelled = true }
+  }, [id])
+
+  // Helpers for mastery visualization
+  const getMasteryForPage = (pageIndex0) => {
+    // Prefer exact length match; else try 1-indexed arrays; else fallback 0
+    if (Array.isArray(pageMastery)) {
+      if (pageMastery.length === pdfTotalPages) return pageMastery[pageIndex0]
+      if (pageMastery.length === pdfTotalPages + 1) return pageMastery[pageIndex0 + 1]
+      return pageMastery[pageIndex0]
+    }
+    return undefined
+  }
+
+  const getMasteryColor = (value) => {
+    const v = typeof value === 'number' && isFinite(value) ? Math.max(0, Math.min(1, value)) : null
+    if (v === null) return '#ced4da' // muted gray when unknown
+    const hue = v * 120 // 0=red, 120=green
+    return `hsl(${hue}, 70%, 45%)`
+  }
+
+  const navigateToPdfPage = async (target1Indexed) => {
+    const target = Math.min(pdfTotalPages, Math.max(1, target1Indexed))
+    if (target - 1 === pdfCurrentPage) return
+    await sendTrackForCurrentPage()
+    setPdfCurrentPage(target - 1)
+    setPdfSliderValue(target)
+    pageEnterTimeRef.current = Date.now()
+  }
+
   const sendTrackForCurrentPage = async () => {
     try {
+      // Require at least 30s dwell time before tracking
+      const dwellMs = Date.now() - pageEnterTimeRef.current
+      if (dwellMs < MIN_DWELL_MS) return
       if (viewMode === 'markdown') {
         const range = pageChunkRanges[currentPage]
         if (!range) return
@@ -453,6 +555,7 @@ function Document() {
         // Track the page we're leaving (current page)
         await sendTrackForCurrentPage()
         setCurrentPage(prev)
+        pageEnterTimeRef.current = Date.now()
       }
     } else {
       // PDF mode
@@ -460,6 +563,7 @@ function Document() {
       if (prev !== pdfCurrentPage) {
         await sendTrackForCurrentPage()
         setPdfCurrentPage(prev)
+        pageEnterTimeRef.current = Date.now()
       }
     }
   }
@@ -471,6 +575,7 @@ function Document() {
         // Track the page we're leaving (current page)
         await sendTrackForCurrentPage()
         setCurrentPage(next)
+        pageEnterTimeRef.current = Date.now()
       }
     } else {
       // PDF mode
@@ -478,6 +583,7 @@ function Document() {
       if (next !== pdfCurrentPage) {
         await sendTrackForCurrentPage()
         setPdfCurrentPage(next)
+        pageEnterTimeRef.current = Date.now()
       }
     }
   }
@@ -489,6 +595,7 @@ function Document() {
         await sendTrackForCurrentPage()
         setCurrentPage(pageNum - 1) // Convert to 0-based index
         setMdPageInput('')
+        pageEnterTimeRef.current = Date.now()
       }
     }
   }
@@ -500,6 +607,7 @@ function Document() {
         await sendTrackForCurrentPage()
         setPdfCurrentPage(pageNum - 1) // Convert to 0-based index
         setPdfPageInput('')
+        pageEnterTimeRef.current = Date.now()
       }
     }
   }
@@ -510,20 +618,27 @@ function Document() {
       if (viewMode === 'markdown') {
         const range = pageChunkRanges[currentPage]
         if (!range) return
-        // Fire-and-forget; navigator.sendBeacon preferable but our API requires auth header
-        trackPage({ 
-          docId: Number(id), 
-          chunkStart: range.startChunk,
-          chunkEnd: range.endChunk,
-          readerType: 'md'
-        }).catch(() => {})
+        // Dwell gating
+        const dwellMs = Date.now() - pageEnterTimeRef.current
+        if (dwellMs >= MIN_DWELL_MS) {
+          // Fire-and-forget; navigator.sendBeacon preferable but our API requires auth header
+          trackPage({ 
+            docId: Number(id), 
+            chunkStart: range.startChunk,
+            chunkEnd: range.endChunk,
+            readerType: 'md'
+          }).catch(() => {})
+        }
       } else {
         // PDF mode
-        trackPage({ 
-          docId: Number(id), 
-          pageNumber: pdfCurrentPage + 1,
-          readerType: 'pdf'
-        }).catch(() => {})
+        const dwellMs = Date.now() - pageEnterTimeRef.current
+        if (dwellMs >= MIN_DWELL_MS) {
+          trackPage({ 
+            docId: Number(id), 
+            pageNumber: pdfCurrentPage + 1,
+            readerType: 'pdf'
+          }).catch(() => {})
+        }
       }
     }
     window.addEventListener('beforeunload', handleBeforeUnload)
@@ -543,22 +658,25 @@ function Document() {
 
     // Set up new timer for 1 minute intervals
     const timer = setInterval(() => {
+      // Do not make pending requests while quiz popup is visible
+      if (quizOpenRef.current) return
+      // Do not make another call while lock is held
+      if (pendingLockRef.current) return
       const now = Date.now()
-      const timeSinceLastQuiz = now - lastQuizTime
+      const timeSinceLastQuiz = now - lastQuizTimeRef.current
       
-      // Show quiz popup if 1 minute (60000ms) has passed
-      if (timeSinceLastQuiz >= 60000) {
-        setQuizPopupOpen(true)
-        setLastQuizTime(now)
+      // Check for pending items when threshold elapsed
+      if (timeSinceLastQuiz >= pendingThresholdMs) {
+        checkPendingAndShowPopup()
       }
-    }, 10000) // Check every 10 seconds
+    }, pendingCheckIntervalMs) // Check on configured interval
 
     setQuizTimer(timer)
 
     return () => {
       if (timer) clearInterval(timer)
     }
-  }, [loading, lastQuizTime])
+  }, [loading, pendingCheckIntervalMs, pendingThresholdMs])
 
   // Clean up timer on unmount
   React.useEffect(() => {
@@ -569,19 +687,64 @@ function Document() {
     }
   }, [quizTimer])
 
+  // Check if there are pending items before showing popup
+  const checkPendingAndShowPopup = async () => {
+    // Do not make pending requests while quiz popup is visible
+    if (quizOpenRef.current) return
+    // Check if lock is already acquired
+    if (pendingLockRef.current) return
+
+    try {
+      // Acquire lock
+      pendingLockRef.current = true
+      
+      const response = await api.get('/pending')
+      if (response.data && response.data.length > 0) {
+        // Mark quiz as open to prohibit further calls before state flushes
+        quizOpenRef.current = true
+        setQuizItems(response.data)
+        setQuizPopupOpen(true)
+      } else {
+        // No items returned; reset timer so next check happens in one minute
+        const now = Date.now()
+        setLastQuizTime(now)
+        lastQuizTimeRef.current = now
+      }
+    } catch (error) {
+      console.error('Failed to check pending items:', error)
+      // On error, still reset timer to prevent repeated failed requests
+      const now = Date.now()
+      setLastQuizTime(now)
+      lastQuizTimeRef.current = now
+    } finally {
+      // Always release lock
+      pendingLockRef.current = false
+    }
+  }
+
   // Debug function to manually trigger quiz popup
-  const triggerQuizPopup = () => {
-    setQuizPopupOpen(true)
+  const triggerQuizPopup = async () => {
+    if (quizOpenRef.current) return
+    if (pendingLockRef.current) return
+    await checkPendingAndShowPopup()
   }
 
   // Handle quiz popup close
   const handleQuizPopupClose = () => {
     setQuizPopupOpen(false)
+    // When popup becomes invisible, restart timer baseline
+    const now = Date.now()
+    setLastQuizTime(now)
+    lastQuizTimeRef.current = now
+    setQuizItems([])
   }
 
   // Handle quiz completion
   const handleQuizComplete = () => {
-    setLastQuizTime(Date.now()) // Reset timer after quiz completion
+    const now = Date.now()
+    setLastQuizTime(now) // Reset timer after quiz completion
+    lastQuizTimeRef.current = now
+    // Popup will close shortly after via onComplete->onClose
   }
 
   return (
@@ -693,12 +856,66 @@ function Document() {
           </>
         ) : (
           /* PDF View */
-          <PDFViewer 
-            pdfUrl={pdfUrl}
-            currentPage={pdfCurrentPage}
-            onPageChange={setPdfCurrentPage}
-            onTotalPagesChange={setPdfTotalPages}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <PDFViewer 
+                pdfUrl={pdfUrl}
+                currentPage={pdfCurrentPage}
+                onPageChange={(p) => {
+                  setPdfCurrentPage(p)
+                  pageEnterTimeRef.current = Date.now()
+                }}
+                onTotalPagesChange={(tp) => {
+                  setPdfTotalPages(tp)
+                  setPdfSliderValue(Math.min(tp, Math.max(1, pdfCurrentPage + 1)))
+                }}
+              />
+            </div>
+            {/* Mastery bar (PDF only): red->green segments per page; click to navigate */}
+            <div style={{ padding: '0.25rem 0.75rem 0.5rem 0.75rem' }}>
+              <div style={{ display: 'flex', gap: '2px', alignItems: 'center', width: '100%' }}>
+                {Array.from({ length: Math.max(1, pdfTotalPages) }, (_, i) => {
+                  const mastery = getMasteryForPage(i)
+                  const color = getMasteryColor(mastery)
+                  const isCurrent = i === pdfCurrentPage
+                  return (
+                    <div
+                      key={`mastery-${i}`}
+                      onClick={() => navigateToPdfPage(i + 1)}
+                      title={`Page ${i + 1}${typeof mastery === 'number' ? ` · ${(mastery * 100).toFixed(0)}%` : ''}`}
+                      style={{
+                        flex: 1,
+                        height: '8px',
+                        background: color,
+                        cursor: 'pointer',
+                        borderRadius: '2px',
+                        outline: isCurrent ? '2px solid #343a40' : 'none',
+                        outlineOffset: isCurrent ? '0' : '0'
+                      }}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+            {/* PDF-only page slider */}
+            <div style={{ padding: '0.5rem 0.75rem' }}>
+              <input
+                type="range"
+                min={1}
+                max={Math.max(1, pdfTotalPages)}
+                value={pdfSliderValue}
+                onChange={(e) => setPdfSliderValue(parseInt(e.target.value))}
+                onMouseUp={async () => { await navigateToPdfPage(pdfSliderValue) }}
+                onTouchEnd={async () => { await navigateToPdfPage(pdfSliderValue) }}
+                style={{ width: '100%' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#6c757d', fontSize: '0.875rem' }}>
+                <span>1</span>
+                <span>Page {pdfSliderValue} / {Math.max(1, pdfTotalPages)}</span>
+                <span>{Math.max(1, pdfTotalPages)}</span>
+              </div>
+            </div>
+          </div>
         )}
               </div>
 
@@ -777,6 +994,7 @@ function Document() {
       {/* Quiz Popup */}
       <QuizPopup 
         isOpen={quizPopupOpen}
+        items={quizItems}
         onClose={handleQuizPopupClose}
         onComplete={handleQuizComplete}
       />

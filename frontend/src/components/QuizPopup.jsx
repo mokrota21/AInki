@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react'
-import { Brain, CheckCircle, XCircle, X } from 'lucide-react'
+import { Brain, X, CheckCircle, XCircle } from 'lucide-react'
 import { api } from '../services/api'
 import toast from 'react-hot-toast'
 
-function QuizPopup({ isOpen, onClose, onComplete }) {
-  const [pendingItems, setPendingItems] = useState([])
-  const [currentIndex, setCurrentIndex] = useState(0)
+// Custom Checkmark SVG
+const CheckmarkIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 6L9 17l-5-5"/>
+  </svg>
+)
+
+function QuizPopup({ isOpen, items = [], onClose, onComplete }) {
+  const [pendingItems, setPendingItems] = useState(items)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [showAnswer, setShowAnswer] = useState(false)
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [answerRevealed, setAnswerRevealed] = useState(false)
 
-  const currentItem = pendingItems[currentIndex]
+  const currentItem = pendingItems[currentQuestionIndex]
+  const totalQuestions = pendingItems.length
 
   useEffect(() => {
-    if (isOpen) {
-      loadPendingItems()
-    }
-  }, [isOpen])
+    if (!isOpen) return
+    setPendingItems(items || [])
+    setCurrentQuestionIndex(0)
+    setShowAnswer(false)
+    setLoading(false)
+  }, [isOpen, items])
 
-  const loadPendingItems = async () => {
-    try {
-      setLoading(true)
-      const response = await api.get('/pending')
-      setPendingItems(response.data)
-    } catch (error) {
-      toast.error('Failed to load pending items')
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Removed internal network fetch; items are provided by parent
 
   const handleAnswer = async (correct) => {
     if (!currentItem) return
@@ -42,12 +42,14 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
       
       toast.success(correct ? 'Correct! Well done!' : 'Incorrect. Keep learning!')
       
-      // Move to next item or finish
-      if (currentIndex < pendingItems.length - 1) {
-        setCurrentIndex(currentIndex + 1)
-        setAnswerRevealed(false) // Reset answer reveal for next question
+      // Move to next question or finish
+      if (currentQuestionIndex < totalQuestions - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1)
+        setShowAnswer(false) // Reset answer reveal for next question
       } else {
-        toast.success('Review session completed!')
+        // Quiz completed
+        setCurrentQuestionIndex(0)
+        setShowAnswer(false)
         onComplete?.()
         onClose()
       }
@@ -59,71 +61,62 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
   }
 
   const handleClose = () => {
-    setCurrentIndex(0)
+    setCurrentQuestionIndex(0)
     setPendingItems([])
-    setAnswerRevealed(false)
+    setShowAnswer(false)
     onClose()
   }
 
-  const toggleAnswer = () => {
-    setAnswerRevealed(!answerRevealed)
+  const handleShowAnswer = () => {
+    setShowAnswer(true)
+  }
+
+  const handleStartOver = () => {
+    setCurrentQuestionIndex(0)
+    setShowAnswer(false)
+    // Reset to the initial items from props without network
+    setPendingItems(items || [])
   }
 
   if (!isOpen) return null
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 2000,
-      padding: '1rem'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-        maxWidth: '600px',
-        width: '100%',
-        maxHeight: '80vh',
-        overflow: 'auto',
-        position: 'relative'
-      }}>
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '0.5rem',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1
-          }}
-        >
-          <X size={20} color="#6c757d" />
-        </button>
+    <div className="fixed inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-background flex items-center justify-center z-50 p-4">
+      <div className="bg-card rounded-2xl shadow-2xl border border-border max-w-2xl w-full max-h-[80vh] overflow-auto animate-scale-in">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <span className="text-muted">
+            Question {currentQuestionIndex + 1} of {totalQuestions}
+          </span>
+          <button
+            onClick={handleClose}
+            className="p-2 hover:bg-muted rounded-full transition-smooth"
+          >
+            <X size={20} className="text-muted" />
+          </button>
+        </div>
 
-        <div style={{ padding: '2rem' }}>
+        {/* Progress Bar */}
+        <div className="px-6 py-4">
+          <div className="progress">
+            <div 
+              className="progress-bar"
+              style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="p-6">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
-              <p>Loading review items...</p>
+            <div className="text-center py-8">
+              <div className="spinner mx-auto mb-4"></div>
+              <p className="text-muted">Loading review items...</p>
             </div>
-          ) : pendingItems.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <Brain size={64} style={{ color: '#667eea', marginBottom: '1rem' }} />
-              <h2 style={{ marginBottom: '1rem', color: '#2c3e50' }}>No Reviews Available</h2>
-              <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+          ) : totalQuestions === 0 ? (
+            <div className="text-center py-8">
+              <Brain size={64} className="text-primary mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold mb-4">No Reviews Available</h2>
+              <p className="text-muted mb-6">
                 You don't have any items ready for review right now.
               </p>
               <button onClick={handleClose} className="btn btn-primary">
@@ -132,132 +125,72 @@ function QuizPopup({ isOpen, onClose, onComplete }) {
             </div>
           ) : (
             <>
-              {/* Progress */}
-              <div style={{ marginBottom: '2rem' }}>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  marginBottom: '1rem' 
-                }}>
-                  <span style={{ color: '#6c757d' }}>
-                    Question {currentIndex + 1} of {pendingItems.length}
+              {/* Question Area */}
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold mb-4 leading-relaxed">
+                  {currentItem.question}
+                </h2>
+                
+                {/* Metadata Badges */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <span className="badge">
+                    <strong>Type:</strong> {currentItem.question_type}
+                  </span>
+                  <span className="badge">
+                    <strong>Focus:</strong> {currentItem.cognitive_focus}
                   </span>
                 </div>
-                <div style={{ 
-                  width: '100%', 
-                  height: '8px', 
-                  background: '#e9ecef', 
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: `${((currentIndex + 1) / pendingItems.length) * 100}%`,
-                    height: '100%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    transition: 'width 0.3s ease'
-                  }}></div>
-                </div>
+
+                {/* Answer Flow */}
+                {!showAnswer ? (
+                  <div className="text-center">
+                    <button
+                      onClick={handleShowAnswer}
+                      className="btn btn-outline px-8 py-3 text-lg transition-smooth"
+                    >
+                      Show Answer
+                    </button>
+                  </div>
+                ) : (
+                  <div className="animate-fade-in">
+                    {/* Answer Section */}
+                    <div className="bg-muted/50 rounded-xl p-6 mb-6">
+                      <strong className="text-lg">Answer:</strong>
+                      <p className="mt-2 text-muted leading-relaxed">
+                        {currentItem.answer}
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => handleAnswer(false)}
+                        className="btn btn-destructive flex-1 flex items-center justify-center gap-2 py-3 text-lg transition-smooth"
+                        disabled={submitting}
+                      >
+                        <XCircle size={20} />
+                        I Don't Know
+                      </button>
+                      
+                      <button
+                        onClick={() => handleAnswer(true)}
+                        className="btn btn-success-custom flex-1 flex items-center justify-center gap-2 py-3 text-lg transition-smooth"
+                        disabled={submitting}
+                      >
+                        <CheckmarkIcon />
+                        I Know This
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {submitting && (
+                  <div className="text-center mt-6">
+                    <div className="spinner mx-auto mb-2"></div>
+                    <p className="text-muted">Processing your answer...</p>
+                  </div>
+                )}
               </div>
-
-              {/* Question */}
-              <h2 style={{ 
-                marginBottom: '1.5rem', 
-                color: '#2c3e50',
-                fontSize: '1.5rem',
-                fontWeight: '600'
-              }}>
-                {currentItem.question}
-              </h2>
-              
-              {/* Question metadata */}
-              <div style={{ 
-                marginBottom: '1.5rem', 
-                padding: '0.75rem', 
-                background: '#f8f9fa', 
-                borderRadius: '8px',
-                fontSize: '0.9rem',
-                color: '#6c757d',
-                display: 'flex',
-                gap: '1rem',
-                flexWrap: 'wrap'
-              }}>
-                <span><strong>Type:</strong> {currentItem.question_type}</span>
-                <span><strong>Difficulty:</strong> {currentItem.difficulty}</span>
-                <span><strong>Focus:</strong> {currentItem.cognitive_focus}</span>
-              </div>
-
-              {/* Answer section */}
-              {answerRevealed && (
-                <div style={{ 
-                  marginBottom: '2rem', 
-                  padding: '1rem', 
-                  background: '#e9ecef', 
-                  borderRadius: '8px',
-                  fontSize: '0.9rem',
-                  color: '#495057'
-                }}>
-                  <strong>Answer:</strong> {currentItem.content}
-                </div>
-              )}
-
-              {/* Show Answer Button */}
-              {!answerRevealed && (
-                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                  <button
-                    onClick={toggleAnswer}
-                    className="btn btn-secondary"
-                    style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
-                  >
-                    Show Answer
-                  </button>
-                </div>
-              )}
-
-              {/* Answer Buttons - only show when answer is revealed */}
-              {answerRevealed && (
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '1rem', 
-                  justifyContent: 'center',
-                  flexWrap: 'wrap'
-                }}>
-                  <button
-                    onClick={() => handleAnswer(false)}
-                    className="btn btn-danger"
-                    disabled={submitting}
-                    style={{ 
-                      padding: '1rem 2rem', 
-                      fontSize: '1rem',
-                      minWidth: '140px'
-                    }}
-                  >
-                    <XCircle size={18} style={{ marginRight: '0.5rem' }} />
-                    I Don't Know
-                  </button>
-                  
-                  <button
-                    onClick={() => handleAnswer(true)}
-                    className="btn btn-success"
-                    disabled={submitting}
-                    style={{ 
-                      padding: '1rem 2rem', 
-                      fontSize: '1rem',
-                      minWidth: '140px'
-                    }}
-                  >
-                    <CheckCircle size={18} style={{ marginRight: '0.5rem' }} />
-                    I Know This
-                  </button>
-                </div>
-              )}
-
-              {submitting && (
-                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                  <div className="spinner" style={{ margin: '0 auto' }}></div>
-                  <p style={{ marginTop: '0.5rem', color: '#6c757d' }}>Processing your answer...</p>
-                </div>
-              )}
             </>
           )}
         </div>

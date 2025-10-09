@@ -39,8 +39,8 @@ question_types = {
 }
 
 question_prompt = """
-You are an expert mathematician and educational content designer.
-Your goal is to generate several high-quality review questions based on the provided knowledge object.
+You are an expert educational content designer.
+Your task is to generate short, high-quality review questions based on the provided knowledge object.
 
 Knowledge object:
 - Name: {name}
@@ -48,10 +48,14 @@ Knowledge object:
 - Reference text: {reference}
 
 Question generation goals:
-1. Reflect the key meaning, proof idea, or implications of the knowledge object.
-2. Match the requested question type.
-3. Encourage recall, reasoning, or application rather than rote repetition.
-4. Use clear, formal mathematical language appropriate for advanced learners.
+1. Focus on the core concept or reasoning described in the reference text.
+2. Do NOT use undefined symbols, variables, or notation (e.g., n, m, f(x)).
+   - Instead, restate them in plain language (e.g., "a number", "a function", "two quantities").
+3. Ensure each question is self-contained and understandable to a learner who has not seen the reference.
+4. Keep questions and answers short, clear, and educational.
+5. Use precise and general mathematical or conceptual language rather than copied text.
+6. Match the intent of the given question type, but simplify if it becomes overly complex.
+7. Focus on understanding and reasoning, not rote recall.
 
 Question type: {question_type}
 Question type description: {description}
@@ -67,23 +71,26 @@ Return a single JSON-like dictionary with this structure:
     {{
       "id": 1,
       "question_text": "<string>",
-      "difficulty": "<easy|medium|hard>",
-      "cognitive_focus": "<recall|understanding|application|analysis>"
-    }},
-    ...
+      "answer": "<string>",
+      "cognitive_focus": "<understanding|application|analysis>"
+    }}
   ]
 }}
 
 Guidelines:
-- Generate 3–5 questions.
-- Vary the difficulty and cognitive focus across items.
-- Do NOT include explanations or answers.
-- Ensure the text of each question is self-contained and precise.
+- Generate exactly 1 question.
+- Keep both question and answer concise.
+- Rephrase any symbolic or contextual references into general descriptive terms.
+- Ensure learners can understand and answer without access to the original text.
+- Use consistent, accessible terminology that communicates meaning clearly.
 """
+
+
 completion_tokens = 10000
 model_name = os.getenv("MODEL_NAME")
 max_retries = 3
-max_questions_per_type = 50
+max_questions_per_type = 1
+max_questions_per_node = 5
 
 from .neo4j_connection import driver
 from .chunk_maper import chunk_maper
@@ -98,6 +105,7 @@ def sample_question_type(node_id: str):
     """
     result = driver.execute_query(query, node_id=node_id)
     question_types_count = {}
+    total_questions = 0
     for q_type in question_types.keys():
         question_types_count[q_type] = 0
     for type_key, total in result.records:
@@ -105,10 +113,13 @@ def sample_question_type(node_id: str):
             question_types_count.pop(type_key)
         else:
             question_types_count[type_key] = total
-
+        total_questions += total
+    
     # Make probabilities independent of each other
     types_ar = np.array(list(question_types_count.keys()))
     types_counts_ar = np.array(list(question_types_count.values()))
+    if total_questions >= max_questions_per_node:
+        return None
     if types_counts_ar.sum() == 0: # No questions generated yet
         return np.random.choice(types_ar)
     type_probability = 1 / (types_counts_ar * types_counts_ar)
@@ -132,7 +143,6 @@ logger = logging.getLogger(__name__)
 def make_review_questions(node_id: str, question_type: str = None):
     if question_type is None:
         return None
-    print(node_id, question_type)
     query = """
     MATCH (m)
     WHERE elementId(m) = $node_id
@@ -186,6 +196,6 @@ def make_review_questions(node_id: str, question_type: str = None):
         return None
     question_nodes = []
     for question in question_result["questions"]:
-        question_node = add_review_question(node_id, question["question_text"], question_type, question["difficulty"], question["cognitive_focus"])
+        question_node = add_review_question(node_id, question["question_text"], question_type, question["cognitive_focus"], question["answer"])
         question_nodes.append(question_node)
     return question_nodes

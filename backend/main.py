@@ -20,6 +20,7 @@ app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100
 PENDING_QUIZ_LIMIT = 5
+NO_QUESTION_GENERATION=True
 
 # Add validation error handler to see detailed error messages
 @app.exception_handler(RequestValidationError)
@@ -76,9 +77,9 @@ class PendingItem(BaseModel):
     name: str
     question: str
     question_type: str
-    difficulty: str
     cognitive_focus: str
-    content: str
+    answer: str
+    reference: str
     doc_id: int
     chunk_start: int
     chunk_end: int
@@ -284,26 +285,33 @@ def get_pending_items(current_user: str = Depends(get_current_user)):
 
         for record in pending_records:
             node = record["n"]
-            question_type = sample_question_type(node.element_id)
+            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
             logger.info(f"Question type: {question_type} ({type(question_type)})")
-            question_nodes = make_review_questions(node.element_id, question_type)
-            question = get_rand_review_question(node.element_id, question_nodes)
+            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
+            try:
+                question = get_rand_review_question(node.element_id, question_nodes)
+            except Exception as e:
+                question = None
+            if question is None:
+                logger.error(f"No questions generated for node {node.element_id}")
+                continue
             logger.info(f"Question: {question}")
             reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
 
             pending_items.append(PendingItem(
                 node_id=node.element_id,
                 name=node["name"],
-                question=question["question_text"],
-                question_type=question["question_type"],
-                difficulty=question["difficulty"],
+                question_id=question.element_id,
+                question=question["question"],
+                question_type=question["type"],
                 cognitive_focus=question["cognitive_focus"],
-                content=reference,
+                answer=question["answer"],
+                reference=reference,
                 doc_id=node["doc_id"],
                 chunk_start=node["chunk_id_s"],
                 chunk_end=node["chunk_id_e"]
             ))
-        
+
         logger.info(f"Returning {len(pending_items)} pending items")
         return pending_items
     except Exception as e:
@@ -315,6 +323,10 @@ def get_pending_items(current_user: str = Depends(get_current_user)):
 def get_total_pending(current_user: str = Depends(get_current_user)):
     pending = get_all_pending(current_user)
     return len(pending)
+
+@app.get("/api/mastery")
+def get_mastery(current_user: str = Depends(get_current_user), doc_id: int = 0):
+    return get_page_mastery(current_user, doc_id)
 
 @app.post("/api/quiz/answer")
 def submit_answer(

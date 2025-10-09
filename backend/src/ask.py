@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class QuizAnswer(BaseModel):
     node_id: str
     correct: bool
+    question_id: str
 
 def check_answer(answer: QuizAnswer):
     state_node = driver.execute_query(
@@ -24,3 +25,15 @@ def check_answer(answer: QuizAnswer):
     state = RepeatState(state_node.get("userid"), state)
     merge_repetition_state(answer.node_id, state)
 
+    set_query = "SET n.asked = n.asked + 1"
+    if answer.correct:
+        set_query += ", n.correct = n.correct + 1"
+    query = f"""
+        MATCH (n)
+        WHERE elementId(n) = $question_id
+        {set_query}
+    """
+    driver.execute_query(
+        query,
+        question_id = answer.question_id
+    )

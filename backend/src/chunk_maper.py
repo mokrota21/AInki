@@ -73,6 +73,17 @@ def map_to_pages(doc_id: int, chunks: List[str]) -> List[int]:
         chunk_mapping.append(current_page)
     return chunk_mapping
 
+def chunk_to_page(chunk_idx: int, doc_id: int) -> int:
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT page_idx FROM public.chunks WHERE doc_id = %s AND order_idx = %s
+            """,
+            (doc_id, chunk_idx)
+        )
+        return cursor.fetchone()[0]
+
 def chunks_in_page(page_idx: int, doc_id: int) -> List[int]:
     conn = get_connection()
     with conn.cursor() as cursor:

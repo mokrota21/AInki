@@ -53,7 +53,7 @@ def add_knowledge_object(name: str, label: str, doc_id: int, chunk_id_s: int, ch
     )
     return summary.records[0]["n"]
 
-def add_review_question(node_id: str, question: str, question_type: str, difficulty: str, cognitive_focus: str):
+def add_review_question(node_id: str, question: str, question_type: str, cognitive_focus: str, answer: str):
     """
     Create a ReviewQuestion and link it to an existing BookKnowledge node.
     Fails cleanly if the BookKnowledge node doesn't exist.
@@ -61,7 +61,7 @@ def add_review_question(node_id: str, question: str, question_type: str, difficu
     query = """
     MATCH (m)
     WHERE elementId(m) = $node_id
-    CREATE (n:ReviewQuestion {type: $type, question: $question, difficulty: $difficulty, cognitive_focus: $cognitive_focus, asked: $asked, correct: $correct, asked_at: $asked_at})
+    CREATE (n:ReviewQuestion {type: $type, question: $question, answer: $answer, cognitive_focus: $cognitive_focus, asked: $asked, correct: $correct, asked_at: $asked_at})
     CREATE (n)-[:QUESTION_FOR]->(m)
     RETURN n
     """
@@ -70,7 +70,7 @@ def add_review_question(node_id: str, question: str, question_type: str, difficu
         node_id=node_id,
         type=question_type,
         question=question,
-        difficulty=difficulty,
+        answer=answer,
         cognitive_focus=cognitive_focus,
         asked=0,
         correct=0,
@@ -147,10 +147,93 @@ def get_rand_review_question(node_id: str, question_nodes: list = None):
     if question_nodes is None:
         result = driver.execute_query(
             """
-            MATCH (n:ReviewQuestion)-[:QUESTION_FOR]->(m:BookKnowledge {id: $node_id})
+            MATCH (n:ReviewQuestion)-[:QUESTION_FOR]->(m)
+            WHERE elementId(m) = $node_id
             RETURN n
             """,
             node_id=node_id
         )
         question_nodes = [record['n'] for record in result.records]
     return choice(question_nodes)
+
+import numpy as np
+def interpolate(array: list):
+    array = np.array(array, dtype=float)
+    x = np.arange(len(array))
+    nans = np.isnan(array)
+    array[nans] = np.interp(x[nans], x[~nans], array[~nans])
+    return array.tolist()
+
+
+def get_chunk_mastery(userid: str, doc_id: int):
+    result = driver.execute_query(
+        """
+        MATCH (n)-[:LAST_REPEATED]->(r:RepetitionState)
+        WHERE r.userid = $userid AND n.doc_id = $doc_id
+        ORDER BY n.chunk_id_s ASC
+        RETURN r, n
+        """,
+        userid=userid, doc_id=doc_id
+    )
+
+    chunk_index_mastery = []
+    current_chunk_index = 0
+    for record in result.records:
+        r = record["r"]
+        n = record["n"]
+        state = int(r.get("state"))
+        if n.get("chunk_id_s") > current_chunk_index:
+            while n.get("chunk_id_s") > current_chunk_index:
+                chunk_index_mastery.append(None)
+                current_chunk_index += 1
+        while n.get("chunk_id_e") >= current_chunk_index:
+            chunk_index_mastery.append(state)
+            current_chunk_index += 1
+    chunk_index_mastery = interpolate(chunk_index_mastery)
+    return chunk_index_mastery
+
+from .chunk_maper import chunk_to_page
+# Only works for pdf documents
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # This makes it show in terminal
+    ]
+)
+
+logger = logging.getLogger(__name__)
+def get_page_mastery(userid: str, doc_id: int):
+    chunk_mastery = get_chunk_mastery(userid, doc_id)
+    page_mastery = []
+    current_page = 0
+    total_mastery = 0
+    total_chunks = 0
+    logger.info("Computing page mastery: userid=%s doc_id=%s chunk_count=%s", userid, doc_id, len(chunk_mastery))
+    for chunk_idx, mastery in enumerate(chunk_mastery):
+        total_mastery += mastery
+        total_chunks += 1
+        try:
+            mapped_page = chunk_to_page(chunk_idx, doc_id)
+        except Exception as e:
+            logger.error(
+                "chunk_to_page failed: doc_id=%s chunk_idx=%s current_page=%s total_chunks_in_page=%s error=%s",
+                doc_id, chunk_idx, current_page, total_chunks, repr(e), exc_info=True
+            )
+            raise
+        if mapped_page is None:
+            logger.error(
+                "chunk_to_page returned None: doc_id=%s chunk_idx=%s (no page mapping found)",
+                doc_id, chunk_idx
+            )
+            raise ValueError(f"No page mapping for chunk_idx={chunk_idx} doc_id={doc_id}")
+        if mapped_page > current_page:
+            page_mastery.append(total_mastery / total_chunks)
+            current_page += 1
+            total_mastery = 0
+            total_chunks = 0
+    page_mastery.append(total_mastery / total_chunks)
+    page_mastery = np.array(page_mastery, dtype=float)
+    page_mastery = page_mastery / page_mastery.max()
+    return page_mastery.tolist()

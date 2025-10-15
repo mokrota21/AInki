@@ -16,6 +16,8 @@ from random import sample
 
 load_dotenv()
 
+ensure_tables_exist()
+
 app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100

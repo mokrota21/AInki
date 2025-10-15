@@ -90,51 +90,69 @@ completion_tokens = 10000
 model_name = os.getenv("MODEL_NAME")
 max_retries = 3
 max_questions_per_type = 1
-max_questions_per_node = 5
+max_questions_per_node = 1
 
 from .neo4j_connection import driver
 from .chunk_maper import chunk_maper
 import numpy as np
 
+# TODO: Check this
 def sample_question_type(node_id: str):
     query = """
-    MATCH (n:BookKnowledge)-[:QUESTION_FOR]->(q:ReviewQuestion)
+    MATCH (q:ReviewQuestion)-[:QUESTION_FOR]->(n)
     WHERE elementId(n) = $node_id
     RETURN q.type AS type, COUNT(q) AS total
-    ORDER BY total DESC
     """
     result = driver.execute_query(query, node_id=node_id)
-    question_types_count = {}
+
+    # Initialize counts for all types; drop types at per-type cap
+    question_types_count = {q_type: 0 for q_type in question_types.keys()}
     total_questions = 0
-    for q_type in question_types.keys():
-        question_types_count[q_type] = 0
-    for type_key, total in result.records:
+
+    for record in result.records:
+        type_key = record["type"]
+        total = record["total"]
+        total_questions += total
         if total >= max_questions_per_type:
-            question_types_count.pop(type_key)
+            question_types_count.pop(type_key, None)
         else:
             question_types_count[type_key] = total
-        total_questions += total
-    
-    # Make probabilities independent of each other
-    types_ar = np.array(list(question_types_count.keys()))
-    types_counts_ar = np.array(list(question_types_count.values()))
+
+    # Enforce per-node cap
     if total_questions >= max_questions_per_node:
         return None
-    if types_counts_ar.sum() == 0: # No questions generated yet
-        return np.random.choice(types_ar)
-    type_probability = 1 / (types_counts_ar * types_counts_ar)
 
-    s = type_probability.sum()
-    none_prob = 1 - s if s < 1 else 0
+    # If no types remain under the per-type cap, do not generate
+    if not question_types_count:
+        return None
 
-    type_probability = np.append(type_probability, none_prob)
-    types_ar = np.append(types_ar, None)
-    type_probability = type_probability / type_probability.sum()
-    res =  np.random.choice(types_ar, p=type_probability)
+    types_ar = np.array(list(question_types_count.keys()))
+    types_counts_ar = np.array(list(question_types_count.values()), dtype=float)
+
+    # If none generated yet for any remaining type -> uniform choice
+    if types_counts_ar.sum() == 0:
+        res = np.random.choice(types_ar)
+        return res.item() if hasattr(res, "item") else res
+
+    # Favor underrepresented types; avoid division by zero
+    type_weights = 1.0 / ((types_counts_ar + 1.0) ** 2)
+
+    # Increase skip probability as we approach the node limit
+    remaining_slots = max(0, max_questions_per_node - total_questions)
+    none_prob = max(0.0, 1.0 - (remaining_slots / float(max_questions_per_node)))
+
+    probs = np.append(type_weights, none_prob)
+    choices = np.append(types_ar, None)
+
+    if probs.sum() == 0:
+        res = np.random.choice(types_ar)
+        return res.item() if hasattr(res, "item") else res
+
+    probs = probs / probs.sum()
+    res = np.random.choice(choices, p=probs)
     if res is None:
         return None
-    res = res.item()
-    return res
+    return res.item() if hasattr(res, "item") else res
 
 import logging
 logging.basicConfig(level=logging.INFO)

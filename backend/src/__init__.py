@@ -11,6 +11,7 @@ from .file_reader import DefaultReader, MineruReader
 from .chunk_maper import chunk_maper, map_to_pages, chunks_in_page
 from .question_maker import make_review_questions, sample_question_type
 from .neo4j_graph import get_rand_review_question, get_page_mastery
+from .schema_setup import ensure_tables_exist
 
 __all__ = [
     "insert_chunk",
@@ -40,5 +41,6 @@ __all__ = [
     "make_review_questions",
     "sample_question_type",
     "get_rand_review_question",
-    "get_page_mastery"
+    "get_page_mastery",
+    "ensure_tables_exist"
 ]

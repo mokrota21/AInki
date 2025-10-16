@@ -70,7 +70,7 @@ jobs:
               "LANGFUSE_SECRET_KEY=secretref:langfuse-secret-key" \
               "LANGFUSE_HOST=secretref:langfuse-host" \
               "DOC_ENDPOINT=secretref:document-intelligence-endpoint" \
-              "DOC_KEY=secretref:document-intelligence-api-key" \
+              "DOC_KEY=secretref:document-intelligence-key" \
               "AZURE_OPENAI_ENDPOINT=secretref:azure-openai-endpoint" \
               "AZURE_OPENAI_API_KEY=secretref:azure-openai-api-key" \
               "OPENAI_API_VERSION=secretref:azure-openai-api-version" \

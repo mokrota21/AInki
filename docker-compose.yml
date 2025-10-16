@@ -1,20 +1,41 @@
 services:
-  backend:
-    build: ./backend
-    container_name: ainki-backend
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
-    volumes:
-      - ./backend/uploads:/app/uploads
-
   frontend:
-    build: ./frontend
-    container_name: ainki-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules  # keep deps inside the container
     environment:
-      - VITE_API_PROXY_TARGET=http://backend:8000
-    depends_on:
-      - backend
+      - VITE_API_URL=http://localhost:8000/api
+      - VITE_API_PROXY_TARGET=http://backend-dev:8000
+      - CHOKIDAR_USEPOLLING=true
+      
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - ENVIRONMENT=development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  frontend_node_modules:

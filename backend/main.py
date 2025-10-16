@@ -306,10 +306,10 @@ def track_page(
     return {"message": "Page tracking started in background"}
 
 @app.get("/api/assigned", response_model=List[PendingItem])
-def get_assigned_items(current_user: str = Depends(get_current_user)):
+def get_assigned_items(current_user: str = Depends(get_current_user), doc_id: int = None):
     try:
-        logger.info(f"Getting pending items for user: {current_user}")
-        pending_records = get_all_assigned(current_user)
+        logger.info(f"Getting assigned items for user: {current_user}, doc_id: {doc_id}")
+        pending_records = get_all_assigned(current_user, doc_id)
         if len(pending_records) > PENDING_QUIZ_LIMIT:
             pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
         logger.info(f"Sampled {len(pending_records)} pending records")
@@ -317,6 +317,9 @@ def get_assigned_items(current_user: str = Depends(get_current_user)):
 
         for record in pending_records:
             node = record["n"]
+            # Defensive doc_id filter (in case of query mismatch)
+            if doc_id is not None and node.get("doc_id") != doc_id:
+                continue
             question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
             logger.info(f"Question type: {question_type} ({type(question_type)})")
             question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
@@ -353,10 +356,10 @@ def get_assigned_items(current_user: str = Depends(get_current_user)):
 
 
 @app.get("/api/pending", response_model=List[PendingItem])
-def get_pending_items(current_user: str = Depends(get_current_user)):
+def get_pending_items(current_user: str = Depends(get_current_user), doc_id: int = None):
     try:
-        logger.info(f"Getting pending items for user: {current_user}")
-        pending_records = get_all_pending(current_user)
+        logger.info(f"Getting pending items for user: {current_user}, doc_id: {doc_id}")
+        pending_records = get_all_pending(current_user, doc_id)
         if len(pending_records) > PENDING_QUIZ_LIMIT:
             pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
         logger.info(f"Sampled {len(pending_records)} pending records")
@@ -364,6 +367,9 @@ def get_pending_items(current_user: str = Depends(get_current_user)):
 
         for record in pending_records:
             node = record["n"]
+            # Defensive doc_id filter (in case of query mismatch)
+            if doc_id is not None and node.get("doc_id") != doc_id:
+                continue
             question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
             logger.info(f"Question type: {question_type} ({type(question_type)})")
             question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None

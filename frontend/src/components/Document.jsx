@@ -46,6 +46,7 @@ function Document() {
   const pendingLockRef = React.useRef(false)
   const quizOpenRef = React.useRef(false)
   const [quizItems, setQuizItems] = React.useState([])
+  const [quizButtonLoading, setQuizButtonLoading] = React.useState(false)
   const pageEnterTimeRef = React.useRef(Date.now())
   const MIN_DWELL_MS = 30000
 
@@ -738,9 +739,11 @@ function Document() {
         const now = Date.now()
         setLastQuizTime(now)
         lastQuizTimeRef.current = now
+        toast.error('You need to first create quiz before pressing on this button! Go back to dashboard and generate quiz for this document!')
       }
     } catch (error) {
       console.error('Failed to load assigned items:', error)
+      toast.error('Failed to load assigned items')
     } finally {
       pendingLockRef.current = false
     }
@@ -750,7 +753,12 @@ function Document() {
   const triggerQuizPopup = async () => {
     if (quizOpenRef.current) return
     if (pendingLockRef.current) return
-    await fetchAssignedAndShowPopup()
+    try {
+      setQuizButtonLoading(true)
+      await fetchAssignedAndShowPopup()
+    } finally {
+      setQuizButtonLoading(false)
+    }
   }
 
   // Handle quiz popup close
@@ -818,16 +826,19 @@ function Document() {
           <button
             className="btn btn-secondary"
             onClick={triggerQuizPopup}
+            disabled={quizButtonLoading}
             style={{ 
               fontSize: '0.75rem', 
               padding: '0.4rem 0.6rem',
               background: '#ffc107',
               color: '#000',
-              border: '1px solid #ffc107'
+              border: '1px solid #ffc107',
+              opacity: quizButtonLoading ? 0.7 : 1,
+              cursor: quizButtonLoading ? 'not-allowed' : 'pointer'
             }}
             title="Debug: Trigger Quiz Popup"
           >
-            🧠 Quiz
+            {quizButtonLoading ? 'Loading…' : '🧠 Quiz'}
           </button>
           
           <button

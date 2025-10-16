@@ -99,9 +99,8 @@ function Document() {
         const folder = data?.folder || ''
         const chunks = Array.isArray(data?.chunks) ? data.chunks : []
         
-        // Set PDF URL - assuming the original PDF is stored in uploads folder
-        // docName already includes the .pdf extension, so use it directly
-        const pdfUrl = `/api/uploads/${docName}` // This should match your backend upload path
+        // Set PDF URL - now served from backend storage by doc_id
+        const pdfUrl = `/api/get_file?doc_id=${Number(id)}`
         setPdfUrl(pdfUrl)
         const resolvedChunks = chunks.map((c) => {
           const raw = typeof c?.content === 'string' ? c.content : ''

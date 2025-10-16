@@ -698,7 +698,7 @@ function Document() {
       // Acquire lock
       pendingLockRef.current = true
       
-      const response = await api.get('/pending')
+      const response = await api.get('/pending', { params: { doc_id: Number(id) } })
       if (response.data && response.data.length > 0) {
         // Mark quiz as open to prohibit further calls before state flushes
         quizOpenRef.current = true
@@ -729,7 +729,7 @@ function Document() {
 
     try {
       pendingLockRef.current = true
-      const response = await api.get('/assigned')
+      const response = await api.get('/assigned', { params: { doc_id: Number(id) } })
       if (response.data && response.data.length > 0) {
         quizOpenRef.current = true
         setQuizItems(response.data)

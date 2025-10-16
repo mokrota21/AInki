@@ -425,10 +425,22 @@ def debug_log():
 # Serve built frontend (SPA) from frontend/dist at root path
 app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
 
-# SPA fallback for client-side routes (e.g., /dashboard)
-@app.get("/{full_path:path}")
-def spa_fallback(full_path: str):
-    return FileResponse("frontend/dist/index.html")
+# Middleware-based SPA fallback so mounted StaticFiles 404s resolve to index.html
+@app.middleware("http")
+async def spa_fallback_middleware(request: Request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if (
+        response.status_code == 404
+        and not path.startswith("/api")
+        and not path.startswith("/api/")
+        and "." not in path  # skip asset-like paths
+    ):
+        try:
+            return FileResponse("frontend/dist/index.html")
+        except Exception:
+            return response
+    return response
 
 # Global exception handler
 @app.exception_handler(Exception)

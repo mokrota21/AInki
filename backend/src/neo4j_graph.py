@@ -121,25 +121,25 @@ def merge_repetition_state(connected_to_id: str, state: RepeatState):
     )
     return result.records[0]["r"], result.records[0]["c"]
 
-def get_all_assigned(userid: str = None):
+def get_all_assigned(userid: str = None, doc_id: int = None):
     result = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
-        WHERE r.userid = $userid OR $userid IS NULL
+        WHERE r.userid = $userid OR $userid IS NULL AND (n.doc_id = $doc_id OR $doc_id IS NULL)
         RETURN n, c, r
         """,
-        userid=userid
+        userid=userid, doc_id=doc_id
     )
     return result.records
 
-def get_all_pending(userid: str = None):
+def get_all_pending(userid: str = None, doc_id: int = None):
     result = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
-        WHERE r.next_repeat < datetime() AND (r.userid = $userid OR $userid IS NULL)
+        WHERE r.next_repeat < datetime() AND (r.userid = $userid OR $userid IS NULL) AND (n.doc_id = $doc_id OR $doc_id IS NULL)
         RETURN n, c, r
         """,
-        userid=userid
+        userid=userid, doc_id=doc_id
     )
     return result.records
 

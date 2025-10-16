@@ -3,13 +3,21 @@ from dotenv import load_dotenv
 import os
 from typing import List, Dict, Any, Optional, Tuple
 import json
-import logging
 from .neo4j_graph import add_knowledge_object
 from .repetition import RepeatState
 from .neo4j_graph import merge_repetition_state
 from tqdm import tqdm
 
 load_dotenv()
+
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # This makes it show in terminal
+    ]
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +26,7 @@ client = AzureOpenAI()
 completion_tokens = 10000
 price_mapping = {
     "gpt-5-nano": (0.05 / 1000000, 0.40 / 1000000),
+    "gpt-4.1-mini": (0.2 / 1000000, 0.80 / 1000000),
 }
 prompts = {
     "math_textbook_prompt": """
@@ -196,7 +205,7 @@ def make_study_object(chunks: List[Tuple[str, int]], doc_id: int, prompt_key: st
 
 prompts_available = list(prompts.keys())
 
-def price_approximation(chunks: List[str], prompt_key: str = "general_textbook_prompt", model_name: str = "gpt-5-nano"):
+def price_approximation(chunks: List[str], prompt_key: str = "general_textbook_prompt", model_name: str = "gpt-4.1-mini"):
     input_tokens = 0
     for chunk in chunks:
         input_tokens += len(chunk) / 4

@@ -211,7 +211,9 @@ def extract_objects_parameter():
             "fetch_name": "prompt_key"
         }
         ]
-
+@app.get("/health")
+async def main_health():
+    return JSONResponse(content={"status": "ok", "service": "Main App"})
 #TODO: investigate why doesn't work
 @app.post("/api/price_approximation")
 def price_approx(

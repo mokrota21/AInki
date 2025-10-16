@@ -1,0 +1,985 @@
+# Chapter 2 Starting at the beginning: the natural numbers
+
+In this text, we will review the material you have learnt in high school
+and in elementary calculus classes, but as rigorously as possible. To do
+so we will have to begin at the very basics - indeed, we will go back to the
+concept of numbers and what their properties are. Of course, you have
+dealt with numbers for over ten years and you know how to manipulate
+the rules of algebra to simplify any expression involving numbers, but
+we will now turn to a more fundamental issue, which is: why do the rules
+of algebra work at all? For instance, why is it true that a(b+c) is equal
+to ab + ac for any three numbers a, b, c? This is not an arbitrary choice
+of rule; it can be proven from more primitive, and more fundamental,
+properties of the number system. This will teach you a new skill - how
+to prove complicated properties from simpler ones. You will find that
+even though a statement may be "obvious", it may not be easy to prove;
+the material here will give you plenty of practice in doing so, and in the
+process will lead you to think about why an obvious statement really is
+obvious. One skill in particular that you will pick up here is the use of
+mathematical induction, which is a basic tool in proving things in many
+areas of mathematics.
+
+So in the first few chapters we will re-acquaint you with various
+number systems that are used in real analysis. In increasing order of
+sophistication, they are the natural numbers N; the integers Z; the ra-
+tionals Q, and the real numbers R. (There are other number systems
+such as the complex numbers C, but we will not study them until Sec-
+tion 11.26.) The natural numbers {0,1,2, ... } are the most primitive of
+the number systems, but they are used to build the integers, which in
+turn are used to build the rationals. Furthermore, the rationals are used
+to build the real numbers, which are in turn used to build the complex
+numbers. Thus to begin at the very beginning, we must look at the
+
+<!-- PageFooter="@ Springer Science+Business Media Singapore 2016 and Hindustan Book Agency 2015" -->
+<!-- PageFooter="T. Tao, Analysis I, Texts and Readings in Mathematics 37, DOI 10.1007/978-981-10-1789-6_2" -->
+<!-- PageNumber="13" -->
+<!-- PageBreak -->
+
+<!-- PageNumber="14" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+natural numbers. We will consider the following question: how does one
+actually define the natural numbers? (This is a very different question
+from how to use the natural numbers, which is something you of course
+know how to do very well. It's like the difference between knowing how
+to use, say, a computer, versus knowing how to build that computer.)
+
+This question is more difficult to answer than it looks. The basic
+problem is that you have used the natural numbers for so long that
+they are embedded deeply into your mathematical thinking, and you
+can make various implicit assumptions about these numbers (e.g., that
+a + b is always equal to b + a) without even aware that you are doing
+so; it is difficult to let go and try to inspect this number system as if it
+is the first time you have seen it. So in what follows I will have to ask
+you to perform a rather difficult task: try to set aside, for the moment,
+everything you know about the natural numbers; forget that you know
+how to count, to add, to multiply, to manipulate the rules of algebra,
+etc. We will try to introduce these concepts one at a time and identify
+explicitly what our assumptions are as we go along - and not allow our-
+selves to use more "advanced" tricks such as the rules of algebra until we
+have actually proven them. This may seem like an irritating constraint,
+especially as we will spend a lot of time proving statements which are
+"obvious", but it is necessary to do this suspension of known facts to
+avoid circularity (e.g., using an advanced fact to prove a more elemen-
+tary fact, and then later using the elementary fact to prove the advanced
+fact). Also, this exercise will be an excellent way to affirm the founda-
+tions of your mathematical knowledge. Furthermore, practicing your
+proofs and abstract thinking here will be invaluable when we move on
+to more advanced concepts, such as real numbers, functions, sequences
+and series, differentials and integrals, and so forth. In short, the results
+here may seem trivial, but the journey is much more important than
+the destination, for now. (Once the number systems are constructed
+properly, we can resume using the laws of algebra etc. without having
+to rederive them each time.)
+
+We will also forget that we know the decimal system, which of course
+is an extremely convenient way to manipulate numbers, but it is not
+something which is fundamental to what numbers are. (For instance,
+one could use an octal or binary system instead of the decimal system,
+or even the Roman numeral system, and still get exactly the same set
+of numbers.) Besides, if one tries to fully explain what the decimal
+number system is, it isn't as natural as you might think. Why is 00423
+the same number as 423, but 32400 isn't the same number as 324? Why
+
+<!-- PageBreak -->
+
+<!-- PageNumber="15" -->
+<!-- PageHeader="2.1. The Peano axioms" -->
+
+is 123.4444 ... a real number, while ... 444.321 is not? And why do we
+have to carry of digits when adding or multiplying? Why is 0.999 ... the
+same number as 1? What is the smallest positive real number? Isn't
+it just 0.00 ... 001? So to set aside these problems, we will not try to
+assume any knowledge of the decimal system, though we will of course
+still refer to numbers by their familiar names such as 1,2,3, etc. instead
+of using other notation such as I,II,III or 0++, (0++)++, ((0++)++)++
+(see below) so as not to be needlessly artificial. For completeness, we
+review the decimal system in an Appendix (§B).
+
+
+## 2.1 The Peano axioms
+
+We now present one standard way to define the natural numbers, in
+terms of the Peano axioms, which were first laid out by Guiseppe Peano
+(1858-1932). This is not the only way to define the natural numbers.
+For instance, another approach is to talk about the cardinality of finite
+sets, for instance one could take a set of five elements and define 5 to be
+the number of elements in that set. We shall discuss this alternate ap-
+proach in Section 3.6. However, we shall stick with the Peano axiomatic
+approach for now.
+
+How are we to define what the natural numbers are? Informally, we
+could say
+
+Definition 2.1.1. (Informal) A natural number is any element of the
+set
+
+N := {0,1,2,3,4, ... },
+
+which is the set of all the numbers created by starting with 0 and then
+counting forward indefinitely. We call N the set of natural numbers.
+
+Remark 2.1.2. In some texts the natural numbers start at 1 instead of
+0, but this is a matter of notational convention more than anything else.
+In this text we shall refer to the set {1,2, 3, ... } as the positive integers
+Z+ rather than the natural numbers. Natural numbers are sometimes
+also known as whole numbers.
+
+In a sense, this definition solves the problem of what the natural
+numbers are: a natural number is any element of the set1 N. However,
+
+1Strictly speaking, there is another problem with this informal definition: we have
+not yet defined what a "set" is, or what "element of" is. Thus for the rest of this
+chapter we shall avoid mention of sets and their elements as much as possible, except
+in informal discussion.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="16" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+it is not really that satisfactory, because it begs the question of what
+N is. This definition of "start at 0 and count indefinitely" seems like
+an intuitive enough definition of N, but it is not entirely acceptable,
+because it leaves many questions unanswered. For instance: how do
+we know we can keep counting indefinitely, without cycling back to 0?
+Also, how do you perform operations such as addition, multiplication,
+or exponentiation?
+
+We can answer the latter question first: we can define complicated
+operations in terms of simpler operations. Exponentiation is nothing
+more than repeated multiplication: 53 is nothing more than three fives
+multiplied together. Multiplication is nothing more than repeated addi-
+tion; 5 x 3 is nothing more than three fives added together. (Subtraction
+and division will not be covered here, because they are not operations
+which are well-suited to the natural numbers; they will have to wait for
+the integers and rationals, respectively.) And addition? It is nothing
+more than the repeated operation of counting forward, or incrementing.
+If you add three to five, what you are doing is incrementing five three
+times. On the other hand, incrementing seems to be a fundamental op-
+eration, not reducible to any simpler operation; indeed, it is the first
+operation one learns on numbers, even before learning to add.
+
+Thus, to define the natural numbers, we will use two fundamental
+concepts: the zero number 0, and the increment operation. In deference
+to modern computer languages, we will use n++ to denote the increment
+or successor of n, thus for instance 3++ = 4, (3++)++ = 5, etc. This
+is a slightly different usage from that in computer languages such as C,
+where n++ actually redefines the value of n to be its successor; however
+in mathematics we try not to define a variable more than once in any
+given setting, as it can often lead to confusion; many of the statements
+which were true for the old value of the variable can now become false,
+and vice versa.
+
+So, it seems like we want to say that N consists of 0 and everything
+which can be obtained from 0 by incrementing: N should consist of the
+objects
+
+0,0++,(0++)++,((0++)++)++, etc.
+
+If we start writing down what this means about the natural numbers,
+we thus see that we should have the following axioms concerning 0 and
+the increment operation ++:
+
+Axiom 2.1. 0 is a natural number.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="17" -->
+<!-- PageHeader="2.1. The Peano axioms" -->
+
+Axiom 2.2. If n is a natural number, then n++ is also a natural num-
+ber.
+
+Thus for instance, from Axiom 2.1 and two applications of Axiom 2.2,
+we see that (0++)++ is a natural number. Of course, this notation will
+begin to get unwieldy, so we adopt a convention to write these numbers
+in more familiar notation:
+
+Definition 2.1.3. We define 1 to be the number 0++, 2 to be the
+number (0++)++, 3 to be the number ((0++)++)++, etc. (In other
+words, 1 := 0++, 2 := 14+, 3 := 2++, etc. In this text I use "x := y"
+to denote the statement that x is defined to equal y.)
+
+Thus for instance, we have
+
+Proposition 2.1.4. 3 is a natural number.
+
+Proof. By Axiom 2.1, 0 is a natural number. By Axiom 2.2, 0++ = 1 is
+a natural number. By Axiom 2.2 again, 1++ = 2 is a natural number.
+By Axiom 2.2 again, 2++ = 3 is a natural number.
+☐
+
+It may seem that this is enough to describe the natural numbers.
+However, we have not pinned down completely the behavior of N:
+
+Example 2.1.5. Consider a number system which consists of the num-
+bers 0, 1, 2,3, in which the increment operation wraps back from 3 to
+0. More precisely 0++ is equal to 1, 1++ is equal to 2, 2++ is equal
+to 3, but 3++ is equal to 0 (and also equal to 4, by definition of 4).
+This type of thing actually happens in real life, when one uses a com-
+puter to try to store a natural number: if one starts at 0 and performs
+the increment operation repeatedly, eventually the computer will over-
+flow its memory and the number will wrap around back to 0 (though
+this may take quite a large number of incrementation operations, for
+instance a two-byte representation of an integer will wrap around only
+after 65, 536 increments). Note that this type of number system obeys
+Axiom 2.1 and Axiom 2.2, even though it clearly does not correspond
+to what we intuitively believe the natural numbers to be like.
+
+To prevent this sort of "wrap-around issue" we will impose another
+axiom:
+
+Axiom 2.3. 0 is not the successor of any natural number; i.e., we have
+n++ + 0 for every natural number n.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="18" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+Now we can show that certain types of wrap-around do not occur:
+for instance we can now rule out the type of behavior in Example 2.1.5
+using
+
+Proposition 2.1.6. 4 is not equal to 0.
+
+Don't laugh! Because of the way we have defined 4 - it is the in-
+crement of the increment of the increment of the increment of 0 - it is
+not necessarily true a priori that this number is not the same as zero,
+even if it is "obvious". ("a priori" is Latin for "beforehand" - it refers to
+what one already knows or assumes to be true before one begins a proof
+or argument. The opposite is "a posteriori" - what one knows to be
+true after the proof or argument is concluded.) Note for instance that
+in Example 2.1.5, 4 was indeed equal to 0, and that in a standard two-
+byte computer representation of a natural number, for instance, 65536
+is equal to 0 (using our definition of 65536 as equal to 0 incremented
+sixty-five thousand, five hundred and thirty-six times).
+
+Proof. By definition, 4 = 3++. By Axioms 2.1 and 2.2, 3 is a natural
+number. Thus by Axiom 2.3, 3++ + 0, i.e., 4 + 0.
+☐
+
+However, even with our new axiom, it is still possible that our num-
+ber system behaves in other pathological ways:
+
+Example 2.1.7. Consider a number system consisting of five numbers
+0,1,2,3,4, in which the increment operation hits a "ceiling" at 4. More
+precisely, suppose that 0++ = 1, 1++ = 2, 2++ = 3, 3++ = 4, but
+4++ = 4 (or in other words that 5 = 4, and hence 6 = 4, 7 = 4, etc.).
+This does not contradict Axioms 2.1,2.2,2.3. Another number system
+with a similar problem is one in which incrementation wraps around,
+but not to zero, e.g. suppose that 4++ = 1 (so that 5 = 1, then 6 = 2,
+etc.).
+
+There are many ways to prohibit the above types of behavior from
+happening, but one of the simplest is to assume the following axiom:
+
+Axiom 2.4. Different natural numbers must have different successors;
+i.e., if n, m are natural numbers and n # m, then n++ + m++. Equiv-
+alently2, if n++ = m++, then we must have n = m.
+
+2This is an example of reformulating an implication using its contrapositive; see
+Section A.2 for more details. In the converse direction, if n = m, then n++ = m++;
+this is the axiom of substitution (see Section A.7) applied to the operation ++.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="19" -->
+<!-- PageHeader="2.1. The Peano axioms" -->
+
+Thus, for instance, we have
+
+Proposition 2.1.8. 6 is not equal to 2.
+
+Proof. Suppose for sake of contradiction that 6 = 2. Then 5++ = 1++,
+so by Axiom 2.4 we have 5 = 1, so that 4++ = 0++. By Axiom 2.4 again
+we then have 4 = 0, which contradicts our previous proposition.
+☐
+
+As one can see from this proposition, it now looks like we can keep all
+of the natural numbers distinct from each other. There is however still
+one more problem: while the axioms (particularly Axioms 2.1 and 2.2)
+allow us to confirm that 0, 1, 2, 3, ... are distinct elements of N, there is
+the problem that there may be other "rogue" elements in our number
+system which are not of this form:
+
+Example 2.1.9. (Informal) Suppose that our number system N con-
+sisted of the following collection of integers and half-integers:
+
+N := {0,0.5, 1, 1.5, 2, 2.5, 3, 3.5, .. . }.
+
+(This example is marked "informal" since we are using real numbers,
+which we're not supposed to use yet.) One can check that Axioms 2.1-
+2.4 are still satisfied for this set.
+
+What we want is some axiom which says that the only numbers in N
+are those which can be obtained from 0 and the increment operation -
+in order to exclude elements such as 0.5. But it is difficult to quantify
+what we mean by "can be obtained from" without already using the
+natural numbers, which we are trying to define. Fortunately, there is an
+ingenious solution to try to capture this fact:
+
+Axiom 2.5 (Principle of mathematical induction). Let P(n) be any
+property pertaining to a natural number n. Suppose that P(0) is true,
+and suppose that whenever P(n) is true, P(n++) is also true. Then
+P(n) is true for every natural number n.
+
+Remark 2.1.10. We are a little vague on what "property" means at
+this point, but some possible examples of P(n) might be "n is even";
+"n is equal to 3"; "n solves the equation (n + 1)2 = n2 + 2n + 1"; and
+so forth. Of course we haven't defined many of these concepts yet, but
+when we do, Axiom 2.5 will apply to these properties. (A logical remark:
+Because this axiom refers not just to variables, but also properties, it is
+of a different nature than the other four axioms; indeed, Axiom 2.5
+
+<!-- PageBreak -->
+
+<!-- PageNumber="20" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+should technically be called an axiom schema rather than an axiom - it
+is a template for producing an (infinite) number of axioms, rather than
+being a single axiom in its own right. To discuss this distinction further
+is far beyond the scope of this text, though, and falls in the realm of
+logic.)
+
+The informal intuition behind this axiom is the following. Suppose
+P(n) is such that P(0) is true, and such that whenever P(n) is true,
+then P(n++) is true. Then since P(0) is true, P(0++) = P(1) is true.
+Since P(1) is true, P(1++) = P(2) is true. Repeating this indefinitely,
+we see that P(0), P(1), P(2), P(3), etc. are all true - however this
+line of reasoning will never let us conclude that P(0.5), for instance, is
+true. Thus Axiom 2.5 should not hold for number systems which contain
+"unnecessary" elements such as 0.5. (Indeed, one can give a "proof" of
+this fact. Apply Axiom 2.5 to the property P(n) = n "is not a half-
+integer", i.e., an integer plus 0.5. Then P(0) is true, and if P(n) is true,
+then P(n++) is true. Thus Axiom 2.5 asserts that P(n) is true for all
+natural numbers n, i.e., no natural number can be a half-integer. In
+particular, 0.5 cannot be a natural number. This "proof" is not quite
+genuine, because we have not defined such notions as "integer", "half-
+integer", and "0.5" yet, but it should give you some idea as to how the
+principle of induction is supposed to prohibit any numbers other than
+the "true" natural numbers from appearing in N.)
+
+The principle of induction gives us a way to prove that a property
+P(n) is true for every natural number n. Thus in the rest of this text
+we will see many proofs which have a form like this:
+
+Proposition 2.1.11. A certain property P(n) is true for every natural
+number n.
+
+Proof. We use induction. We first verify the base case n = 0, i.e., we
+prove P(0). (Insert proof of P(0) here). Now suppose inductively that n
+is a natural number, and P(n) has already been proven. We now prove
+P(n++). (Insert proof of P(n++), assuming that P(n) is true, here).
+This closes the induction, and thus P(n) is true for all numbers n.
+☐
+
+Of course we will not necessarily use the exact template, wording,
+or order in the above type of proof, but the proofs using induction will
+generally be something like the above form. There are also some other
+variants of induction which we shall encounter later, such as backwards
+induction (Exercise 2.2.6), strong induction (Proposition 2.2.14), and
+transfinite induction (Lemma 8.5.15).
+
+<!-- PageBreak -->
+
+<!-- PageNumber="21" -->
+<!-- PageHeader="2.1. The Peano axioms" -->
+
+Axioms 2.1-2.5 are known as the Peano axioms for the natural num-
+bers. They are all very plausible, and so we shall make
+
+Assumption 2.6. (Informal) There exists a number system N, whose
+elements we will call natural numbers, for which Axioms 2.1-2.5 are
+true.
+
+We will make this assumption a bit more precise once we have laid
+down our notation for sets and functions in the next chapter.
+
+Remark 2.1.12. We will refer to this number system N as the natural
+number system. One could of course consider the possibility that there
+is more than one natural number system, e.g., we could have the Hindu-
+Arabic number system {0,1,2,3, ... } and the Roman number system
+{O, I, II, III, IV,V,VI, ... }, and if we really wanted to be annoying we
+could view these number systems as different. But these number systems
+are clearly equivalent (the technical term is isomorphic), because one
+can create a one-to-one correspondence 0 > 0, 1 <> I, 2 > II, etc.
+which maps the zero of the Hindu-Arabic system with the zero of the
+Roman system, and which is preserved by the increment operation (e.g.,
+if 2 corresponds to II, then 2++ will correspond to II++). For a more
+precise statement of this type of equivalence, see Exercise 3.5.13. Since
+all versions of the natural number system are equivalent, there is no
+point in having distinct natural number systems, and we will just use a
+single natural number system to do mathematics.
+
+We will not prove Assumption 2.6 (though we will eventually include
+it in our axioms for set theory, see Axiom 3.7), and it will be the only
+assumption we will ever make about our numbers. A remarkable ac-
+complishment of modern analysis is that just by starting from these five
+very primitive axioms, and some additional axioms from set theory, we
+can build all the other number systems, create functions, and do all the
+algebra and calculus that we are used to.
+
+Remark 2.1.13. (Informal) One interesting feature about the natural
+numbers is that while each individual natural number is finite, the set of
+natural numbers is infinite; i.e., N is infinite but consists of individually
+finite elements. (The whole is greater than any of its parts.) There
+are no infinite natural numbers; one can even prove this using Axiom
+2.5, provided one is comfortable with the notions of finite and infinite.
+(Clearly 0 is finite. Also, if n is finite, then clearly n++ is also finite.
+Hence by Axiom 2.5, all natural numbers are finite.) So the natural
+
+<!-- PageBreak -->
+
+<!-- PageNumber="22" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+numbers can approach infinity, but never actually reach it; infinity is
+not one of the natural numbers. (There are other number systems which
+admit "infinite" numbers, such as the cardinals, ordinals, and p-adics,
+but they do not obey the principle of induction, and in any event are
+beyond the scope of this text.)
+
+Remark 2.1.14. Note that our definition of the natural numbers is ax-
+iomatic rather than constructive. We have not told you what the natural
+numbers are (so we do not address such questions as what the numbers
+are made of, are they physical objects, what do they measure, etc.) -
+we have only listed some things you can do with them (in fact, the only
+operation we have defined on them right now is the increment one) and
+some of the properties that they have. This is how mathematics works
+\- it treats its objects abstractly, caring only about what properties the
+objects have, not what the objects are or what they mean. If one wants
+to do mathematics, it does not matter whether a natural number means
+a certain arrangement of beads on an abacus, or a certain organization
+of bits in a computer's memory, or some more abstract concept with no
+physical substance; as long as you can increment them, see if two of them
+are equal, and later on do other arithmetic operations such as add and
+multiply, they qualify as numbers for mathematical purposes (provided
+they obey the requisite axioms, of course). It is possible to construct
+the natural numbers from other mathematical objects - from sets, for
+instance - but there are multiple ways to construct a working model of
+the natural numbers, and it is pointless, at least from a mathematician's
+standpoint, as to argue about which model is the "true" one - as long as
+it obeys all the axioms and does all the right things, that's good enough
+to do maths.
+
+Remark 2.1.15. Historically, the realization that numbers could be
+treated axiomatically is very recent, not much more than a hundred
+years old. Before then, numbers were generally understood to be in-
+extricably connected to some external concept, such as counting the
+cardinality of a set, measuring the length of a line segment, or the mass
+of a physical object, etc. This worked reasonably well, until one was
+forced to move from one number system to another; for instance, under-
+standing numbers in terms of counting beads, for instance, is great for
+conceptualizing the numbers 3 and 5, but doesn't work so well for -3
+or 1/3 or v2 or 3 + 4i; thus each great advance in the theory of num-
+☒
+bers - negative numbers, irrational numbers, complex numbers, even
+the number zero - led to a lot of unnecessary philosophical anguish.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="23" -->
+<!-- PageHeader="2.1. The Peano axioms" -->
+
+The great discovery of the late nineteenth century was that numbers
+can be understood abstractly via axioms, without necessarily needing a
+concrete model; of course a mathematician can use any of these models
+when it is convenient, to aid his or her intuition and understanding, but
+they can also be just as easily discarded when they begin to get in the
+way.
+
+One consequence of the axioms is that we can now define sequences
+recursively. Suppose we want to build a sequence a0, a1, a2,... of num-
+bers by first defining a0 to be some base value, e.g., a0 := c for some
+number c, and then by letting a1 be some function of a0, a1 := f0(a0),
+a2 be some function of a1, a2 := f1(a1), and so forth. In general, we
+set an++ := fn(an) for some function fn from N to N. By using all
+the axioms together we will now conclude that this procedure will give
+a single value to the sequence element an for each natural number n.
+More precisely3:
+
+Proposition 2.1.16 (Recursive definitions). Suppose for each natural
+number n, we have some function fn : N -> N from the natural numbers
+to the natural numbers. Let c be a natural number. Then we can assign
+a unique natural number an to each natural number n, such that a0 = c
+and an++ = fn(an) for each natural number n.
+
+Proof. (Informal) We use induction. We first observe that this proce-
+dure gives a single value to a0, namely c. (None of the other defini-
+tions an++ := fn(an) will redefine the value of a0, because of Axiom
+2.3.) Now suppose inductively that the procedure gives a single value
+to an. Then it gives a single value to an++, namely ant := fn(an).
+(None of the other definitions am++ := fm(am) will redefine the value
+of an++, because of Axiom 2.4.) This completes the induction, and so
+an is defined for each natural number n, with a single value assigned to
+each an.
+☐
+
+Note how all of the axioms had to be used here. In a system which
+had some sort of wrap-around, recursive definitions would not work
+
+3Strictly speaking, this proposition requires one to define the notion of a function,
+which we shall do in the next chapter. However, this will not be circular, as the
+concept of a function does not require the Peano axioms. Proposition 2.1.16 can be
+formalized more rigorously in the language of set theory; see Exercise 3.5.12.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="24" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+because some elements of the sequence would constantly be redefined.
+For instance, in Example 2.1.5, in which 3++ = 0, then there would
+be (at least) two conflicting definitions for a0, either c or f3(a3)). In
+a system which had superfluous elements such as 0.5, the element a0.5
+would never be defined.
+
+Recursive definitions are very powerful; for instance, we can use them
+to define addition and multiplication, to which we now turn.
+
+
+## 2.2 Addition
+
+The natural number system is very bare right now: we have only one
+operation - increment - and a handful of axioms. But now we can build
+up more complex operations, such as addition.
+
+The way it works is the following. To add three to five should be the
+same as incrementing five three times - this is one increment more than
+adding two to five, which is one increment more than adding one to five,
+which is one increment more than adding zero to five, which should just
+give five. So we give a recursive definition for addition as follows.
+
+Definition 2.2.1 (Addition of natural numbers). Let m be a natural
+number. To add zero to m, we define 0 + m := m. Now suppose
+inductively that we have defined how to add n to m. Then we can add
+n++ to m by defining (n++) + m := (n +m)++.
+
+Thus 0+m is m, 1+m =(0++)+m is m++; 2+m = (1++) +m =
+(m++)++; and so forth; for instance we have 2 + 3 = (3++)++ =
+4++ = 5. From our discussion of recursion in the previous section
+we see that we have defined n + m for every natural number n. Here
+we are specializing the previous general discussion to the setting where
+an = n+m and fn(an) = an++. Note that this definition is asymmetric:
+3 + 5 is incrementing 5 three times, while 5 + 3 is incrementing 3 five
+times. Of course, they both yield the same value of 8. More generally, it
+is a fact (which we shall prove shortly) that a + b = b+ a for all natural
+numbers a, b, although this is not immediately clear from the definition.
+
+Notice that we can prove easily, using Axioms 2.1, 2.2, and induction
+(Axiom 2.5), that the sum of two natural numbers is again a natural
+number (why?).
+
+Right now we only have two facts about addition: that 0 + m = m,
+and that (n++) + m = (n +m)++. Remarkably, this turns out to be
+
+<!-- PageBreak -->
+
+<!-- PageNumber="25" -->
+<!-- PageHeader="2.2. Addition" -->
+
+enough to deduce everything else we know about addition. We begin
+with some basic lemmas4.
+
+Lemma 2.2.2. For any natural number n, n +0 = n.
+
+Note that we cannot deduce this immediately from 0 + m = m be-
+cause we do not know yet that a + b = b + a.
+
+Proof. We use induction. The base case 0 + 0 = 0 follows since we
+know that 0 + m = m for every natural number m, and 0 is a natural
+number. Now suppose inductively that n + 0 = n. We wish to show
+that (n++)+0 = n++. But by definition of addition, (n++) +0 is equal
+to (n + 0)++, which is equal to n++ since n +0 = n. This closes the
+induction.
+☐
+
+Lemma 2.2.3. For any natural numbers n and m, n + (m++) = (n +
+m)++.
+
+Again, we cannot deduce this yet from (n++) + m = (n +m)++
+because we do not know yet that a + b = b + a.
+
+Proof. We induct on n (keeping m fixed). We first consider the base
+case n = 0. In this case we have to prove 0 + (m++) = (0 + m)++.
+But by definition of addition, 0 + (m++) = m++ and 0 + m = m, so
+both sides are equal to m++ and are thus equal to each other. Now
+we assume inductively that n + (m+) = (n +m)++; we now have to
+show that (n++)+(m++) = ((n++)+m)++. The left-hand side is (n+
+(m++))++ by definition of addition, which is equal to ((n +m)++)++
+by the inductive hypothesis. Similarly, we have (n++)+m = (n+m)++
+by the definition of addition, and so the right-hand side is also equal to
+((n + m)++)++. Thus both sides are equal to each other, and we have
+closed the induction.
+☐
+
+4From a logical point of view, there is no difference between a lemma, proposition,
+theorem, or corollary - they are all claims waiting to be proved. However, we use
+these terms to suggest different levels of importance and difficulty. A lemma is an
+easily proved claim which is helpful for proving other propositions and theorems, but
+is usually not particularly interesting in its own right. A proposition is a statement
+which is interesting in its own right, while a theorem is a more important statement
+than a proposition which says something definitive on the subject, and often takes
+more effort to prove than a proposition or lemma. A corollary is a quick consequence
+of a proposition or theorem that was proven recently.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="26" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+As a particular corollary of Lemma 2.2.2 and Lemma 2.2.3 we see
+that n++=n+1 (why?).
+
+As promised earlier, we can now prove that a + b = b + a.
+
+Proposition 2.2.4 (Addition is commutative). For any natural num-
+bers n and m, n +m = m+n.
+
+Proof. We shall use induction on n (keeping m fixed). First we do the
+base case n = 0, i.e., we show 0 + m = m + 0. By the definition of
+addition, 0 + m = m, while by Lemma 2.2.2, m + 0 = m. Thus the
+base case is done. Now suppose inductively that n + m = m +n, now
+we have to prove that (n++) + m = m + (n++) to close the induction.
+By the definition of addition, (n++) + m = (n +m)++. By Lemma
+2.2.3, m + (n++) = (m +n)++, but this is equal to (n + m)++ by the
+inductive hypothesis n + m = m + n. Thus (n++) + m = m + (n++)
+and we have closed the induction.
+☐
+
+Proposition 2.2.5 (Addition is associative). For any natural numbers
+a, b, c, we have (a + b) + c = a + (b+c).
+
+Proof. See Exercise 2.2.1.
+☐
+
+Because of this associativity we can write sums such as a + b + c
+without having to worry about which order the numbers are being added
+together.
+
+Now we develop a cancellation law.
+
+Proposition 2.2.6 (Cancellation law). Let a, b, c be natural numbers
+such that a + b = a +c. Then we have b = c.
+
+Note that we cannot use subtraction or negative numbers yet to prove
+this proposition, because we have not developed these concepts yet. In
+fact, this cancellation law is crucial in letting us define subtraction (and
+the integers) later on in this text, because it allows for a sort of "virtual
+subtraction" even before subtraction is officially defined.
+
+Proof. We prove this by induction on a. First consider the base case
+a = 0. Then we have 0 + b = 0+ c, which by definition of addition
+implies that b = c as desired. Now suppose inductively that we have the
+cancellation law for a (so that a + b = a + c implies b = c); we now have
+to prove the cancellation law for a++. In other words, we assume that
+(a++) +b = (a++) +c and need to show that b = c. By the definition
+of addition, (a++) +b = (a+b)++ and (a++) +c = (a+c)++ and so
+
+<!-- PageBreak -->
+
+<!-- PageNumber="27" -->
+<!-- PageHeader="2.2. Addition" -->
+
+we have (a +b)++ = (a +c)++. By Axiom 2.4, we have a + b = a + c.
+Since we already have the cancellation law for a, we thus have b = c as
+desired. This closes the induction.
+☐
+
+We now discuss how addition interacts with positivity.
+
+Definition 2.2.7 (Positive natural numbers). A natural number n is
+said to be positive iff it is not equal to 0. ("iff" is shorthand for "if and
+only if" - see Section A.1).
+
+Proposition 2.2.8. If a is positive and b is a natural number, then a+b
+is positive (and hence b + a is also, by Proposition 2.2.4).
+
+Proof. We use induction on b. If b = 0, then a + b = a + 0 = a, which
+is positive, so this proves the base case. Now suppose inductively that
+a + b is positive. Then a + (b++) = (a+b)++, which cannot be zero by
+Axiom 2.3, and is hence positive. This closes the induction.
+☐
+
+Corollary 2.2.9. If a and b are natural numbers such that a + b = 0,
+then a = 0 and b = 0.
+
+Proof. Suppose for sake of contradiction that a # 0 or b + 0. If a +0
+then a is positive, and hence a +b = 0 is positive by Proposition 2.2.8, a
+contradiction. Similarly if b 0 then b is positive, and again a+b = 0 is
+positive by Proposition 2.2.8, a contradiction. Thus a and b must both
+be zero.
+☐
+
+Lemma 2.2.10. Let a be a positive number. Then there exists exactly
+one natural number b such that b++ = a.
+
+Proof. See Exercise 2.2.2.
+
+☐
+
+Once we have a notion of addition, we can begin defining a notion
+of order.
+
+Definition 2.2.11 (Ordering of the natural numbers). Let n and m be
+natural numbers. We say that n is greater than or equal to m, and write
+n ≥ m or m ≤ n, iff we have n = m + a for some natural number a.
+We say that n is strictly greater than m, and write n > m or m < n, iff
+n ≥ m and n# m.
+
+Thus for instance 8 > 5, because 8 = 5+3 and 8 $ 5. Also note that
+n++ > n for any n; thus there is no largest natural number n, because
+the next number n++ is always larger still.
+
+<!-- PageBreak -->
+
+<!-- PageNumber="28" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+Proposition 2.2.12 (Basic properties of order for natural numbers).
+Let a, b, c be natural numbers. Then
+
+(a) (Order is reflexive) a ≥ a.
+
+(b) (Order is transitive) If a ≥ b and b > c, then a ≥ c.
+
+(c) (Order is anti-symmetric) If a ≥ b and b > a, then a = b.
+
+(d) (Addition preserves order) a ≥ b if and only if a + c ≥ b+c.
+
+(e) a < b if and only if a++ ≤ b.
+
+(f) a <b if and only if b = a + d for some positive number d.
+
+Proof. See Exercise 2.2.3.
+☐
+
+Proposition 2.2.13 (Trichotomy of order for natural numbers). Let a
+and b be natural numbers. Then exactly one of the following statements
+is true: a < b, a = b, or a > b.
+
+Proof. This is only a sketch of the proof; the gaps will be filled in Exer-
+cise 2.2.4.
+
+First we show that we cannot have more than one of the statements
+a < b, a = b, a > b holding at the same time. If a < b then a + b by
+definition, and if a > b then a + b by definition. If a > b and a < b then
+by Proposition 2.2.12 we have a = b, a contradiction. Thus no more
+than one of the statements is true.
+
+Now we show that at least one of the statements is true. We keep b
+fixed and induct on a. When a = 0 we have 0 ≤ b for all b (why?), so
+we have either 0 = b or 0 < b, which proves the base case. Now suppose
+we have proven the proposition for a, and now we prove the proposition
+for a++. From the trichotomy for a, there are three cases: a < b, a = b,
+and a > b. If a > b, then a++ > b (why?). If a = b, then a++ > b
+(why?). Now suppose that a < b. Then by Proposition 2.2.12, we have
+a++ ≤ b. Thus either a++ = b or a++ < b, and in either case we are
+done. This closes the induction.
+☐
+
+The properties of order allow one to obtain a stronger version of the
+principle of induction:
+
+Proposition 2.2.14 (Strong principle of induction). Let m0 be a natu-
+ral number, and let P(m) be a property pertaining to an arbitrary natural
+
+<!-- PageBreak -->
+
+<!-- PageNumber="29" -->
+<!-- PageHeader="2.3. Multiplication" -->
+
+number m. Suppose that for each m > mo, we have the following im-
+plication: if P(m') is true for all natural numbers mo ≤ m' <m, then
+P(m) is also true. (In particular, this means that P(m0) is true, since
+in this case the hypothesis is vacuous.) Then we can conclude that P(m)
+is true for all natural numbers m ≥ m0.
+
+Remark 2.2.15. In applications we usually use this principle with m0 =
+0 or m0 = 1.
+
+Proof. See Exercise 2.2.5.
+☐
+
+
+## - Exercises -
+
+Exercise 2.2.1. Prove Proposition 2.2.5. (Hint: fix two of the variables and
+induct on the third.)
+
+Exercise 2.2.2. Prove Lemma 2.2.10. (Hint: use induction.)
+
+Exercise 2.2.3. Prove Proposition 2.2.12. (Hint: you will need many of the
+preceding propositions, corollaries, and lemmas.)
+
+Exercise 2.2.4. Justify the three statements marked (why?) in the proof of
+Proposition 2.2.13.
+
+Exercise 2.2.5. Prove Proposition 2.2.14. (Hint: define Q(n) to be the property
+that P(m) is true for all m0 ≤ m<n; note that Q(n) is vacuously true when
+n<m0.)
+
+Exercise 2.2.6. Let n be a natural number, and let P(m) be a property per-
+taining to the natural numbers such that whenever P(m++) is true, then P(m)
+is true. Suppose that P(n) is also true. Prove that P(m) is true for all natural
+numbers m ≤ n; this is known as the principle of backwards induction. (Hint:
+apply induction to the variable n.)
+
+
+## 2.3 Multiplication
+
+In the previous section we have proven all the basic facts that we know to
+be true about addition and order. To save space and to avoid belaboring
+the obvious, we will now allow ourselves to use all the rules of algebra
+concerning addition and order that we are familiar with, without further
+comment. Thus for instance we may write things like a + b + c = c+
+b + a without supplying any further justification. Now we introduce
+multiplication. Just as addition is the iterated increment operation,
+multiplication is iterated addition:
+
+Definition 2.3.1 (Multiplication of natural numbers). Let m be a nat-
+ural number. To multiply zero to m, we define 0 x m := 0. Now suppose
+
+<!-- PageBreak -->
+
+<!-- PageNumber="30" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+inductively that we have defined how to multiply n to m. Then we can
+multiply n++ to m by defining (n++) x m := (n x m) + m.
+
+Thus for instance 0 x m = 0, 1 x m = 0 + m, 2 x m = 0+m+m,
+etc. By induction one can easily verify that the product of two natural
+numbers is a natural number.
+
+Lemma 2.3.2 (Multiplication is commutative). Let n, m be natural
+numbers. Then n x m = mx n.
+
+Proof. See Exercise 2.3.1.
+☐
+
+We will now abbreviate n x m as nm, and use the usual convention
+that multiplication takes precedence over addition, thus for instance
+ab + c means (a x b) + c, not a x (b+c). (We will also use the usual
+notational conventions of precedence for the other arithmetic operations
+when they are defined later, to save on using parentheses all the time.)
+
+Lemma 2.3.3 (Positive natural numbers have no zero divisors). Let
+n, m be natural numbers. Then n x m = 0 if and only if at least one of
+n, m is equal to zero. In particular, if n and m are both positive, then
+nm is also positive.
+
+Proof. See Exercise 2.3.2.
+☐
+
+Proposition 2.3.4 (Distributive law). For any natural numbers a, b, c,
+we have a(b + c) = ab + ac and (b + c)a = ba + ca.
+
+Proof. Since multiplication is commutative we only need to show the first
+identity a(b + c) = ab + ac. We keep a and b fixed, and use induction
+on c. Let's prove the base case c = 0, i.e., a(b+0) = ab + a0. The
+left-hand side is ab, while the right-hand side is ab + 0 = ab, so we are
+done with the base case. Now let us suppose inductively that a(b+c) =
+ab + ac, and let us prove that a(b + (c++)) = ab + a(c++). The left-
+hand side is a((b+c)++) = a(b+c) +a, while the right-hand side is
+ab + ac + a = a(b+c) + a by the induction hypothesis, and so we can
+close the induction.
+☐
+
+Proposition 2.3.5 (Multiplication is associative). For any natural
+numbers a, b, c, we have (a x b) x c = a x (b x c).
+
+Proof. See Exercise 2.3.3.
+☐
+
+<!-- PageBreak -->
+
+<!-- PageNumber="31" -->
+<!-- PageHeader="2.3. Multiplication" -->
+
+Proposition 2.3.6 (Multiplication preserves order). If a, b are natural
+numbers such that a < b, and c is positive, then ac < bc.
+
+Proof. Since a < b, we have b = a + d for some positive d. Multiplying
+by c and using the distributive law we obtain bc = ac + dc. Since
+d is positive, and c is positive, dc is positive, and hence ac < bc as
+desired.
+☐
+
+Corollary 2.3.7 (Cancellation law). Let a, b, c be natural numbers such
+that ac = bc and c is non-zero. Then a = b.
+
+Remark 2.3.8. Just as Proposition 2.2.6 will allow for a "virtual sub-
+traction" which will eventually let us define genuine subtraction, this
+corollary provides a "virtual division" which will be needed to define
+genuine division later on.
+
+Proof. By the trichotomy of order (Proposition 2.2.13), we have three
+cases: a < b, a = b, a > b. Suppose first that a < b, then by Propo-
+sition 2.3.6 we have ac < bc, a contradiction. We can obtain a similar
+contradiction when a > b. Thus the only possibility is that a = b, as
+desired.
+☐
+
+With these propositions it is easy to deduce all the familiar rules of
+algebra involving addition and multiplication, see for instance Exercise
+2.3.4.
+
+Now that we have the familiar operations of addition and multipli-
+cation, the more primitive notion of increment will begin to fall by the
+wayside, and we will see it rarely from now on. In any event we can
+always use addition to describe incrementation, since n++ = n + 1.
+
+Proposition 2.3.9 (Euclidean algorithm). Let n be a natural number,
+and let q be a positive number. Then there exist natural numbers m, r
+such that 0 < r < q and n = mq + r.
+
+Remark 2.3.10. In other words, we can divide a natural number n by
+a positive number q to obtain a quotient m (which is another natural
+number) and a remainder r (which is less than q). This algorithm marks
+the beginning of number theory, which is a beautiful and important
+subject but one which is beyond the scope of this text.
+
+Proof. See Exercise 2.3.5.
+☐
+
+<!-- PageBreak -->
+
+<!-- PageNumber="32" -->
+<!-- PageHeader="2. Starting at the beginning: the natural numbers" -->
+
+Just like one uses the increment operation to recursively define ad-
+dition, and addition to recursively define multiplication, one can use
+multiplication to recursively define exponentiation:
+
+Definition 2.3.11 (Exponentiation for natural numbers). Let m be
+a natural number. To raise m to the power 0, we define mº := 1; in
+particular, we define 00 := 1. Now suppose recursively that m™ has been
+defined for some natural number n, then we define m"++ := m2 x m.
+
+Examples 2.3.12. Thus for instance x1 = x0 x x = 1 x x = x; x2 =
+x1 x x = x x x; x3 = x2 x x = x x x x x; and so forth. By induction we
+see that this recursive definition defines x7 for all natural numbers n.
+
+We will not develop the theory of exponentiation too deeply here,
+but instead wait until after we have defined the integers and rational
+numbers; see in particular Proposition 4.3.10.
+
+
+## - Exercises -
+
+Exercise 2.3.1. Prove Lemma 2.3.2. (Hint: modify the proofs of Lemmas 2.2.2,
+2.2.3 and Proposition 2.2.4.)
+
+Exercise 2.3.2. Prove Lemma 2.3.3. (Hint: prove the second statement first.)
+
+Exercise 2.3.3. Prove Proposition 2.3.5. (Hint: modify the proof of Proposition
+2.2.5 and use the distributive law.)
+
+Exercise 2.3.4. Prove the identity (a + b)2 = a2 + 2ab + b2 for all natural
+numbers a, b.
+
+Exercise 2.3.5. Prove Proposition 2.3.9. (Hint: fix q and induct on n.)

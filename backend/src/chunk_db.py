@@ -32,10 +32,16 @@ def insert_doc_chunks(chunks: List[str], doc_id: int, reader_name: str) -> int:
             """, (doc_id,)
         )
         conn.commit()
-    page_mapping = map_to_pages(doc_id, chunks)
+    page_mapping = map_to_pages(doc_id, chunks, reader_name)
     for idx, chunk in enumerate(chunks):
         insert_chunk(chunk, page_mapping[idx], doc_id, idx, reader_name)
     return len(chunks)
+
+def get_max_chunk_order(doc_id: int) -> int:
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT MAX(order_idx) FROM public.chunks WHERE doc_id = %s", (doc_id,))
+        return cursor.fetchone()[0]
 
 def get_chunks(doc_id: int, chunk_ids: List[int] = None) -> List[Dict]:
     conn = get_connection()

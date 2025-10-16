@@ -96,4 +96,6 @@ class LowerBoundChunker(SentenceChunker):
             new_chunks.append(current_chunk)
         return new_chunks
 
+
+
 DefaultChunker = LowerBoundChunker

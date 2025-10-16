@@ -1,8 +1,9 @@
 from .pg_connection import get_connection
 from .paths import make_content_path
 from typing import List
-import json
+import json, re
 import pandas as pd
+from .chunker import DefaultChunker
 
 def chunk_maper(doc_id: int, chunk_id_s: int, chunk_id_e: int) -> str:
     conn = get_connection()
@@ -35,7 +36,8 @@ def from_content_to_pages(df: pd.DataFrame) -> List[str]:
     pages.append(current)
     return pages
 
-def map_to_pages(doc_id: int, chunks: List[str]) -> List[int]:
+# TODO: Make it for each reader
+def map_to_pages_mineru(doc_id: int, chunks: List[str]) -> List[int]:
     conn = get_connection()
     with conn.cursor() as cursor:
         cursor.execute(
@@ -72,6 +74,42 @@ def map_to_pages(doc_id: int, chunks: List[str]) -> List[int]:
             current_page += 1
         chunk_mapping.append(current_page)
     return chunk_mapping
+
+def map_to_pages_doc_intelligence(doc_id: int, chunks: List[str]) -> List[int]:
+    full_text = "".join(chunks)
+    page_break_patterns = (
+        r'<!--\s*PageBreak\s*-->'                      # PageBreak (required)
+        r'(?:\s*<!--\s*PageNumber="\d+"\s*-->)?'       # Optional PageNumber
+        r'(?:\s*<!--\s*PageHeader="[^"]+"\s*-->)?'     # Optional PageHeader
+    )
+
+    # Split BEFORE each pattern, keeping the pattern with the following page
+    pages = re.split(f'(?={page_break_patterns})', full_text)
+    chunk_mapping = []
+    current_page_left = len(pages[0])
+    page_idx = 0
+    chunk_idx = 0
+    current_chunk_left = len(chunks[0])
+    while chunk_idx < len(chunks):
+        if current_chunk_left > current_page_left:
+            page_idx += 1
+            current_chunk_left -= current_page_left
+            current_page_left = len(pages[page_idx])
+        else:
+            chunk_idx += 1
+            chunk_mapping.append(page_idx)
+            current_page_left -= current_chunk_left
+            current_chunk_left = len(chunks[chunk_idx]) if chunk_idx < len(chunks) else 0
+    return chunk_mapping
+
+
+fun_map = {
+    "MineruReader": map_to_pages_mineru,
+    "DocIntelligence": map_to_pages_doc_intelligence,
+}
+
+def map_to_pages(doc_id: int, chunks: List[str], reader: str):
+    return fun_map[reader](doc_id, chunks)
 
 def chunk_to_page(chunk_idx: int, doc_id: int) -> int:
     conn = get_connection()

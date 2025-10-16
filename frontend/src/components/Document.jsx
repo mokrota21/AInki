@@ -722,11 +722,35 @@ function Document() {
     }
   }
 
+  // Fetch assigned items explicitly (used by Quiz button)
+  const fetchAssignedAndShowPopup = async () => {
+    if (quizOpenRef.current) return
+    if (pendingLockRef.current) return
+
+    try {
+      pendingLockRef.current = true
+      const response = await api.get('/assigned')
+      if (response.data && response.data.length > 0) {
+        quizOpenRef.current = true
+        setQuizItems(response.data)
+        setQuizPopupOpen(true)
+      } else {
+        const now = Date.now()
+        setLastQuizTime(now)
+        lastQuizTimeRef.current = now
+      }
+    } catch (error) {
+      console.error('Failed to load assigned items:', error)
+    } finally {
+      pendingLockRef.current = false
+    }
+  }
+
   // Debug function to manually trigger quiz popup
   const triggerQuizPopup = async () => {
     if (quizOpenRef.current) return
     if (pendingLockRef.current) return
-    await checkPendingAndShowPopup()
+    await fetchAssignedAndShowPopup()
   }
 
   // Handle quiz popup close

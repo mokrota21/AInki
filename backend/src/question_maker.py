@@ -8,7 +8,16 @@ from .neo4j_graph import add_review_question
 from .repetition import RepeatState
 from .neo4j_graph import merge_repetition_state
 from tqdm import tqdm
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # This makes it show in terminal
+    ]
+)
 
+logger = logging.getLogger(__name__)
 load_dotenv()
 
 client = AzureOpenAI()
@@ -117,7 +126,9 @@ def sample_question_type(node_id: str):
             question_types_count.pop(type_key, None)
         else:
             question_types_count[type_key] = total
-
+    # logger.info(f"Question types count: {question_types_count}")
+    # logger.info(f"Total questions: {total_questions}")
+    # logger.info(f"Question types: {question_types_count}")
     # Enforce per-node cap
     if total_questions >= max_questions_per_node:
         return None
@@ -128,9 +139,11 @@ def sample_question_type(node_id: str):
 
     types_ar = np.array(list(question_types_count.keys()))
     types_counts_ar = np.array(list(question_types_count.values()), dtype=float)
+    logger.info(f"Types: {types_ar}, Types counts: {types_counts_ar}")
 
     # If none generated yet for any remaining type -> uniform choice
     if types_counts_ar.sum() == 0:
+        logger.info(f"No types generated yet for any remaining type -> uniform choice")
         res = np.random.choice(types_ar)
         return res.item() if hasattr(res, "item") else res
 
@@ -153,10 +166,6 @@ def sample_question_type(node_id: str):
     if res is None:
         return None
     return res.item() if hasattr(res, "item") else res
-
-import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def make_review_questions(node_id: str, question_type: str = None):
     if question_type is None:

@@ -5,6 +5,12 @@ from io import BytesIO
 import os
 import logging
 from .paths import output_path, upload_path, get_output_folder
+from dotenv import load_dotenv
+
+load_dotenv()
+
+endpoint = os.getenv("DOC_ENDPOINT")
+key = os.getenv("DOC_KEY")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,4 +67,19 @@ class MineruReader(FileReader):
             contents = f.read()
         return (contents, result_folder)
 
-DefaultReader = MineruReader
+from azure.ai.documentintelligence import DocumentIntelligenceClient
+from azure.core.credentials import AzureKeyCredential
+
+class DocIntelligenceReader(FileReader):
+    def __init__(self) -> None:
+        super().__init__()
+        self.name = "DocIntelligence"
+        self.client = DocumentIntelligenceClient(endpoint, AzureKeyCredential(key))
+
+    def read_file(self, file: UploadFile) -> Any:
+        bin_content = file.file.read()
+        poller = self.client.begin_analyze_document("prebuilt-layout", bin_content, output_content_format="markdown")
+        result = poller.result()
+        return (result.content, None)
+
+DefaultReader = DocIntelligenceReader

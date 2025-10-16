@@ -14,9 +14,9 @@ dependencies = [
     "langfuse>=3.5.2",
     "openai>=1.109.1",
     "PyPDF2>=3.0.1",
-    "torch",
-    "torchvision",
-    "mineru[core]"
+    "azure-ai-documentintelligence>=1.0.2",
+    "azure-core>=1.36.0",
+    "pandas>=2.3.3"
 ]
 
 [tool.uv.sources]

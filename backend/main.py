@@ -22,7 +22,7 @@ app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100
 PENDING_QUIZ_LIMIT = 5
-NO_QUESTION_GENERATION=True
+NO_QUESTION_GENERATION=False
 
 # Add validation error handler to see detailed error messages
 @app.exception_handler(RequestValidationError)
@@ -77,6 +77,7 @@ class UserLogin(BaseModel):
 class PendingItem(BaseModel):
     node_id: str
     name: str
+    question_id: str
     question: str
     question_type: str
     cognitive_focus: str
@@ -274,6 +275,53 @@ def track_page(
     
     # Return immediately without waiting for processing
     return {"message": "Page tracking started in background"}
+
+@app.get("/api/assigned", response_model=List[PendingItem])
+def get_assigned_items(current_user: str = Depends(get_current_user)):
+    try:
+        logger.info(f"Getting pending items for user: {current_user}")
+        pending_records = get_all_assigned(current_user)
+        if len(pending_records) > PENDING_QUIZ_LIMIT:
+            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
+        logger.info(f"Sampled {len(pending_records)} pending records")
+        pending_items = []
+
+        for record in pending_records:
+            node = record["n"]
+            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
+            logger.info(f"Question type: {question_type} ({type(question_type)})")
+            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
+            try:
+                question = get_rand_review_question(node.element_id, question_nodes)
+            except Exception as e:
+                question = None
+            if question is None:
+                logger.error(f"No questions generated for node {node.element_id}")
+                continue
+            logger.info(f"Question: {question}")
+            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
+
+            pending_items.append(PendingItem(
+                node_id=node.element_id,
+                name=node["name"],
+                question_id=question.element_id,
+                question=question["question"],
+                question_type=question["type"],
+                cognitive_focus=question["cognitive_focus"],
+                answer=question["answer"],
+                reference=reference,
+                doc_id=node["doc_id"],
+                chunk_start=node["chunk_id_s"],
+                chunk_end=node["chunk_id_e"]
+            ))
+
+        logger.info(f"Returning {len(pending_items)} pending items")
+        return pending_items
+    except Exception as e:
+        logger.error(f"Pending items error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
+
 
 @app.get("/api/pending", response_model=List[PendingItem])
 def get_pending_items(current_user: str = Depends(get_current_user)):

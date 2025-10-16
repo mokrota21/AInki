@@ -37,7 +37,8 @@ function QuizPopup({ isOpen, items = [], onClose, onComplete }) {
     try {
       await api.post('/quiz/answer', {
         node_id: currentItem.node_id,
-        correct: correct
+        correct: correct,
+        question_id: currentItem.question_id
       })
       
       toast.success(correct ? 'Correct! Well done!' : 'Incorrect. Keep learning!')

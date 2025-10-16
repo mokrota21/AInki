@@ -6,7 +6,7 @@ from .repetition import RepeatState
 from datetime import timezone, datetime
 from .neo4j_connection import driver
 from random import choice
-
+from .chunk_db import get_max_chunk_order
 
 tz = timezone.utc
 
@@ -121,11 +121,22 @@ def merge_repetition_state(connected_to_id: str, state: RepeatState):
     )
     return result.records[0]["r"], result.records[0]["c"]
 
+def get_all_assigned(userid: str = None):
+    result = driver.execute_query(
+        """
+        MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
+        WHERE r.userid = $userid OR $userid IS NULL
+        RETURN n, c, r
+        """,
+        userid=userid
+    )
+    return result.records
+
 def get_all_pending(userid: str = None):
     result = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
-        WHERE r.next_repeat < datetime({year: 9999, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0, timezone: 'UTC'}) AND (r.userid = $userid OR $userid IS NULL)
+        WHERE r.next_repeat < datetime() AND (r.userid = $userid OR $userid IS NULL)
         RETURN n, c, r
         """,
         userid=userid
@@ -164,7 +175,6 @@ def interpolate(array: list):
     array[nans] = np.interp(x[nans], x[~nans], array[~nans])
     return array.tolist()
 
-
 def get_chunk_mastery(userid: str, doc_id: int):
     result = driver.execute_query(
         """
@@ -176,20 +186,17 @@ def get_chunk_mastery(userid: str, doc_id: int):
         userid=userid, doc_id=doc_id
     )
 
-    chunk_index_mastery = []
-    current_chunk_index = 0
+    chunk_index_mastery_list = [[] for _ in range(get_max_chunk_order(doc_id) + 1)]
     for record in result.records:
         r = record["r"]
         n = record["n"]
         state = int(r.get("state"))
-        if n.get("chunk_id_s") > current_chunk_index:
-            while n.get("chunk_id_s") > current_chunk_index:
-                chunk_index_mastery.append(None)
-                current_chunk_index += 1
-        while n.get("chunk_id_e") >= current_chunk_index:
-            chunk_index_mastery.append(state)
-            current_chunk_index += 1
-    chunk_index_mastery = interpolate(chunk_index_mastery)
+        for chunk_idx in range(n.get("chunk_id_s"), n.get("chunk_id_e") + 1):
+            chunk_index_mastery_list[chunk_idx].append(state)
+    chunk_index_mastery = []
+    for chunk_idx_mastery in chunk_index_mastery_list:
+        val = np.mean(chunk_idx_mastery) if chunk_idx_mastery else 0.0
+        chunk_index_mastery.append(val)
     return chunk_index_mastery
 
 from .chunk_maper import chunk_to_page
@@ -233,7 +240,16 @@ def get_page_mastery(userid: str, doc_id: int):
             current_page += 1
             total_mastery = 0
             total_chunks = 0
-    page_mastery.append(total_mastery / total_chunks)
+    if total_chunks > 0:
+        page_mastery.append(total_mastery / total_chunks)
+
+    # Normalize only if max > 0 to avoid NaN (JSON-incompatible)
+    if not page_mastery:
+        return []
+
     page_mastery = np.array(page_mastery, dtype=float)
-    page_mastery = page_mastery / page_mastery.max()
+    max_val = page_mastery.max()
+    if max_val > 0:
+        page_mastery = page_mastery / max_val
+    # else: keep as zeros
     return page_mastery.tolist()

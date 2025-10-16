@@ -1,0 +1,81 @@
+name: (DEV) Deploy app
+
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+
+env:
+  # Fill in these values from your infra repo workflow output:
+  environment_name: "dev"
+  container_app_name: "cae-anki-tool-dev"
+  resource_group: "rg-anki-dev"
+  registry: "acrankidev"
+  image_name: "cae-anki-dev" 
+  # Set secrets at the bottom of the file
+
+permissions:
+  contents: read
+  id-token: write  # enable OIDC
+
+jobs:
+  build-and-push:
+    environment: dev
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.build.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to ACR
+        run: az acr login --name ${{ env.registry }}
+
+      - name: Build & Push Image
+        id: build
+        run: |
+          TAG=${GITHUB_SHA::8}
+          IMAGE=${{ env.registry }}.azurecr.io/${{ env.image_name }}:$TAG
+          docker build -t "$IMAGE" -f ./Dockerfile .
+          docker push "$IMAGE"
+          echo "image_tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: build-and-push
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Container App
+        run: |
+          az containerapp update \
+            --name "${{ env.container_app_name }}" \
+            --resource-group "${{ env.resource_group }}" \
+            --image "${{ env.registry }}.azurecr.io/${{ env.image_name }}:${{ needs.build-and-push.outputs.image_tag }}" \
+            --set-env-vars "LANGFUSE_PUBLIC_KEY=secretref:langfuse-public-key" \
+              "LANGFUSE_SECRET_KEY=secretref:langfuse-secret-key" \
+              "LANGFUSE_HOST=secretref:langfuse-host" \
+              "DOCUMENT_INTELLIGENCE_ENDPOINT=secretref:document-intelligence-endpoint" \
+              "DOCUMENT_INTELLIGENCE_API_KEY=secretref:document-intelligence-api-key" \
+              "AZURE_OPENAI_ENDPOINT=secretref:azure-openai-endpoint" \
+              "AZURE_OPENAI_API_KEY=secretref:azure-openai-api-key" \
+              "OPENAI_API_VERSION=secretref:azure-openai-api-version" \
+              "AZURE_OPENAI_MODEL_NAME=secretref:azure-openai-model-name" \
+              "AZURE_STORAGE_ACCOUNT_KEY=secretref:azure-storage-account-key" \
+              "AZURE_STORAGE_CONNECTION_STRING=secretref:azure-storage-connection-string" \
+              "AZURE_STORAGE_ACCOUNT_NAME=secretref:azure-storage-account-name" \
+              "AZURE_STORAGE_CONTAINER_NAMES=secretref:azure-storage-container-names"

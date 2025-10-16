@@ -125,7 +125,7 @@ def get_all_assigned(userid: str = None, doc_id: int = None):
     result = driver.execute_query(
         """
         MATCH (n)-[c:LAST_REPEATED]->(r:RepetitionState)
-        WHERE r.userid = $userid OR $userid IS NULL AND (n.doc_id = $doc_id OR $doc_id IS NULL)
+        WHERE (r.userid = $userid OR $userid IS NULL) AND (n.doc_id = $doc_id OR $doc_id IS NULL)
         RETURN n, c, r
         """,
         userid=userid, doc_id=doc_id

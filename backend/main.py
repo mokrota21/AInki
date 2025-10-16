@@ -4,6 +4,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from starlette.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
 from src import *
@@ -420,6 +421,14 @@ def debug_log():
     logger.warning("Debug log test - WARNING level")
     logger.error("Debug log test - ERROR level")
     return {"message": "Check console and ainki.log file for logs"}
+
+# Serve built frontend (SPA) from frontend/dist at root path
+app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
+
+# SPA fallback for client-side routes (e.g., /dashboard)
+@app.get("/{full_path:path}")
+def spa_fallback(full_path: str):
+    return FileResponse("frontend/dist/index.html")
 
 # Global exception handler
 @app.exception_handler(Exception)

@@ -16,6 +16,7 @@ dependencies = [
     "PyPDF2>=3.0.1",
     "azure-ai-documentintelligence>=1.0.2",
     "azure-core>=1.36.0",
+    "azure-storage-blob>=12.20.0",
     "pandas>=2.3.3"
 ]
 

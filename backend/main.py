@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import RequestValidationError
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
@@ -14,6 +14,7 @@ import uvicorn
 import logging
 import traceback
 from random import sample
+from io import BytesIO
 
 load_dotenv()
 
@@ -181,6 +182,18 @@ def upload_file(
             raise HTTPException(status_code=400, detail="File already exists")
         logger.info(f"Document inserted with ID: {doc_id}")
         
+        # Store original PDF in Azure Blob Storage using generated doc_id
+        try:
+            try:
+                file.file.seek(0)
+            except Exception:
+                pass
+            store_file(doc_id, file)
+            logger.info(f"Stored PDF in blob storage as {doc_id}.pdf")
+        except Exception as storage_err:
+            logger.error(f"Failed to store PDF in blob storage: {storage_err}")
+            raise HTTPException(status_code=500, detail="Failed to store file in storage")
+
         chunks = DefaultChunker().chunk(content)
         insert_doc_chunks(chunks, doc_id, DefaultReader().name)
         logger.info(f"Created {len(chunks)} chunks")
@@ -201,6 +214,19 @@ def upload_file(
         logger.error(f"Upload error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+@app.get("/api/get_file")
+def get_file(doc_id: int):
+    try:
+        pdf_bytes = fet_file(doc_id)
+        return StreamingResponse(
+            BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'inline; filename="{doc_id}.pdf"'}
+        )
+    except Exception as e:
+        logger.error(f"Get file error: {str(e)}")
+        raise HTTPException(status_code=404, detail="File not found")
 
 @app.post("/api/extract_objects_parameter")
 def extract_objects_parameter():

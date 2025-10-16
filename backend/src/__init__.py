@@ -12,6 +12,7 @@ from .chunk_maper import chunk_maper, map_to_pages, chunks_in_page, map_to_pages
 from .question_maker import make_review_questions, sample_question_type
 from .neo4j_graph import get_rand_review_question, get_page_mastery, get_all_assigned
 from .schema_setup import ensure_tables_exist
+from .pdf_storage import store_file, fet_file
 
 __all__ = [
     "insert_chunk",
@@ -44,5 +45,7 @@ __all__ = [
     "get_page_mastery",
     "ensure_tables_exist",
     "map_to_pages_doc_intelligence",
-    "get_all_assigned"
+    "get_all_assigned",
+    "store_file",
+    "fet_file"
 ]

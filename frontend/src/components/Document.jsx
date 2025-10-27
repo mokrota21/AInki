@@ -37,6 +37,7 @@ function Document() {
   const [pdfPageInput, setPdfPageInput] = React.useState('')
   const [pdfSliderValue, setPdfSliderValue] = React.useState(1)
   const [pageMastery, setPageMastery] = React.useState([])
+  const [chromeVisible, setChromeVisible] = React.useState(false)
   
   // Quiz popup state
   const [quizPopupOpen, setQuizPopupOpen] = React.useState(false)
@@ -743,6 +744,10 @@ function Document() {
     }
   }
 
+  const toggleChromeVisibility = React.useCallback(() => {
+    setChromeVisible((prev) => !prev)
+  }, [])
+
   const handleLogout = React.useCallback(() => {
     logout()
     navigate('/login')
@@ -768,8 +773,20 @@ function Document() {
 
   return (
     <div className="reader-shell">
-      <div className="reader-hover-zone reader-hover-zone--top" />
-      <div className="reader-controls reader-controls--top">
+      <button
+        type="button"
+        className={`reader-chrome-toggle${chromeVisible ? ' is-active' : ''}`}
+        onClick={toggleChromeVisibility}
+        aria-label={chromeVisible ? 'Hide reader menu' : 'Show reader menu'}
+        aria-pressed={chromeVisible}
+        title={chromeVisible ? 'Hide menu' : 'Show menu'}
+      >
+        <span aria-hidden="true">{chromeVisible ? '×' : '☰'}</span>
+      </button>
+      <div
+        className={`reader-controls reader-controls--top${chromeVisible ? ' is-visible' : ''}`}
+        aria-hidden={!chromeVisible}
+      >
         <div className="reader-controls__bar reader-controls__bar--top">
           <div className="reader-controls__group">
             <button
@@ -871,83 +888,98 @@ function Document() {
                 </div>
               </div>
               <div className="reader-stage__pdf-slider">
-                <input
-                  type="range"
-                  min={1}
-                  max={Math.max(1, pdfTotalPages)}
-                  value={pdfSliderValue}
-                  onChange={(e) => setPdfSliderValue(parseInt(e.target.value))}
-                  onMouseUp={async () => { await navigateToPdfPage(pdfSliderValue) }}
-                  onTouchEnd={async () => { await navigateToPdfPage(pdfSliderValue) }}
-                />
-                <div className="reader-stage__pdf-slider-meta">
-                  <span>1</span>
-                  <span>Page {pdfSliderValue} / {Math.max(1, pdfTotalPages)}</span>
-                  <span>{Math.max(1, pdfTotalPages)}</span>
+                <button
+                  type="button"
+                  className="reader-stage__pdf-slider-button"
+                  onClick={handlePrev}
+                  disabled={pdfCurrentPage === 0}
+                >
+                  Prev
+                </button>
+                <div className="reader-stage__pdf-slider-body">
+                  <input
+                    type="range"
+                    min={1}
+                    max={Math.max(1, pdfTotalPages)}
+                    value={pdfSliderValue}
+                    onChange={(e) => setPdfSliderValue(parseInt(e.target.value))}
+                    onMouseUp={async () => { await navigateToPdfPage(pdfSliderValue) }}
+                    onTouchEnd={async () => { await navigateToPdfPage(pdfSliderValue) }}
+                  />
+                  <div className="reader-stage__pdf-slider-meta">
+                    <span>1</span>
+                    <span>Page {pdfSliderValue} / {Math.max(1, pdfTotalPages)}</span>
+                    <span>{Math.max(1, pdfTotalPages)}</span>
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  className="reader-stage__pdf-slider-button"
+                  onClick={handleNext}
+                  disabled={pdfCurrentPage >= pdfTotalPages - 1}
+                >
+                  Next
+                </button>
+              </div>
+              <div className="reader-stage__pdf-goto">
+                <label htmlFor="pdf-page-input">Go to page</label>
+                <input
+                  id="pdf-page-input"
+                  type="number"
+                  value={pdfPageInput}
+                  onChange={(e) => setPdfPageInput(e.target.value)}
+                  onKeyDown={handlePdfPageInput}
+                  placeholder="Enter page"
+                  min="1"
+                  max={pdfTotalPages}
+                />
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="reader-hover-zone reader-hover-zone--bottom" />
-      <div className="reader-controls reader-controls--bottom">
-        <div className="reader-controls__bar reader-controls__bar--bottom">
-          <button
-            className="btn btn-secondary"
-            onClick={handlePrev}
-            disabled={viewMode === 'markdown' ? currentPage === 0 : pdfCurrentPage === 0}
-          >
-            Prev
-          </button>
+      {viewMode === 'markdown' && (
+        <div
+          className={`reader-controls reader-controls--bottom${chromeVisible ? ' is-visible' : ''}`}
+          aria-hidden={!chromeVisible}
+        >
+          <div className="reader-controls__bar reader-controls__bar--bottom">
+            <button
+              className="btn btn-secondary"
+              onClick={handlePrev}
+              disabled={currentPage === 0}
+            >
+              Prev
+            </button>
 
-          <div className="reader-page-info">
-            {viewMode === 'markdown' ? (
-              <>
-                <span>
-                  Page {Math.min(totalPages, Math.max(1, currentPage + 1))} / {Math.max(1, totalPages)}
-                  {pageChunkRanges[currentPage] ? ` · chunks ${pageChunkRanges[currentPage].startChunk}–${pageChunkRanges[currentPage].endChunk}` : ''}
-                </span>
-                <input
-                  type="number"
-                  value={mdPageInput}
-                  onChange={(e) => setMdPageInput(e.target.value)}
-                  onKeyDown={handleMdPageInput}
-                  placeholder="Go to page"
-                  min="1"
-                  max={totalPages}
-                  className="reader-page-input"
-                />
-              </>
-            ) : (
-              <>
-                <span>
-                  PDF Page {pdfCurrentPage + 1} / {pdfTotalPages}
-                </span>
-                <input
-                  type="number"
-                  value={pdfPageInput}
-                  onChange={(e) => setPdfPageInput(e.target.value)}
-                  onKeyDown={handlePdfPageInput}
-                  placeholder="Go to page"
-                  min="1"
-                  max={pdfTotalPages}
-                  className="reader-page-input"
-                />
-              </>
-            )}
+            <div className="reader-page-info">
+              <span>
+                Page {Math.min(totalPages, Math.max(1, currentPage + 1))} / {Math.max(1, totalPages)}
+                {pageChunkRanges[currentPage] ? ` · chunks ${pageChunkRanges[currentPage].startChunk}–${pageChunkRanges[currentPage].endChunk}` : ''}
+              </span>
+              <input
+                type="number"
+                value={mdPageInput}
+                onChange={(e) => setMdPageInput(e.target.value)}
+                onKeyDown={handleMdPageInput}
+                placeholder="Go to page"
+                min="1"
+                max={totalPages}
+                className="reader-page-input"
+              />
+            </div>
+
+            <button
+              className="btn btn-primary"
+              onClick={handleNext}
+              disabled={currentPage >= totalPages - 1}
+            >
+              Next
+            </button>
           </div>
-
-          <button
-            className="btn btn-primary"
-            onClick={handleNext}
-            disabled={viewMode === 'markdown' ? currentPage >= totalPages - 1 : pdfCurrentPage >= pdfTotalPages - 1}
-          >
-            Next
-          </button>
         </div>
-      </div>
+      )}
 
       <QuizPopup
         isOpen={quizPopupOpen}

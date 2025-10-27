@@ -6,9 +6,17 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
   const [pdfDoc, setPdfDoc] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [scale, setScale] = useState(1)
+  const [scale, setScale] = useState(0.7)
+  const [baseScale, setBaseScale] = useState(1)
   const renderTaskRef = useRef(null)
   const timeoutRef = useRef(null)
+  const [isPanning, setIsPanning] = useState(false)
+  const panStateRef = useRef({ x: 0, y: 0, left: 0, top: 0 })
+  const isPanningRef = useRef(false)
+
+  const clampScale = React.useCallback((value) => {
+    return Math.min(3, Math.max(0.3, value))
+  }, [])
 
   useEffect(() => {
     if (!pdfUrl) return
@@ -74,33 +82,27 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
         const container = containerRef.current
         const context = canvas.getContext('2d')
 
-        // Get container dimensions (account for padding)
-        const containerWidth = container.clientWidth - 32 // 16px padding on each side
-        const containerHeight = container.clientHeight - 32 // 16px padding on each side
-
-        // Calculate scale to fit the container
+        // Calculate scale based on content size, not container size
         const viewport = page.getViewport({ scale: 1 })
-        const scaleX = containerWidth / viewport.width
-        const scaleY = containerHeight / viewport.height
-        const fitScale = Math.min(scaleX, scaleY) * 0.9 // 90% to leave some padding
-        const finalScale = fitScale * scale // Apply user zoom
-
+        
+        // Store base scale on first render
+        if (baseScale === 1) {
+          setBaseScale(1) // Start with 1:1 scale
+        }
+        
+        const finalScale = scale // Direct zoom level
         const scaledViewport = page.getViewport({ scale: finalScale })
 
         // Set canvas dimensions - this will clear the canvas
         canvas.width = scaledViewport.width
         canvas.height = scaledViewport.height
 
-        // Ensure canvas doesn't exceed container when zoomed
-        if (scaledViewport.width > containerWidth || scaledViewport.height > containerHeight) {
-          // Canvas is larger than container, ensure it's positioned at top-left
-          canvas.style.maxWidth = 'none'
-          canvas.style.maxHeight = 'none'
-        } else {
-          // Canvas fits in container, center it
-          canvas.style.maxWidth = '100%'
-          canvas.style.maxHeight = '100%'
-        }
+        // Always allow canvas to grow beyond container when zoomed
+        canvas.style.maxWidth = 'none'
+        canvas.style.maxHeight = 'none'
+        canvas.style.width = `${scaledViewport.width}px`
+        canvas.style.height = `${scaledViewport.height}px`
+        canvas.style.display = 'block'
 
         // Render the page
         const renderContext = {
@@ -141,15 +143,86 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
     const handleResize = () => {
       // Trigger re-render when window resizes
       if (pdfDoc && canvasRef.current) {
-        // Force re-render by updating scale slightly
-        setScale(prev => prev + 0.001)
-        setTimeout(() => setScale(prev => prev - 0.001), 10)
+        // Reset base scale when container size changes
+        setBaseScale(1)
+        // Force re-render by nudging scale within clamp bounds
+        setScale(prev => clampScale(prev + 0.001))
+        setTimeout(() => setScale(prev => clampScale(prev - 0.001)), 10)
       }
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [pdfDoc])
+  }, [pdfDoc, clampScale])
+
+  useEffect(() => {
+    isPanningRef.current = isPanning
+  }, [isPanning])
+
+  useEffect(() => {
+    const handleWindowMouseUp = () => {
+      if (isPanningRef.current) {
+        setIsPanning(false)
+      }
+    }
+
+    window.addEventListener('mouseup', handleWindowMouseUp)
+    return () => {
+      window.removeEventListener('mouseup', handleWindowMouseUp)
+    }
+  }, [])
+
+  const beginPan = React.useCallback((clientX, clientY) => {
+    const container = containerRef.current
+    if (!container) return
+    panStateRef.current = {
+      x: clientX,
+      y: clientY,
+      left: container.scrollLeft,
+      top: container.scrollTop
+    }
+    setIsPanning(true)
+  }, [])
+
+  const updatePan = React.useCallback((clientX, clientY) => {
+    const container = containerRef.current
+    if (!container) return
+    const { x, y, left, top } = panStateRef.current
+    container.scrollLeft = left - (clientX - x)
+    container.scrollTop = top - (clientY - y)
+  }, [])
+
+  const endPan = React.useCallback(() => {
+    if (isPanningRef.current) {
+      setIsPanning(false)
+    }
+  }, [])
+
+  const handleMouseDown = React.useCallback((event) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    beginPan(event.clientX, event.clientY)
+  }, [beginPan])
+
+  const handleMouseMove = React.useCallback((event) => {
+    if (!isPanningRef.current) return
+    event.preventDefault()
+    updatePan(event.clientX, event.clientY)
+  }, [updatePan])
+
+  const handleMouseUp = React.useCallback(() => {
+    endPan()
+  }, [endPan])
+
+  const handleMouseLeave = React.useCallback(() => {
+    endPan()
+  }, [endPan])
+
+  const handleWheel = React.useCallback((event) => {
+    if (!event.ctrlKey && !event.metaKey) return
+    event.preventDefault()
+    setScale(prev => clampScale(event.deltaY < 0 ? prev * 1.1 : prev / 1.1))
+  }, [clampScale])
 
   if (loading) {
     return (
@@ -187,112 +260,51 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
   }
 
   const handleZoomIn = () => {
-    setScale(prev => Math.min(prev * 1.2, 3)) // Max 3x zoom
+    setScale(prev => clampScale(prev * 1.2))
   }
 
   const handleZoomOut = () => {
-    setScale(prev => Math.max(prev / 1.2, 0.5)) // Min 0.5x zoom
+    setScale(prev => clampScale(prev / 1.2))
   }
 
   const handleResetZoom = () => {
-    setScale(1)
+    setScale(0.7)
+    // Force recalculation of base scale
+    setBaseScale(1)
+    // Trigger a re-render to recalculate the fit scale
+    setTimeout(() => {
+      if (pdfDoc && canvasRef.current) {
+        setScale(prev => clampScale(prev + 0.001))
+        setTimeout(() => setScale(prev => clampScale(prev - 0.001)), 10)
+      }
+    }, 50)
   }
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column',
-      height: '100%',
-      padding: '1rem'
-    }}>
-      {/* Zoom Controls */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '0.5rem',
-        marginBottom: '1rem',
-        padding: '0.5rem',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '4px',
-        border: '1px solid #dee2e6'
-      }}>
-        <button
-          onClick={handleZoomOut}
-          style={{
-            padding: '0.25rem 0.5rem',
-            fontSize: '0.875rem',
-            border: '1px solid #6c757d',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            cursor: 'pointer'
-          }}
-        >
-          Zoom Out
+    <div className="pdf-viewer">
+      <div className="pdf-viewer__toolbar" role="group" aria-label="PDF zoom controls">
+        <button type="button" onClick={handleZoomOut} title="Zoom out">
+          −
         </button>
-        <span style={{ fontSize: '0.875rem', color: '#6c757d', minWidth: '60px', textAlign: 'center' }}>
-          {Math.round(scale * 100)}%
-        </span>
-        <button
-          onClick={handleZoomIn}
-          style={{
-            padding: '0.25rem 0.5rem',
-            fontSize: '0.875rem',
-            border: '1px solid #6c757d',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            cursor: 'pointer'
-          }}
-        >
-          Zoom In
+        <span className="pdf-viewer__scale">{Math.round(scale * 100)}%</span>
+        <button type="button" onClick={handleZoomIn} title="Zoom in">
+          +
         </button>
-        <button
-          onClick={handleResetZoom}
-          style={{
-            padding: '0.25rem 0.5rem',
-            fontSize: '0.875rem',
-            border: '1px solid #6c757d',
-            borderRadius: '4px',
-            backgroundColor: '#fff',
-            cursor: 'pointer',
-            marginLeft: '0.5rem'
-          }}
-        >
+        <button type="button" onClick={handleResetZoom} title="Reset zoom">
           Reset
         </button>
       </div>
-
-      {/* PDF Canvas Container */}
-      <div 
+      <div
         ref={containerRef}
-        style={{ 
-          flex: 1,
-          overflow: 'auto',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '4px',
-          border: '1px solid #dee2e6',
-          padding: '1rem',
-          position: 'relative'
-        }}
+        className={`pdf-viewer__canvas-container${isPanning ? ' is-panning' : ''}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onWheel={handleWheel}
       >
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          minHeight: '100%',
-          minWidth: '100%'
-        }}>
-          <canvas
-            ref={canvasRef}
-            style={{
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              backgroundColor: '#fff',
-              display: 'block',
-              flexShrink: 0
-            }}
-          />
+        <div className="pdf-viewer__canvas-scroller">
+          <canvas ref={canvasRef} className="pdf-viewer__canvas" />
         </div>
       </div>
     </div>

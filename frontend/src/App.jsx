@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
 import Login from './components/Login'
@@ -14,20 +14,29 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App">
-          <Toaster position="top-right" />
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-            <Route path="/docs/:id" element={<ProtectedRoute><Document /></ProtectedRoute>} />
-          </Routes>
-        </div>
+        <AppContent />
       </Router>
     </AuthProvider>
+  )
+}
+
+function AppContent() {
+  const location = useLocation()
+  const hideNavbar = location.pathname.startsWith('/docs/')
+
+  return (
+    <div className="App">
+      <Toaster position="top-right" />
+      {!hideNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+        <Route path="/docs/:id" element={<ProtectedRoute><Document /></ProtectedRoute>} />
+      </Routes>
+    </div>
   )
 }
 

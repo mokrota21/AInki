@@ -121,6 +121,17 @@ def merge_repetition_state(connected_to_id: str, state: RepeatState):
     )
     return result.records[0]["r"], result.records[0]["c"]
 
+def get_all_items(doc_id: int = None):
+    result = driver.execute_query(
+        """
+        MATCH (q:ReviewQuestion)-[:QUESTION_FOR]->(n:BookKnowledge)
+        WHERE n.doc_id = $doc_id OR $doc_id IS NULL
+        RETURN n
+        """,
+        doc_id=doc_id
+    )
+    return result.records
+
 def get_all_assigned(userid: str = None, doc_id: int = None):
     result = driver.execute_query(
         """
@@ -165,6 +176,8 @@ def get_rand_review_question(node_id: str, question_nodes: list = None):
             node_id=node_id
         )
         question_nodes = [record['n'] for record in result.records]
+    if len(question_nodes) == 0:
+        return None
     return choice(question_nodes)
 
 import numpy as np

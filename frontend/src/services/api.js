@@ -80,3 +80,9 @@ export async function extractObjects(docId, promptKey = "general_textbook_prompt
   })
   return api.post(`/extract_objects?${queryParams}`)
 }
+
+// Test endpoint for all items
+export async function getAllItems(docId = null) {
+  const params = docId ? { doc_id: docId } : {}
+  return api.get('/all_items', { params })
+}

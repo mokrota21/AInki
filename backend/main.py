@@ -10,6 +10,7 @@ from typing import List
 from src import *
 from dotenv import load_dotenv
 from datetime import datetime
+from pathlib import Path
 import uvicorn
 import logging
 import traceback
@@ -24,7 +25,9 @@ app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
 context_diff = 2
 truncate_after = 100
 PENDING_QUIZ_LIMIT = 5
-NO_QUESTION_GENERATION=False
+NO_QUESTION_GENERATION=True
+NO_QUIZ_GENERATION=True
+NO_BOOK_PROCESSING=True
 
 # Add validation error handler to see detailed error messages
 @app.exception_handler(RequestValidationError)
@@ -168,6 +171,8 @@ def upload_file(
     current_user: str = Depends(get_current_user),
     reader: str = "DefaultReader"
 ):
+    if NO_BOOK_PROCESSING:
+        return {"message": "Book processing is disabled"}
     try:
         reader = readers[reader]
         logger.info(f"Uploading file: {file.filename} for user: {current_user}")
@@ -260,11 +265,13 @@ def extract_objects(
     prompt_key: str = "general_textbook_prompt",
     **kwargs
 ):
+    if NO_QUIZ_GENERATION:
+        return {"message": "Book processing is disabled"}
     try:
         chunks_full = get_chunks(doc_id)
         chunks = [(chunk['content'], chunk['order_idx']) for chunk in chunks_full]
         make_study_object(chunks, doc_id, prompt_key)
-        return True
+        return {"message": "Book processing completed"}
     except Exception as e:
         logger.error(f"Extract objects error: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
@@ -304,6 +311,55 @@ def track_page(
     
     # Return immediately without waiting for processing
     return {"message": "Page tracking started in background"}
+
+@app.get("/api/all_items", response_model=List[PendingItem])
+def get_all_items_endpoint(current_user: str = Depends(get_current_user), doc_id: int = None):
+    try:
+        logger.info(f"Getting all items for user: {current_user}, doc_id: {doc_id}")
+        pending_records = get_all_items(doc_id)
+        if len(pending_records) > PENDING_QUIZ_LIMIT:
+            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
+        logger.info(f"Sampled {len(pending_records)} pending records")
+        pending_items = []
+
+        for record in pending_records:
+            node = record["n"]
+            # Defensive doc_id filter (in case of query mismatch)
+            if doc_id is not None and node.get("doc_id") != doc_id:
+                continue
+            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
+            logger.info(f"Question type: {question_type} ({type(question_type)})")
+            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
+            try:
+                question = get_rand_review_question(node.element_id, question_nodes)
+            except Exception as e:
+                question = None
+            if question is None:
+                logger.error(f"No questions generated for node {node.element_id}")
+                continue
+            logger.info(f"Question: {question}")
+            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
+
+            pending_items.append(PendingItem(
+                node_id=node.element_id,
+                name=node["name"],
+                question_id=question.element_id,
+                question=question["question"],
+                question_type=question["type"],
+                cognitive_focus=question["cognitive_focus"],
+                answer=question["answer"],
+                reference=reference,
+                doc_id=node["doc_id"],
+                chunk_start=node["chunk_id_s"],
+                chunk_end=node["chunk_id_e"]
+            ))
+
+        logger.info(f"Returning {len(pending_items)} pending items")
+        return pending_items
+    except Exception as e:
+        logger.error(f"Pending items error: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
 
 @app.get("/api/assigned", response_model=List[PendingItem])
 def get_assigned_items(current_user: str = Depends(get_current_user), doc_id: int = None):
@@ -454,8 +510,14 @@ def debug_log():
     logger.error("Debug log test - ERROR level")
     return {"message": "Check console and ainki.log file for logs"}
 
-# Serve built frontend (SPA) from frontend/dist at root path
-app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
+# Serve built frontend (SPA) from frontend/dist at root path when available
+FRONTEND_DIST = (Path(__file__).resolve().parent.parent / "frontend" / "dist").resolve()
+INDEX_HTML = FRONTEND_DIST / "index.html"
+
+if FRONTEND_DIST.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="spa")
+else:
+    logger.warning("Frontend build directory '%s' not found. SPA assets will not be served.", FRONTEND_DIST)
 
 # Middleware-based SPA fallback so mounted StaticFiles 404s resolve to index.html
 @app.middleware("http")
@@ -469,7 +531,8 @@ async def spa_fallback_middleware(request: Request, call_next):
         and "." not in path  # skip asset-like paths
     ):
         try:
-            return FileResponse("frontend/dist/index.html")
+            if INDEX_HTML.exists():
+                return FileResponse(str(INDEX_HTML))
         except Exception:
             return response
     return response

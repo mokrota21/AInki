@@ -37,11 +37,12 @@ ENV PYTHONIOENCODING=UTF-8
 
 WORKDIR /app
 
+# Copy built frontend from previous stage to the correct location first
+# Backend expects frontend/dist to be at ../frontend/dist relative to backend
+COPY --from=frontend-builder /app/frontend/dist /frontend/dist
+
 # Copy API source code
 COPY backend/ .
-
-# Copy built frontend from previous stage
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 # Install Python dependencies using uv
 RUN uv sync

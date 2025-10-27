@@ -59,7 +59,14 @@ function QuizGenerationModal({ isOpen, onClose, docId, docName, onSuccess }) {
         ...selectedParams
       })
       const response = await api.post(`/extract_objects?${queryParams}`)
-      toast.success('Quiz generation started! This may take a few minutes.')
+      
+      // Show the message from the backend response
+      if (response.data?.message) {
+        toast.success(response.data.message)
+      } else {
+        toast.success('Quiz generation started! This may take a few minutes.')
+      }
+      
       onSuccess?.()
       onClose()
     } catch (error) {

@@ -6,7 +6,8 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
   const [pdfDoc, setPdfDoc] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [scale, setScale] = useState(1)
+  const [scale, setScale] = useState(0.7)
+  const [baseScale, setBaseScale] = useState(1)
   const renderTaskRef = useRef(null)
   const timeoutRef = useRef(null)
   const [isPanning, setIsPanning] = useState(false)
@@ -14,7 +15,7 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
   const isPanningRef = useRef(false)
 
   const clampScale = React.useCallback((value) => {
-    return Math.min(3, Math.max(0.5, value))
+    return Math.min(3, Math.max(0.3, value))
   }, [])
 
   useEffect(() => {
@@ -81,33 +82,27 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
         const container = containerRef.current
         const context = canvas.getContext('2d')
 
-        // Get container dimensions (account for padding)
-        const containerWidth = container.clientWidth - 32 // 16px padding on each side
-        const containerHeight = container.clientHeight - 32 // 16px padding on each side
-
-        // Calculate scale to fit the container
+        // Calculate scale based on content size, not container size
         const viewport = page.getViewport({ scale: 1 })
-        const scaleX = containerWidth / viewport.width
-        const scaleY = containerHeight / viewport.height
-        const fitScale = Math.min(scaleX, scaleY) * 0.9 // 90% to leave some padding
-        const finalScale = fitScale * scale // Apply user zoom
-
+        
+        // Store base scale on first render
+        if (baseScale === 1) {
+          setBaseScale(1) // Start with 1:1 scale
+        }
+        
+        const finalScale = scale // Direct zoom level
         const scaledViewport = page.getViewport({ scale: finalScale })
 
         // Set canvas dimensions - this will clear the canvas
         canvas.width = scaledViewport.width
         canvas.height = scaledViewport.height
 
-        // Ensure canvas doesn't exceed container when zoomed
-        if (scaledViewport.width > containerWidth || scaledViewport.height > containerHeight) {
-          // Canvas is larger than container, ensure it's positioned at top-left
-          canvas.style.maxWidth = 'none'
-          canvas.style.maxHeight = 'none'
-        } else {
-          // Canvas fits in container, center it
-          canvas.style.maxWidth = '100%'
-          canvas.style.maxHeight = '100%'
-        }
+        // Always allow canvas to grow beyond container when zoomed
+        canvas.style.maxWidth = 'none'
+        canvas.style.maxHeight = 'none'
+        canvas.style.width = `${scaledViewport.width}px`
+        canvas.style.height = `${scaledViewport.height}px`
+        canvas.style.display = 'block'
 
         // Render the page
         const renderContext = {
@@ -148,6 +143,8 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
     const handleResize = () => {
       // Trigger re-render when window resizes
       if (pdfDoc && canvasRef.current) {
+        // Reset base scale when container size changes
+        setBaseScale(1)
         // Force re-render by nudging scale within clamp bounds
         setScale(prev => clampScale(prev + 0.001))
         setTimeout(() => setScale(prev => clampScale(prev - 0.001)), 10)
@@ -271,7 +268,16 @@ const PDFViewer = ({ pdfUrl, currentPage, onPageChange, onTotalPagesChange }) =>
   }
 
   const handleResetZoom = () => {
-    setScale(1)
+    setScale(0.7)
+    // Force recalculation of base scale
+    setBaseScale(1)
+    // Trigger a re-render to recalculate the fit scale
+    setTimeout(() => {
+      if (pdfDoc && canvasRef.current) {
+        setScale(prev => clampScale(prev + 0.001))
+        setTimeout(() => setScale(prev => clampScale(prev - 0.001)), 10)
+      }
+    }, 50)
   }
 
   return (

@@ -31,9 +31,7 @@ function Dashboard() {
       
       const chunksCount = response?.data?.chunks_count
       toast.success(
-        chunksCount != null
-          ? `File processed successfully! Split into ${chunksCount} chunks.`
-          : 'File processed successfully!'
+        response?.data?.message || 'Upload successful'
       )
       fetchDocs()
       checkPendingItems()

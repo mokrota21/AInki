@@ -8,11 +8,13 @@ import { fetchFileContent, trackPage, api } from '../services/api'
 import PDFViewer from './PDFViewer'
 import QuizPopup from './QuizPopup'
 import 'katex/dist/katex.min.css'
+import { useAuth } from '../contexts/AuthContext'
 
 function Document() {
   const SENTINEL = '\u2063'
   const { id } = useParams()
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const [loading, setLoading] = React.useState(true)
   const [name, setName] = React.useState('')
   const [markdown, setMarkdown] = React.useState('')
@@ -741,6 +743,11 @@ function Document() {
     }
   }
 
+  const handleLogout = React.useCallback(() => {
+    logout()
+    navigate('/login')
+  }, [logout, navigate])
+
   // Handle quiz popup close
   const handleQuizPopupClose = () => {
     setQuizPopupOpen(false)
@@ -764,12 +771,20 @@ function Document() {
       <div className="reader-hover-zone reader-hover-zone--top" />
       <div className="reader-controls reader-controls--top">
         <div className="reader-controls__bar reader-controls__bar--top">
-          <button
-            className="btn btn-secondary reader-back-button"
-            onClick={() => navigate('/dashboard')}
-          >
-            ← Back
-          </button>
+          <div className="reader-controls__group">
+            <button
+              className="btn btn-secondary reader-back-button"
+              onClick={() => navigate('/dashboard')}
+            >
+              ← Dashboard
+            </button>
+            <button
+              className="btn btn-secondary reader-logout-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
           <div className="reader-title" title={name}>
             {name}
           </div>

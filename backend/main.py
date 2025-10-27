@@ -10,6 +10,7 @@ from typing import List
 from src import *
 from dotenv import load_dotenv
 from datetime import datetime
+from pathlib import Path
 import uvicorn
 import logging
 import traceback
@@ -454,8 +455,14 @@ def debug_log():
     logger.error("Debug log test - ERROR level")
     return {"message": "Check console and ainki.log file for logs"}
 
-# Serve built frontend (SPA) from frontend/dist at root path
-app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="spa")
+# Serve built frontend (SPA) from frontend/dist at root path when available
+FRONTEND_DIST = (Path(__file__).resolve().parent.parent / "frontend" / "dist").resolve()
+INDEX_HTML = FRONTEND_DIST / "index.html"
+
+if FRONTEND_DIST.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="spa")
+else:
+    logger.warning("Frontend build directory '%s' not found. SPA assets will not be served.", FRONTEND_DIST)
 
 # Middleware-based SPA fallback so mounted StaticFiles 404s resolve to index.html
 @app.middleware("http")
@@ -469,7 +476,8 @@ async def spa_fallback_middleware(request: Request, call_next):
         and "." not in path  # skip asset-like paths
     ):
         try:
-            return FileResponse("frontend/dist/index.html")
+            if INDEX_HTML.exists():
+                return FileResponse(str(INDEX_HTML))
         except Exception:
             return response
     return response

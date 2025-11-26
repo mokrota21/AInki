@@ -1,6 +1,6 @@
 [project]
 name = "ainki-backend"
-version = "0.1.0"
+version = "0.2.0"
 description = "AInki Backend - Spaced Repetition Learning Platform"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -18,18 +18,6 @@ dependencies = [
     "azure-core>=1.36.0",
     "azure-storage-blob>=12.20.0",
     "pandas>=2.3.3",
-    "pydantic-settings>=2.11.0"
+    "pydantic-settings>=2.11.0",
+    "SQLAlchemy>=2.0.44",
 ]
-
-[tool.uv.sources]
-torch = [
-  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-]
-torchvision = [
-  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
-]
-
-[[tool.uv.index]]
-name = "pytorch-cu126"
-url = "https://download.pytorch.org/whl/cu126"
-explicit = true

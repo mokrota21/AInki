@@ -1,5 +1,5 @@
 [project]
-name = "ainki-backend"
+name = "ainki-old-backend"
 version = "0.1.0"
 description = "AInki Backend - Spaced Repetition Learning Platform"
 readme = "README.md"

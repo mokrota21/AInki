@@ -1,18 +1,25 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 from langfuse.openai import AzureOpenAI
-from psycopg2 import connect
+# from psycopg2 import connect
+from sqlalchemy import create_engine, event
 from neo4j import GraphDatabase
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
+import os
+# Import all table models so they register with Base.metadata
+from .tables import users, repetitions, docs, chunks, Base, after_create
 
-load_dotenv()
+
+# Load .env from project root (new_backend/)
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 class Settings(BaseSettings):
     # PostgreSQL
     pg_password: str | None = None
     pg_host: str | None = None
     pg_user: str | None = None
     pg_dbname: str | None = None
+    pg_url: str | None = None
 
     # Neo4j
     neo4j_uri: str | None = None
@@ -62,10 +69,6 @@ class Settings(BaseSettings):
         return DocumentIntelligenceClient(self.doc_endpoint, AzureKeyCredential(self.doc_key))
 
     @property
-    def get_connection(self):
-        return connect(dbname=self.pg_dbname, user=self.pg_user, host=self.pg_host, password=self.pg_password)
-
-    @property
     def get_neo4j_driver(self):
         driver = GraphDatabase.driver(self.neo4j_uri, auth=(self.neo4j_username, self.neo4j_password))
         try:
@@ -74,5 +77,15 @@ class Settings(BaseSettings):
         except Exception as e:
             print(f"❌ Error connecting to Neo4j: {e}")
         return driver
+    
+    def get_engine(self):
+        engine = create_engine(self.pg_url)
+        # Attach event listeners before creating tables
+        for table in Base.metadata.tables.values():    
+            event.listen(table, "after_create", after_create)
+        # Create all tables - this will fire the after_create events
+        Base.metadata.create_all(engine)
+        return engine
+        # return connect(dbname=self.pg_dbname, user=self.pg_user, host=self.pg_host, password=self.pg_password)
 
 settings = Settings()

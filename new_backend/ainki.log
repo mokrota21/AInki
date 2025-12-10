@@ -163,3 +163,10 @@ Response headers:
     'x-content-type-options': 'REDACTED'
     'x-ms-region': 'REDACTED'
     'Date': 'Tue, 11 Nov 2025 20:28:06 GMT'
+2025-12-10 20:39:14,349 - root - INFO - Initialized table repetitions
+2025-12-10 20:39:14,376 - root - INFO - Initialized table docs
+2025-12-10 20:41:18,136 - root - INFO - Initialized table repetitions
+2025-12-10 20:41:28,746 - root - INFO - Initialized table repetitions
+2025-12-10 20:42:06,839 - root - INFO - Initialized table repetitions
+2025-12-10 20:43:33,198 - root - INFO - Initialized table repetitions
+2025-12-10 20:43:47,322 - tables.base - INFO - Initialized table repetitions

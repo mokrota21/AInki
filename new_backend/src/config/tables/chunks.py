@@ -1,12 +1,12 @@
-from .base import Base
-from sqlalchemy import Integer, String, CheckConstraint, DateTime, func, UniqueConstraint
+from .base import Base, after_create
+from sqlalchemy import Integer, String, CheckConstraint, DateTime, func, UniqueConstraint, event
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
 class Chunks(Base):
     __tablename__ = "chunks"
     __table_args__ = (
-        UniqueConstraint("doc_id", "chunker", "page_no", name='uq_output_constraint')
+        UniqueConstraint("doc_id", "chunker", "page_no", name='uq_output_constraint'),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

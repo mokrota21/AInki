@@ -1,13 +1,18 @@
-from src import *
-import os
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-reader = DocIntelligenceReader()
-with open(r"C:\torrent\Scherm_afbeelding_2025-10-06_om_13.55.08.pdf", "rb") as f:
-    file_bytes = f.read()
-    file_type = "pdf"
-    md = reader.get_md(file_bytes, file_type)
+class BookBytes(BaseModel):
+    name: str
+    content: bytes
+    size: float # in mb
 
-import json
+app = FastAPI()
 
-with open("pages.json", "w", encoding="utf-8") as f:
-    json.dump(md, f, indent=4)
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.get("/add-book")
+async def add_book(book: BookBytes):
+    pass

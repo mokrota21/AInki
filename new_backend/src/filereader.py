@@ -34,7 +34,7 @@ class DocIntelligenceReader(FileReader):
         super().__init__()
         self.name = "DocIntelligence"
 
-    def get_md(self, file_bytes: bytes, file_type: str) -> Any:
+    def get_md(self, file_bytes: bytes, file_type: str = None) -> List[str]:
         if self.supported_file_types is not None and file_type not in self.supported_file_types:
             raise ValueError(f"File type {file_type} is not supported")
         poller = settings.doc_client.begin_analyze_document(settings.doc_model_id, file_bytes, output_content_format="markdown")

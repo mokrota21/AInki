@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, event
 from neo4j import GraphDatabase
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import os
 # Import all table models so they register with Base.metadata
 from .tables import users, repetitions, docs, chunks, Base, after_create
@@ -14,6 +15,12 @@ from .tables import users, repetitions, docs, chunks, Base, after_create
 # Load .env from project root (new_backend/)
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 class Settings(BaseSettings):
+    # Storage container
+    storage_connection_string: str | None = None
+    storage_key: str | None = None
+    storage_name: str | None = None
+    storage_container_name: str | None = None
+
     # PostgreSQL
     pg_password: str | None = None
     pg_host: str | None = None
@@ -21,13 +28,13 @@ class Settings(BaseSettings):
     pg_dbname: str | None = None
     pg_url: str | None = None
 
-    # Neo4j
-    neo4j_uri: str | None = None
-    neo4j_username: str | None = None
-    neo4j_password: str | None = None
-    neo4j_database: str | None = None
-    aura_instanceid: str | None = None
-    aura_instancename: str | None = None
+    # # Neo4j
+    # neo4j_uri: str | None = None
+    # neo4j_username: str | None = None
+    # neo4j_password: str | None = None
+    # neo4j_database: str | None = None
+    # aura_instanceid: str | None = None
+    # aura_instancename: str | None = None
 
     # Langfuse
     langfuse_public_key: str | None = None
@@ -49,9 +56,13 @@ class Settings(BaseSettings):
     azure_openai_deployment_name: str | None = None
 
     # Internal parameters
-    default_reader: str | None = None
-    default_chunker: str | None = None
-    repetition_ranks_mapping: list | None = None
+    chunk_size: int | None = None
+    stride: int | None = None
+
+    @property
+    def container_client(self):
+        container_client = ContainerClient.from_connection_string(self.storage_connection_string, container_name=self.storage_container_name)
+        return container_client
 
     @property
     def llm_client(self):
@@ -78,7 +89,7 @@ class Settings(BaseSettings):
             print(f"❌ Error connecting to Neo4j: {e}")
         return driver
     
-    def get_engine(self):
+    def get_pg_engine(self):
         engine = create_engine(self.pg_url)
         # Attach event listeners before creating tables
         for table in Base.metadata.tables.values():    
@@ -86,6 +97,5 @@ class Settings(BaseSettings):
         # Create all tables - this will fire the after_create events
         Base.metadata.create_all(engine)
         return engine
-        # return connect(dbname=self.pg_dbname, user=self.pg_user, host=self.pg_host, password=self.pg_password)
 
 settings = Settings()

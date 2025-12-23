@@ -170,3 +170,1053 @@ Response headers:
 2025-12-10 20:42:06,839 - root - INFO - Initialized table repetitions
 2025-12-10 20:43:33,198 - root - INFO - Initialized table repetitions
 2025-12-10 20:43:47,322 - tables.base - INFO - Initialized table repetitions
+2025-12-23 22:03:50,053 - tables.base - WARNING - Attempting to upload existing file mvrdv_invoice_bv_example (1).pdf
+2025-12-23 22:05:57,013 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2cf43c4e-e043-11f0-b588-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:05:57,520 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'c814f0da-401e-0065-2f4f-74a624000000'
+    'x-ms-client-request-id': '2cf43c4e-e043-11f0-b588-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:05:57 GMT'
+2025-12-23 22:05:57,521 - tables.base - INFO - Reading file...
+2025-12-23 22:05:57,523 - tables.base - ERROR - Failed to read file: DocIntelligenceReader.get_md() missing 1 required positional argument: 'file_type'
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\main.py", line 56, in add_book
+    pages = reader.get_md(book.file)
+TypeError: DocIntelligenceReader.get_md() missing 1 required positional argument: 'file_type'
+2025-12-23 22:06:37,284 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '44f55c59-e043-11f0-8543-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:06:37,789 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '15bdbe48-001e-0064-5d50-74f9f8000000'
+    'x-ms-client-request-id': '44f55c59-e043-11f0-8543-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:06:37 GMT'
+2025-12-23 22:06:37,792 - tables.base - INFO - Reading file...
+2025-12-23 22:06:37,795 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'content-type': 'application/json'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '454342c1-e043-11f0-a59d-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:06:38,464 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 400
+Response headers:
+    'Content-Length': '172'
+    'Content-Type': 'application/json; charset=utf-8'
+    'ms-azure-ai-errorcode': 'REDACTED'
+    'x-ms-error-code': 'InvalidArgument'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:06:38 GMT'
+2025-12-23 22:06:38,467 - tables.base - ERROR - Failed to read file: (InvalidArgument) Invalid argument.
+Code: InvalidArgument
+Message: Invalid argument.
+Inner error: {
+    "code": "ParameterMissing",
+    "message": "The parameter urlSource or base64Source is required."
+}
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\main.py", line 56, in add_book
+    pages = reader.get_md(book.file)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\src\filereader.py", line 40, in get_md
+    poller = settings.doc_client.begin_analyze_document(settings.doc_model_id, file_bytes, output_content_format="markdown")
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\azure\core\tracing\decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\azure\ai\documentintelligence\_operations\_patch.py", line 603, in begin_analyze_document
+    raw_result = self._analyze_document_initial(
+        model_id=model_id,
+    ...<12 lines>...
+        **kwargs,
+    )
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\azure\ai\documentintelligence\_operations\_operations.py", line 819, in _analyze_document_initial
+    raise HttpResponseError(response=response, model=error)
+azure.core.exceptions.HttpResponseError: (InvalidArgument) Invalid argument.
+Code: InvalidArgument
+Message: Invalid argument.
+Inner error: {
+    "code": "ParameterMissing",
+    "message": "The parameter urlSource or base64Source is required."
+}
+2025-12-23 22:08:21,906 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8351626b-e043-11f0-9576-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:08:22,211 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '479e38ea-d01e-0005-7550-74dabb000000'
+    'x-ms-client-request-id': '8351626b-e043-11f0-9576-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:08:22 GMT'
+2025-12-23 22:08:22,212 - tables.base - INFO - Reading file...
+2025-12-23 22:08:22,212 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'content-type': 'application/json'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '8380214e-e043-11f0-a8bf-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:08:22,521 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 400
+Response headers:
+    'Content-Length': '172'
+    'Content-Type': 'application/json; charset=utf-8'
+    'ms-azure-ai-errorcode': 'REDACTED'
+    'x-ms-error-code': 'InvalidArgument'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:08:21 GMT'
+2025-12-23 22:08:22,522 - tables.base - ERROR - Failed to read file: (InvalidArgument) Invalid argument.
+Code: InvalidArgument
+Message: Invalid argument.
+Inner error: {
+    "code": "ParameterMissing",
+    "message": "The parameter urlSource or base64Source is required."
+}
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\main.py", line 56, in add_book
+    pages = reader.get_md(book.file)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\src\filereader.py", line 40, in get_md
+    poller = settings.doc_client.begin_analyze_document(settings.doc_model_id, body=file_bytes, output_content_format="markdown")
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\azure\core\tracing\decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\azure\ai\documentintelligence\_operations\_patch.py", line 603, in begin_analyze_document
+    raw_result = self._analyze_document_initial(
+        model_id=model_id,
+    ...<12 lines>...
+        **kwargs,
+    )
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\azure\ai\documentintelligence\_operations\_operations.py", line 819, in _analyze_document_initial
+    raise HttpResponseError(response=response, model=error)
+azure.core.exceptions.HttpResponseError: (InvalidArgument) Invalid argument.
+Code: InvalidArgument
+Message: Invalid argument.
+Inner error: {
+    "code": "ParameterMissing",
+    "message": "The parameter urlSource or base64Source is required."
+}
+2025-12-23 22:10:58,127 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e06edcf3-e043-11f0-8924-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:10:58,533 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ba5725f8-e01e-000e-4150-7421d0000000'
+    'x-ms-client-request-id': 'e06edcf3-e043-11f0-8924-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:10:57 GMT'
+2025-12-23 22:10:58,534 - tables.base - INFO - Reading file...
+2025-12-23 22:10:58,536 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'e0ad2dc4-e043-11f0-a204-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:10:59,134 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:10:58 GMT'
+2025-12-23 22:10:59,140 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/c619a6b6-ce69-430a-bf2f-e18432fc8ea2?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'e0ad2dc4-e043-11f0-a204-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:10:59,200 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:10:58 GMT'
+2025-12-23 22:11:03,201 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/c619a6b6-ce69-430a-bf2f-e18432fc8ea2?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'e0ad2dc4-e043-11f0-a204-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:11:03,277 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:11:02 GMT'
+2025-12-23 22:11:03,286 - tables.base - INFO - Success!
+2025-12-23 22:11:03,287 - tables.base - INFO - Chunking file content...
+2025-12-23 22:11:03,288 - tables.base - ERROR - Failed to chunk file: '>=' not supported between instances of 'int' and 'NoneType'
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\main.py", line 72, in add_book
+    chunks = chunker.chunk(pages)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\src\chunker.py", line 29, in chunk
+    while len(buffer) >= self.chunk_size:
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>=' not supported between instances of 'int' and 'NoneType'
+2025-12-23 22:12:33,074 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '19068b1c-e044-11f0-b812-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:12:33,473 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ec4df1f6-901e-0059-2050-748fe3000000'
+    'x-ms-client-request-id': '19068b1c-e044-11f0-b812-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:12:32 GMT'
+2025-12-23 22:12:33,474 - tables.base - INFO - Reading file...
+2025-12-23 22:12:33,475 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '1943af8f-e044-11f0-b1ca-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:12:33,988 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:12:34 GMT'
+2025-12-23 22:12:33,990 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/7a6d58a8-533b-45f6-bddb-c25c813a9a3a?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '1943af8f-e044-11f0-b1ca-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:12:34,053 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:12:34 GMT'
+2025-12-23 22:12:38,055 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/7a6d58a8-533b-45f6-bddb-c25c813a9a3a?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '1943af8f-e044-11f0-b1ca-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:12:38,148 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '1'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:12:38 GMT'
+2025-12-23 22:12:39,150 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/7a6d58a8-533b-45f6-bddb-c25c813a9a3a?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '1943af8f-e044-11f0-b1ca-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:12:39,211 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '1'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:12:39 GMT'
+2025-12-23 22:12:40,213 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/7a6d58a8-533b-45f6-bddb-c25c813a9a3a?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '1943af8f-e044-11f0-b1ca-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:12:40,269 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '1'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:12:40 GMT'
+2025-12-23 22:12:41,272 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/7a6d58a8-533b-45f6-bddb-c25c813a9a3a?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '1943af8f-e044-11f0-b1ca-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:12:41,349 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:12:41 GMT'
+2025-12-23 22:12:41,351 - tables.base - INFO - Success!
+2025-12-23 22:12:41,351 - tables.base - INFO - Chunking file content...
+2025-12-23 22:12:41,352 - tables.base - ERROR - Failed to chunk file: '>=' not supported between instances of 'int' and 'NoneType'
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\main.py", line 72, in add_book
+    chunks = chunker.chunk(pages)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\src\chunker.py", line 29, in chunk
+    while len(buffer) >= self.chunk_size:
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>=' not supported between instances of 'int' and 'NoneType'
+2025-12-23 22:15:21,345 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7d52ad68-e044-11f0-8a55-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:15:21,795 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'a428a28f-401e-0017-5b51-74a16b000000'
+    'x-ms-client-request-id': '7d52ad68-e044-11f0-8a55-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:15:21 GMT'
+2025-12-23 22:15:21,796 - tables.base - INFO - Reading file...
+2025-12-23 22:15:21,796 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '7d978b54-e044-11f0-b0bc-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:15:22,322 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:15:21 GMT'
+2025-12-23 22:15:22,325 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/6ebb4b66-8707-429b-ae51-ce8b2d2c019d?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '7d978b54-e044-11f0-b0bc-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:15:22,383 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:15:21 GMT'
+2025-12-23 22:15:26,385 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/6ebb4b66-8707-429b-ae51-ce8b2d2c019d?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '7d978b54-e044-11f0-b0bc-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:15:26,479 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:15:25 GMT'
+2025-12-23 22:15:26,488 - tables.base - INFO - Success!
+2025-12-23 22:15:26,489 - tables.base - INFO - Chunking file content...
+2025-12-23 22:15:26,492 - tables.base - INFO - Success!
+2025-12-23 22:15:26,493 - tables.base - INFO - Uploading file to storage...
+2025-12-23 22:15:26,497 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '645'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '80649fd6-e044-11f0-812c-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:15:26,542 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:15:26 GMT'
+    'ETag': '"0x8DE426864CCC8C6"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'a428acc9-401e-0017-5051-74a16b000000'
+    'x-ms-client-request-id': '80649fd6-e044-11f0-812c-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:15:25 GMT'
+2025-12-23 22:15:26,544 - tables.base - INFO - Success!
+2025-12-23 22:15:26,544 - tables.base - INFO - Updating docs database...
+2025-12-23 22:16:19,806 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a02b1a28-e044-11f0-a7f4-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:16:20,249 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '645'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:15:26 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE426864CCC8C6"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '2123888f-b01e-004e-1951-7426e8000000'
+    'x-ms-client-request-id': 'a02b1a28-e044-11f0-a7f4-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:16:20 GMT'
+2025-12-23 22:16:20,250 - tables.base - WARNING - Attempting to upload existing file mvrdv_invoice_bv_example (1).pdf
+2025-12-23 22:16:57,117 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'b6686590-e044-11f0-b4e6-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:16:57,401 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ba3b421c-801e-0018-3651-74d707000000'
+    'x-ms-client-request-id': 'b6686590-e044-11f0-b4e6-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:16:56 GMT'
+2025-12-23 22:16:57,403 - tables.base - INFO - Reading file...
+2025-12-23 22:16:57,404 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'b6941974-e044-11f0-9381-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:16:57,741 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:16:57 GMT'
+2025-12-23 22:16:57,744 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/3b43b80c-15d8-4328-ba21-cd03710376ea?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'b6941974-e044-11f0-9381-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:16:57,807 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:16:57 GMT'
+2025-12-23 22:17:01,809 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/3b43b80c-15d8-4328-ba21-cd03710376ea?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'b6941974-e044-11f0-9381-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:17:01,872 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '1'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:17:01 GMT'
+2025-12-23 22:17:02,873 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/3b43b80c-15d8-4328-ba21-cd03710376ea?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'b6941974-e044-11f0-9381-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:17:02,955 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:17:02 GMT'
+2025-12-23 22:17:02,959 - tables.base - INFO - Success!
+2025-12-23 22:17:02,959 - tables.base - INFO - Chunking file content...
+2025-12-23 22:17:02,960 - tables.base - INFO - Success!
+2025-12-23 22:17:02,960 - tables.base - INFO - Uploading file to storage...
+2025-12-23 22:17:02,960 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '645'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'b9e3ec87-e044-11f0-98cd-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:17:02,998 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:17:03 GMT'
+    'ETag': '"0x8DE42689E4B2314"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ba3b50a5-801e-0018-5851-74d707000000'
+    'x-ms-client-request-id': 'b9e3ec87-e044-11f0-98cd-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:17:02 GMT'
+2025-12-23 22:17:02,999 - tables.base - INFO - Success!
+2025-12-23 22:17:02,999 - tables.base - INFO - Updating docs database...
+2025-12-23 22:17:49,547 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd5a87420-e044-11f0-a40e-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:17:49,979 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '645'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:17:03 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE42689E4B2314"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '7ce7b295-801e-006a-6751-74d048000000'
+    'x-ms-client-request-id': 'd5a87420-e044-11f0-a40e-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:17:50 GMT'
+2025-12-23 22:17:49,981 - tables.base - WARNING - Attempting to upload existing file mvrdv_invoice_bv_example (1).pdf
+2025-12-23 22:18:02,304 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'dd4308cc-e044-11f0-93da-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:02,691 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8a45241d-801e-0037-3d51-74dacc000000'
+    'x-ms-client-request-id': 'dd4308cc-e044-11f0-93da-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:18:02 GMT'
+2025-12-23 22:18:02,693 - tables.base - INFO - Reading file...
+2025-12-23 22:18:02,695 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'dd7eba9f-e044-11f0-b37b-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:18:03,188 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:02 GMT'
+2025-12-23 22:18:03,189 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/a45d5349-259a-4542-b5a1-d370edcc521f?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'dd7eba9f-e044-11f0-b37b-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:03,252 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:02 GMT'
+2025-12-23 22:18:07,253 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/a45d5349-259a-4542-b5a1-d370edcc521f?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'dd7eba9f-e044-11f0-b37b-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:07,334 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:07 GMT'
+2025-12-23 22:18:07,339 - tables.base - INFO - Success!
+2025-12-23 22:18:07,339 - tables.base - INFO - Chunking file content...
+2025-12-23 22:18:07,339 - tables.base - INFO - Success!
+2025-12-23 22:18:07,339 - tables.base - INFO - Uploading file to storage...
+2025-12-23 22:18:07,339 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '645'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e0436942-e044-11f0-b376-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:18:07,373 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:18:07 GMT'
+    'ETag': '"0x8DE4268C4AACE03"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8a453476-801e-0037-1a51-74dacc000000'
+    'x-ms-client-request-id': 'e0436942-e044-11f0-b376-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:07 GMT'
+2025-12-23 22:18:07,374 - tables.base - INFO - Success!
+2025-12-23 22:18:07,374 - tables.base - INFO - Updating docs database...
+2025-12-23 22:18:07,755 - tables.base - INFO - Initialized table repetitions
+2025-12-23 22:18:07,776 - tables.base - INFO - Initialized table docs
+2025-12-23 22:18:07,798 - tables.base - INFO - Initialized table chunks
+2025-12-23 22:18:07,863 - tables.base - INFO - Success!
+2025-12-23 22:18:07,863 - tables.base - INFO - Updating chunks database...
+2025-12-23 22:18:35,758 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f133bf1f-e044-11f0-88a5-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:36,082 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '645'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:18:07 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE4268C4AACE03"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4b47bf31-201e-0063-7951-74959b000000'
+    'x-ms-client-request-id': 'f133bf1f-e044-11f0-88a5-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:35 GMT'
+2025-12-23 22:18:36,085 - tables.base - WARNING - Attempting to upload existing file mvrdv_invoice_bv_example (1).pdf
+2025-12-23 22:18:46,050 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f7562cdb-e044-11f0-956c-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:46,434 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1b000346-301e-006f-3c51-740293000000'
+    'x-ms-client-request-id': 'f7562cdb-e044-11f0-956c-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:18:46 GMT'
+2025-12-23 22:18:46,435 - tables.base - INFO - Reading file...
+2025-12-23 22:18:46,437 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'f7912210-e044-11f0-8919-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:18:46,900 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:47 GMT'
+2025-12-23 22:18:46,904 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/63d3236f-e1e3-49dc-a526-b473670016a6?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'f7912210-e044-11f0-8919-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:46,971 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:47 GMT'
+2025-12-23 22:18:50,973 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/63d3236f-e1e3-49dc-a526-b473670016a6?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'f7912210-e044-11f0-8919-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:18:51,051 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:51 GMT'
+2025-12-23 22:18:51,058 - tables.base - INFO - Success!
+2025-12-23 22:18:51,058 - tables.base - INFO - Chunking file content...
+2025-12-23 22:18:51,058 - tables.base - INFO - Success!
+2025-12-23 22:18:51,058 - tables.base - INFO - Uploading file to storage...
+2025-12-23 22:18:51,059 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '645'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fa528428-e044-11f0-879d-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:18:51,099 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:18:51 GMT'
+    'ETag': '"0x8DE4268DEBAE1C4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1b000a8e-301e-006f-1351-740293000000'
+    'x-ms-client-request-id': 'fa528428-e044-11f0-879d-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:18:51 GMT'
+2025-12-23 22:18:51,100 - tables.base - INFO - Success!
+2025-12-23 22:18:51,101 - tables.base - INFO - Updating docs database...
+2025-12-23 22:19:23,081 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0d68ae44-e045-11f0-bbf3-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:19:23,379 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1773c740-c01e-0026-4651-744078000000'
+    'x-ms-client-request-id': '0d68ae44-e045-11f0-bbf3-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 23 Dec 2025 21:19:23 GMT'
+2025-12-23 22:19:23,381 - tables.base - INFO - Reading file...
+2025-12-23 22:19:23,383 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '645'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '0d96b434-e045-11f0-9870-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:19:23,719 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:19:23 GMT'
+2025-12-23 22:19:23,720 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/f2a0c81c-aac2-47a6-b3d7-8eb8be019709?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '0d96b434-e045-11f0-9870-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:19:23,778 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:19:23 GMT'
+2025-12-23 22:19:27,780 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/f2a0c81c-aac2-47a6-b3d7-8eb8be019709?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '0d96b434-e045-11f0-9870-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2025-12-23 22:19:27,865 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2349'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:19:27 GMT'
+2025-12-23 22:19:27,870 - tables.base - INFO - Success!
+2025-12-23 22:19:27,871 - tables.base - INFO - Chunking file content...
+2025-12-23 22:19:27,871 - tables.base - INFO - Success!
+2025-12-23 22:19:27,872 - tables.base - INFO - Uploading file to storage...
+2025-12-23 22:19:27,872 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/mvrdv_invoice_bv_example%20%281%29.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '645'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '1043c1b9-e045-11f0-83fc-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-23 22:19:27,910 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 23 Dec 2025 21:19:28 GMT'
+    'ETag': '"0x8DE4268F4ABA688"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1773cead-c01e-0026-0351-744078000000'
+    'x-ms-client-request-id': '1043c1b9-e045-11f0-83fc-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 23 Dec 2025 21:19:27 GMT'
+2025-12-23 22:19:27,911 - tables.base - INFO - Success!
+2025-12-23 22:19:27,911 - tables.base - INFO - Updating docs database...
+2025-12-23 22:19:28,211 - tables.base - INFO - Initialized table docs
+2025-12-23 22:19:28,268 - tables.base - INFO - Success!
+2025-12-23 22:19:28,268 - tables.base - INFO - Updating chunks database...
+2025-12-23 22:19:28,327 - tables.base - INFO - Success!

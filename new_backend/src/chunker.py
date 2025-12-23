@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 import re
+from .config.settings import settings
 
 class Chunker(ABC):
     def __init__(self) -> None:
-        pass
+        self.name="UndefinedChunker"
 
     @abstractmethod
     def chunk(self, pages_text: List[str]) -> List[Dict[str, Any]]:
@@ -14,30 +15,31 @@ class Chunker(ABC):
         pass
 
 class SimpleChunker(Chunker):
-    def __init__(self, chunk_size: int, stride: int) -> None:
+    def __init__(self, chunk_size: int = settings.chunk_size, stride: int = settings.stride) -> None:
+        super().__init__()
         self.chunk_size = chunk_size
         self.stride = stride
-        super().__init__()
+        self.name="SimpleChunker"
 
     def chunk(self, pages_text: List[str]) -> List[Dict[str, Any]]:
         chunks = []
-        chunk = ""
+        buffer = ""
         for page_num, page_text in enumerate(pages_text):
-            for i in range(0, len(page_text), self.stride):
-                chunk += page_text[i:i+self.chunk_size]
-                if len(chunk) >= self.chunk_size:
-                    chunks.append(
-                        {
-                            "text": chunk,
-                            "page_num": page_num,
-                        }
-                    )
-                    chunk = chunk[self.stride:]
-        if chunk:
+            buffer += page_text
+            while len(buffer) >= self.chunk_size:
+                chunks.append(
+                    {
+                        "text": buffer[:self.chunk_size],
+                        "page_no": page_num
+                    }
+                )
+                buffer = buffer[self.stride:]
+                
+        if buffer:
             chunks.append(
                 {
-                    "text": chunk,
-                    "page_num": page_num,
+                    "text": buffer,
+                    "page_no": page_num,
                 }
             )
         return chunks

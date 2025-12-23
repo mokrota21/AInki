@@ -1,0 +1,7 @@
+2025-12-23 21:10:14,435 - tables.base - INFO - Initialized table users
+2025-12-23 21:10:14,454 - tables.base - INFO - Initialized table repetitions
+2025-12-23 21:10:14,478 - tables.base - INFO - Initialized table docs
+2025-12-23 21:11:29,046 - tables.base - INFO - Initialized table users
+2025-12-23 21:11:29,062 - tables.base - INFO - Initialized table repetitions
+2025-12-23 21:11:29,080 - tables.base - INFO - Initialized table docs
+2025-12-23 21:11:29,100 - tables.base - INFO - Initialized table chunks

@@ -281,7 +281,7 @@
                 <mxCell id="156" value="md_content: string" style="text;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="154" vertex="1">
                     <mxGeometry y="60" width="140" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="157" value="split_no: serial" style="text;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="154" vertex="1">
+                <mxCell id="157" value="page_no: serial" style="text;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="154" vertex="1">
                     <mxGeometry y="90" width="140" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="164" value="created_at: datetime" style="text;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="154" vertex="1">
@@ -292,12 +292,6 @@
                 </mxCell>
                 <mxCell id="162" value="file_name: string" style="text;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="154" vertex="1">
                     <mxGeometry y="180" width="140" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="161" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="158" target="157" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="158" value="Not chunk!&lt;br&gt;to meet string restrictions" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=default;fillColor=default;" parent="1" vertex="1">
-                    <mxGeometry x="1810" y="660" width="120" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="165" value="chunks" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=default;fillColor=default;" parent="1" vertex="1">
                     <mxGeometry x="2185" y="595" width="140" height="210" as="geometry"/>
@@ -522,10 +516,10 @@
                 <mxCell id="243" value="moved to pg db until find actual use for this" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;" parent="1" vertex="1">
                     <mxGeometry x="2430" y="-20" width="195" height="135" as="geometry"/>
                 </mxCell>
-                <mxCell id="247" value="text_analyze.py" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="247" value="text_analyze.py" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="710" y="1180" width="200" height="200" as="geometry"/>
                 </mxCell>
-                <mxCell id="248" value="filereader.py" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="248" value="filereader.py" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="30" y="450" width="450" height="650" as="geometry"/>
                 </mxCell>
                 <mxCell id="21" value="FileReader1" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
@@ -654,7 +648,7 @@
                         <mxPoint x="950" y="670" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="251" value="chunker.py" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="251" value="chunker.py" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="680" y="380" width="420" height="420" as="geometry"/>
                 </mxCell>
             </root>

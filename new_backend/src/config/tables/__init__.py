@@ -4,6 +4,8 @@ from .repetitions import Repetitions
 from .docs import Docs
 from .chunks import Chunks
 from .base import Base, after_create
+from .docs_metadata import DocsMetadata
+from .knowledge import Knowledge
 
-__all__ = ["Users", "Repetitions", "Docs", "Chunks", "Base", "after_create"]
+__all__ = ["Users", "Repetitions", "Docs", "Chunks", "Base", "DocsMetadata", "Knowledge", "after_create"]
 

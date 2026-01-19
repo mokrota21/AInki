@@ -15,7 +15,7 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "ainki-backend"
+name = "ainki-old-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

@@ -1,0 +1,39 @@
+Analyze the following text chunk and identify important mathematical facts, concepts, or knowledge that a student should remember and understand. For each important piece of information, create an open-ended question that tests the student's understanding, similar to Russian education system "tickets" (билеты).
+
+The questions should:
+- Be open-ended (not yes/no or multiple choice)
+- Test deep understanding of mathematical concepts, not just memorization
+- Require the student to explain, describe, prove, or apply the concept
+- Cover both explicit information (definitions, theorems, algorithms) and implicit knowledge (implications, relationships, subtle properties)
+
+Types of mathematical knowledge to extract:
+- Definition: A formal statement that explains the meaning of a mathematical term
+- Theorem: A proven mathematical statement that should be understood and potentially proven
+- Lemma: A smaller result used to prove a larger theorem
+- Axiom: A fundamental assumption accepted without proof
+- Property: A characteristic or attribute of a mathematical object
+- Corollary: A direct consequence of a theorem
+- Algorithm: A step-by-step procedure or method
+- Proof technique: A method or approach used in mathematical proofs
+- Example: A specific instance illustrating a concept
+- Relationship: Connections between mathematical concepts
+- Application: How a concept is used in practice
+- Other: Any other important mathematical knowledge
+
+Text chunk:
+{current_chunk}
+
+For each important piece of knowledge found, create a question that would test a student's understanding. Each question should include:
+- The question text (open-ended question that tests understanding of the mathematical concept)
+- Knowledge type (one of: definition, theorem, lemma, axiom, property, corollary, algorithm, proof_technique, example, relationship, application, other)
+- Topic (brief topic or subject area of the question)
+
+Guidelines for question creation:
+- Questions should start with words like: "Explain", "Define", "Prove", "Describe", "What is", "How does", "Why", "Compare", "What are the conditions for", "Give an example of", etc.
+- For theorems: Ask students to state and explain the theorem, or prove it
+- For definitions: Ask students to define and explain the concept
+- For algorithms: Ask students to describe the steps or apply the algorithm
+- Avoid questions that can be answered with a single word or number
+- Questions should require demonstrating mathematical comprehension
+- If a concept has multiple aspects, you may create multiple questions
+- Focus on the most important and testable knowledge from the chunk

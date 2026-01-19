@@ -1,6 +1,5 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-from langfuse.openai import AzureOpenAI
 # from psycopg2 import connect
 from sqlalchemy import create_engine, event
 from neo4j import GraphDatabase
@@ -9,7 +8,10 @@ from azure.core.credentials import AzureKeyCredential
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import os
 # Import all table models so they register with Base.metadata
-from .tables import users, repetitions, docs, chunks, Base, after_create
+from .tables import users, repetitions, docs, chunks, knowledge, Base, after_create
+from langfuse.langchain import CallbackHandler
+from langchain_openai import ChatOpenAI, AzureChatOpenAI
+from functools import cached_property
 
 
 # Load .env from project root (new_backend/)
@@ -59,6 +61,11 @@ class Settings(BaseSettings):
     chunk_size: int | None = None
     stride: int | None = None
 
+    @cached_property
+    def langfuse_handler(self) -> CallbackHandler:
+        return CallbackHandler()
+
+
     @property
     def container_client(self):
         container_client = ContainerClient.from_connection_string(self.storage_connection_string, container_name=self.storage_container_name)
@@ -67,10 +74,10 @@ class Settings(BaseSettings):
     @property
     def llm_client(self):
         if self.llm_provider == "azure":
-            return AzureOpenAI(
+            return AzureChatOpenAI(
                 api_key=self.azure_openai_api_key,
                 api_version=self.openai_api_version,
-                model=self.azure_openai_deployment_name
+                azure_deployment=self.azure_openai_deployment_name
             )
         else:
             raise ValueError(f"Unsupported LLM provider: {self.llm_provider}")

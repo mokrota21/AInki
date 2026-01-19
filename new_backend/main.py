@@ -1,10 +1,15 @@
 from pydoc import Doc
 from fastapi import FastAPI, UploadFile, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, Chunks
+from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks
 import logging
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 import uuid
+from fastapi.security import OAuth2PasswordBearer
+from io import BytesIO
 
 logger = logging.getLogger("tables.base")
 
@@ -18,6 +23,19 @@ if not logging.root.handlers:
     )
 
 app = FastAPI()
+
+# Add CORS middleware to allow frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5174", "http://localhost:5173"],  # Frontend dev servers
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# TODO: Replace with proper user authentication
+# Currently using hardcoded user for development
+# This should be replaced with JWT tokens or session-based auth
 user = "mokrota"
 user_id = "f7ef8cce-efe0-42da-849e-4971a7e5a573"
 
@@ -28,97 +46,90 @@ def get_user():
 async def root():
     return {"message": "Hello World"}
 
+from src.workflows.book_processing import process_book_workflow
+
 @app.post("/add-book")
-# async def add_book(book: UploadFile, reader: FileReader = DefaultReader(), chunker: Chunker = DefaultChunker(), force: bool = False):
-async def add_book(book: UploadFile, force: bool = False): #TODO: make dropdown of readers and chunkers
+async def add_book(book: UploadFile, force: bool = False):
     """
     Processes file and stores it in the server.
+    Uses a modular workflow pattern with separate steps.
     
     Args:
         book: The uploaded file to process and store.
+        force: Whether to overwrite existing files.
     
     Returns:
-        dict: Information about the stored book.
+        dict: Information about the stored book including doc_id.
     """
-    ### Check if file exists
-    container_client = settings.container_client
-    blob_client = container_client.get_blob_client(book.filename)
-    if not force and blob_client.exists():
-        logger.warning(f"Attempting to upload existing file {book.filename}")
-        return {
-            "message": "File with the same name exists! Rename and try again."
-        }
-
-    ### Process file with reader
-    reader = DefaultReader()
-    logger.info("Reading file...")
-    try:
-        # Read file bytes and get file type
-        file_bytes = await book.read()
-        file_type = book.filename.split('.')[-1] if '.' in book.filename else None
-        pages = reader.get_md(file_bytes, file_type)
-    except Exception as e:
-        logger.error(f"Failed to read file: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to process file: {str(e)}"
-        )
-    logger.info("Success!")
-    
-    ### Chunk the content
-    chunker = DefaultChunker()
-    logger.info("Chunking file content...")
-    try:
-        chunks = chunker.chunk(pages)
-    except Exception as e:
-        logger.error(f"Failed to chunk file: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to process file: {str(e)}"
-        )
-    logger.info("Success!")
-
-    ### Upload to storage
-    logger.info("Uploading file to storage...")
-    blob_client.upload_blob(file_bytes, overwrite=force)
-    logger.info("Success!")
-
-    ### Update docs database
-    logger.info("Updating docs database...")
     user, user_id = get_user()
-    engine = settings.get_pg_engine()
-    with Session(engine) as session:
-        doc_id = uuid.uuid4()
-        for page_no, page in enumerate(pages):
-            doc = Docs(
-                doc_id=doc_id, 
-                user_id=user_id, 
-                md_content=page, 
-                page_no=page_no, 
-                filereader=reader.name, 
-                file_name=book.filename)
-            session.add(doc)
-        session.commit()
-    logger.info("Success!")
+    return await process_book_workflow(book, user_id, force)
 
-    ### Update chunks database
-    logger.info("Updating chunks database...")
-    chunk_no = 0
-    last_page = -1
+@app.get("/fetch-user-books")
+async def fetch_user_books():
+    """
+    Returns a list of metadata for all books in user's library.
+    """
+    engine = settings.get_pg_engine()
+    stmt = select(
+        DocsMetadata.doc_id, 
+        DocsMetadata.created_at, 
+        DocsMetadata.pages_total,
+        DocsMetadata.file_name
+        ).where(DocsMetadata.user_id == user_id)
     with Session(engine) as session:
-        for chunk in chunks:
-            text = chunk['text']
-            page_no = chunk['page_no']
-            chunk_no = chunk_no + 1 if page_no == last_page else 0
-            chunk_row = Chunks(
-                md_content=text,
-                chunk_no=chunk_no,
-                doc_id=doc_id,
-                chunker=chunker.name,
-                page_no=page_no
-            )
-            session.add(chunk_row)
-        session.commit()
-    logger.info("Success!")
+        result = session.execute(stmt).mappings().all()
+        # Convert RowMapping objects to plain dicts for JSON serialization
+        docs = [dict(row) for row in result]
+    return docs
+
+@app.get("/get-book")
+async def get_book(filename: str):
+    """
+    Returns file bytes from blob storage that can be rendered by the frontend.
     
-    return {"message": "Success!"}
+    Args:
+        filename: Name of the file to retrieve from blob storage
+    
+    Returns:
+        StreamingResponse: File bytes with appropriate content type
+    """
+    try:
+        container_client = settings.container_client
+        blob_client = container_client.get_blob_client(filename)
+        
+        if not blob_client.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"File '{filename}' not found"
+            )
+        
+        # Download blob as bytes
+        download_stream = blob_client.download_blob()
+        file_bytes = download_stream.readall()
+        
+        # Determine content type based on file extension
+        file_ext = filename.split('.')[-1].lower() if '.' in filename else ''
+        content_types = {
+            'pdf': 'application/pdf',
+            'png': 'image/png',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'txt': 'text/plain',
+            'md': 'text/markdown'
+        }
+        media_type = content_types.get(file_ext, 'application/octet-stream')
+        
+        # Return as StreamingResponse for frontend rendering
+        return StreamingResponse(
+            BytesIO(file_bytes),
+            media_type=media_type,
+            headers={"Content-Disposition": f'inline; filename="{filename}"'}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to retrieve file '{filename}': {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve file: {str(e)}"
+        )

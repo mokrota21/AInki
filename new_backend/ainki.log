@@ -1220,3 +1220,919 @@ Response headers:
 2025-12-23 22:19:28,268 - tables.base - INFO - Success!
 2025-12-23 22:19:28,268 - tables.base - INFO - Updating chunks database...
 2025-12-23 22:19:28,327 - tables.base - INFO - Success!
+2026-01-19 20:46:54,354 - uvicorn.error - INFO - Will watch for changes in these directories: ['C:\\Users\\mokrota\\Documents\\GitHub\\AInki\\new_backend']
+2026-01-19 20:46:54,356 - uvicorn.error - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-01-19 20:46:54,357 - uvicorn.error - INFO - Started reloader process [45292] using WatchFiles
+2026-01-19 20:46:56,209 - uvicorn.error - INFO - Started server process [48816]
+2026-01-19 20:46:56,211 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 20:46:56,212 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 20:48:21,644 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'cf4aa648-f56f-11f0-98df-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:48:22,156 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8d42ae2f-d01e-003a-527c-891218000000'
+    'x-ms-client-request-id': 'cf4aa648-f56f-11f0-98df-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 19 Jan 2026 19:48:21 GMT'
+2026-01-19 20:48:22,158 - tables.base - INFO - Reading file...
+2026-01-19 20:48:22,159 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '2666'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'cf9947bd-f56f-11f0-aabf-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2026-01-19 20:48:22,868 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:48:22 GMT'
+2026-01-19 20:48:22,878 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/495f2421-8504-4ee1-ac0d-8801d7fda0cc?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'cf9947bd-f56f-11f0-aabf-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:48:22,946 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:48:22 GMT'
+2026-01-19 20:48:26,948 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/495f2421-8504-4ee1-ac0d-8801d7fda0cc?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'cf9947bd-f56f-11f0-aabf-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:48:27,028 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '8099'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:48:26 GMT'
+2026-01-19 20:48:27,049 - tables.base - INFO - Success!
+2026-01-19 20:48:27,050 - tables.base - INFO - Chunking file content...
+2026-01-19 20:48:27,051 - tables.base - INFO - Success!
+2026-01-19 20:48:27,051 - tables.base - INFO - Uploading file to storage...
+2026-01-19 20:48:27,054 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '2666'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd28431c6-f56f-11f0-ae7f-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2026-01-19 20:48:27,098 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:48:27 GMT'
+    'ETag': '"0x8DE5793B6F12C8B"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8d42b45b-d01e-003a-7a7c-891218000000'
+    'x-ms-client-request-id': 'd28431c6-f56f-11f0-ae7f-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:48:26 GMT'
+2026-01-19 20:48:27,099 - tables.base - INFO - Success!
+2026-01-19 20:48:27,100 - tables.base - INFO - Updating docs database...
+2026-01-19 20:48:27,767 - tables.base - INFO - Initialized table users
+2026-01-19 20:48:27,787 - tables.base - INFO - Initialized table repetitions
+2026-01-19 20:48:27,812 - tables.base - INFO - Initialized table docs
+2026-01-19 20:48:27,835 - tables.base - INFO - Initialized table chunks
+2026-01-19 20:48:27,876 - uvicorn.error - ERROR - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.DuplicateTable: relation "uq_output_constraint_filereader" already exists
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\fastapi\applications.py", line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\fastapi\routing.py", line 125, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\fastapi\routing.py", line 111, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\fastapi\routing.py", line 391, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\fastapi\routing.py", line 290, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\main.py", line 91, in add_book
+    engine = settings.get_pg_engine()
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\src\config\settings.py", line 98, in get_pg_engine
+    Base.metadata.create_all(engine)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\schema.py", line 5928, in create_all
+    bind._run_ddl_visitor(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        ddl.SchemaGenerator, self, checkfirst=checkfirst, tables=tables
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3252, in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2459, in _run_ddl_visitor
+    ).traverse_single(element)
+      ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\visitors.py", line 661, in traverse_single
+    return meth(obj, **kw)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 984, in visit_metadata
+    self.traverse_single(
+    ~~~~~~~~~~~~~~~~~~~~^
+        table,
+        ^^^^^^
+    ...<2 lines>...
+        _is_metadata_operation=True,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\visitors.py", line 661, in traverse_single
+    return meth(obj, **kw)
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 1022, in visit_table
+    )._invoke_with(self.connection)
+      ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 321, in _invoke_with
+    return bind.execute(self)
+           ~~~~~~~~~~~~^^^^^^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 187, in _execute_on_connection
+    return connection._execute_ddl(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1530, in _execute_ddl
+    ret = self._execute_context(
+        dialect,
+    ...<4 lines>...
+        compiled,
+    )
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\mokrota\Documents\GitHub\AInki\new_backend\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.DuplicateTable) relation "uq_output_constraint_filereader" already exists
+
+[SQL: 
+CREATE TABLE docs_metadata (
+	doc_id UUID DEFAULT gen_random_uuid() NOT NULL, 
+	user_id UUID NOT NULL, 
+	pages_total INTEGER NOT NULL, 
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
+	updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
+	filereader VARCHAR NOT NULL, 
+	file_name VARCHAR NOT NULL, 
+	PRIMARY KEY (doc_id), 
+	CONSTRAINT positive_pages CHECK (pages_total >= 1), 
+	CONSTRAINT uq_output_constraint_filereader UNIQUE (filereader, file_name, user_id)
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-01-19 20:48:42,340 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:42,693 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:43,096 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:43,455 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:43,866 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:44,268 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:44,677 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:45,081 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:45,487 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:45,894 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:46,300 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:46,709 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:47,127 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:47,530 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:47,932 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:48,290 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:48,695 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:49,155 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:49,566 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:49,972 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:50,380 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:50,785 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:51,196 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:51,603 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:52,007 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:52,411 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:52,825 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:53,186 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:53,596 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:53,999 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:54,404 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:54,809 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:55,214 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:55,620 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:56,024 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:56,429 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:56,845 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:57,204 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:57,610 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:58,014 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:58,418 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:58,818 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:59,225 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:48:59,639 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:00,041 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:00,399 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:00,807 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:01,220 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:01,627 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:02,033 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:02,435 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:02,842 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:03,247 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:03,654 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:04,055 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:04,458 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:04,861 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:05,267 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:05,675 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:06,085 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:06,490 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:06,897 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:07,300 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:07,707 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:08,112 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:08,522 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:08,927 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:09,339 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:09,704 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:10,114 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:10,521 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:10,989 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:11,400 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:11,805 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:49:12,209 - uvicorn.error - INFO - Shutting down
+2026-01-19 20:49:12,323 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 20:49:12,326 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 20:49:12,330 - uvicorn.error - INFO - Finished server process [48816]
+2026-01-19 20:49:12,457 - uvicorn.error - INFO - Stopping reloader process [45292]
+2026-01-19 20:50:31,465 - uvicorn.error - INFO - Will watch for changes in these directories: ['C:\\Users\\mokrota\\Documents\\GitHub\\AInki\\new_backend']
+2026-01-19 20:50:31,467 - uvicorn.error - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-01-19 20:50:31,467 - uvicorn.error - INFO - Started reloader process [38336] using WatchFiles
+2026-01-19 20:50:33,227 - uvicorn.error - INFO - Started server process [3188]
+2026-01-19 20:50:33,228 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 20:50:33,229 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 20:50:43,288 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '23b7da2b-f570-11f0-bf64-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:50:43,608 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:48:27 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE5793B6F12C8B"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8de63a57-401e-0028-097c-8969c8000000'
+    'x-ms-client-request-id': '23b7da2b-f570-11f0-bf64-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:50:42 GMT'
+2026-01-19 20:50:43,610 - tables.base - WARNING - Attempting to upload existing file productiestaten controle rapport 1094 2026-01-14 20-03-45.pdf
+2026-01-19 20:51:39,250 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '45130a8c-f570-11f0-8eb3-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:51:39,565 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0e5cfe29-101e-0047-567d-89633b000000'
+    'x-ms-client-request-id': '45130a8c-f570-11f0-8eb3-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 19 Jan 2026 19:51:39 GMT'
+2026-01-19 20:51:39,566 - tables.base - INFO - Reading file...
+2026-01-19 20:51:39,567 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '2666'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '45437915-f570-11f0-aadd-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2026-01-19 20:51:39,969 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:51:39 GMT'
+2026-01-19 20:51:39,971 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/6f6fd18b-b4c5-48d0-9eab-5caeff1e0088?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '45437915-f570-11f0-aadd-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:51:40,025 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '4'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:51:39 GMT'
+2026-01-19 20:51:44,027 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/6f6fd18b-b4c5-48d0-9eab-5caeff1e0088?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '45437915-f570-11f0-aadd-88aedd4207b8'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-19 20:51:44,109 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '8099'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:51:43 GMT'
+2026-01-19 20:51:44,116 - tables.base - INFO - Success!
+2026-01-19 20:51:44,116 - tables.base - INFO - Chunking file content...
+2026-01-19 20:51:44,116 - tables.base - INFO - Success!
+2026-01-19 20:51:44,116 - tables.base - INFO - Uploading file to storage...
+2026-01-19 20:51:44,116 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '2666'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '47f9961f-f570-11f0-9d4f-88aedd4207b8'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2026-01-19 20:51:44,432 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0e5d0716-101e-0047-437d-89633b000000'
+    'x-ms-client-request-id': '47f9961f-f570-11f0-9d4f-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 19:51:44 GMT'
+2026-01-19 20:51:44,434 - tables.base - INFO - Success!
+2026-01-19 20:51:44,434 - tables.base - INFO - Updating docs database...
+2026-01-19 20:51:44,996 - tables.base - INFO - Initialized table users
+2026-01-19 20:51:45,010 - tables.base - INFO - Initialized table repetitions
+2026-01-19 20:51:45,027 - tables.base - INFO - Initialized table docs
+2026-01-19 20:51:45,045 - tables.base - INFO - Initialized table chunks
+2026-01-19 20:51:45,063 - tables.base - INFO - Initialized table docs_metadata
+2026-01-19 20:51:45,114 - tables.base - INFO - Success!
+2026-01-19 20:51:45,115 - tables.base - INFO - Updating docs database
+2026-01-19 20:51:45,150 - tables.base - INFO - Success!
+2026-01-19 20:51:45,150 - tables.base - INFO - Updating chunks database...
+2026-01-19 20:51:45,186 - tables.base - INFO - Success!
+2026-01-19 20:53:37,305 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:37,669 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:38,072 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:38,474 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:38,935 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:39,286 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:39,702 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:40,114 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:40,470 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:40,887 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:41,303 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:41,654 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:42,070 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:42,487 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:42,888 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:43,252 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:43,664 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:44,079 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:44,485 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:44,887 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:45,301 - watchfiles.main - INFO - 1 change detected
+2026-01-19 20:53:45,642 - uvicorn.error - INFO - Shutting down
+2026-01-19 20:53:45,750 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 20:53:45,751 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 20:53:45,751 - uvicorn.error - INFO - Finished server process [3188]
+2026-01-19 20:53:45,833 - uvicorn.error - INFO - Stopping reloader process [38336]
+2026-01-19 21:15:30,734 - uvicorn.error - INFO - Will watch for changes in these directories: ['C:\\Users\\mokrota\\Documents\\GitHub\\AInki\\new_backend']
+2026-01-19 21:15:30,736 - uvicorn.error - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-01-19 21:15:30,737 - uvicorn.error - INFO - Started reloader process [49100] using WatchFiles
+2026-01-19 21:15:32,422 - uvicorn.error - INFO - Started server process [44408]
+2026-01-19 21:15:32,422 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 21:15:32,425 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 21:16:46,417 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:46,778 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:47,142 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:47,556 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:47,969 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:48,376 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:48,792 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:49,151 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:49,558 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:49,962 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:50,378 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:50,794 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:51,153 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:51,556 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:51,960 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:52,373 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:52,735 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:53,144 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:53,560 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:53,971 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:54,735 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:55,093 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:55,456 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:55,858 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:56,261 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:56,673 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:57,074 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:57,437 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:57,843 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:58,310 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:58,677 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:59,083 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:59,443 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:16:59,854 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:00,268 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:00,674 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:01,226 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:01,741 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:02,154 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:02,558 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:02,961 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:03,371 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:03,723 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:03,724 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-01-19 21:17:03,732 - uvicorn.error - INFO - Shutting down
+2026-01-19 21:17:03,842 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 21:17:03,843 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 21:17:03,844 - uvicorn.error - INFO - Finished server process [44408]
+2026-01-19 21:17:04,592 - watchfiles.main - INFO - 6 changes detected
+2026-01-19 21:17:05,945 - uvicorn.error - INFO - Started server process [35308]
+2026-01-19 21:17:05,946 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 21:17:05,947 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 21:17:17,786 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:17,787 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-01-19 21:17:17,820 - uvicorn.error - INFO - Shutting down
+2026-01-19 21:17:17,929 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 21:17:17,930 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 21:17:17,930 - uvicorn.error - INFO - Finished server process [35308]
+2026-01-19 21:17:18,664 - watchfiles.main - INFO - 6 changes detected
+2026-01-19 21:17:19,948 - uvicorn.error - INFO - Started server process [45620]
+2026-01-19 21:17:19,949 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 21:17:19,949 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 21:17:35,746 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:35,746 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-01-19 21:17:35,771 - uvicorn.error - INFO - Shutting down
+2026-01-19 21:17:35,873 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 21:17:35,875 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 21:17:35,876 - uvicorn.error - INFO - Finished server process [45620]
+2026-01-19 21:17:36,590 - watchfiles.main - INFO - 6 changes detected
+2026-01-19 21:17:38,041 - uvicorn.error - INFO - Started server process [9616]
+2026-01-19 21:17:38,042 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 21:17:38,043 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 21:17:55,105 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:17:55,106 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2026-01-19 21:17:55,123 - uvicorn.error - INFO - Shutting down
+2026-01-19 21:17:55,231 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 21:17:55,232 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 21:17:55,233 - uvicorn.error - INFO - Finished server process [9616]
+2026-01-19 21:17:55,942 - watchfiles.main - INFO - 6 changes detected
+2026-01-19 21:17:57,223 - uvicorn.error - INFO - Started server process [3380]
+2026-01-19 21:17:57,224 - uvicorn.error - INFO - Waiting for application startup.
+2026-01-19 21:17:57,225 - uvicorn.error - INFO - Application startup complete.
+2026-01-19 21:18:10,720 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f9aa0480-f573-11f0-ab6d-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:11,312 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4359e7b3-f01e-0002-4280-89b6d8000000'
+    'x-ms-client-request-id': 'f9aa0480-f573-11f0-ab6d-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:11 GMT'
+2026-01-19 21:18:11,315 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fa04d254-f573-11f0-b47d-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:11,351 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4359e7c1-f01e-0002-4c80-89b6d8000000'
+    'x-ms-client-request-id': 'fa04d254-f573-11f0-b47d-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:11 GMT'
+2026-01-19 21:18:11,529 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fa258d20-f573-11f0-9198-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:12,181 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '697b544a-f01e-004f-5980-897934000000'
+    'x-ms-client-request-id': 'fa258d20-f573-11f0-9198-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:11 GMT'
+2026-01-19 21:18:12,186 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fa89c4f1-f573-11f0-937d-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:12,227 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '697b5459-f01e-004f-6580-897934000000'
+    'x-ms-client-request-id': 'fa89c4f1-f573-11f0-937d-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:11 GMT'
+2026-01-19 21:18:12,391 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:12,757 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:13,112 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:13,521 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:13,925 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:14,340 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:14,747 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:15,149 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:15,553 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:15,958 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:16,360 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:16,766 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:17,173 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:17,588 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:17,992 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:18,358 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:18,491 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fe4bd20f-f573-11f0-8e9b-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:18,766 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:18,940 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '38454238-b01e-002c-3980-89e4cf000000'
+    'x-ms-client-request-id': 'fe4bd20f-f573-11f0-8e9b-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:18 GMT'
+2026-01-19 21:18:18,946 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fe9131cc-f573-11f0-a6d0-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:18,981 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '38454246-b01e-002c-4480-89e4cf000000'
+    'x-ms-client-request-id': 'fe9131cc-f573-11f0-a6d0-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:18 GMT'
+2026-01-19 21:18:19,144 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'feaf7798-f573-11f0-aab7-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:19,168 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:19,577 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8535a359-401e-0038-3580-89aca0000000'
+    'x-ms-client-request-id': 'feaf7798-f573-11f0-aab7-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:19 GMT'
+2026-01-19 21:18:19,579 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fef1dae2-f573-11f0-9fdd-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:18:19,585 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:19,615 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8535a369-401e-0038-4180-89aca0000000'
+    'x-ms-client-request-id': 'fef1dae2-f573-11f0-9fdd-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:18:19 GMT'
+2026-01-19 21:18:20,044 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:20,453 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:20,863 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:21,267 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:21,673 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:22,076 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:22,479 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:22,890 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:23,249 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:23,657 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:24,059 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:24,467 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:24,873 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:25,290 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:25,659 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:26,074 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:26,478 - watchfiles.main - INFO - 1 change detected
+2026-01-19 21:18:26,718 - uvicorn.error - INFO - Shutting down
+2026-01-19 21:18:26,843 - uvicorn.error - INFO - Waiting for application shutdown.
+2026-01-19 21:18:26,847 - uvicorn.error - INFO - Application shutdown complete.
+2026-01-19 21:18:26,849 - uvicorn.error - INFO - Finished server process [3380]
+2026-01-19 21:18:27,232 - uvicorn.error - INFO - Stopping reloader process [49100]

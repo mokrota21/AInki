@@ -12,13 +12,6 @@ class ChunkAnalysisResponse(BaseModel):
     """
     questions: List[SubAgentResponse] = Field(default_factory=list, description="List of questions extracted from the chunk")
 
-class Knowledge(BaseModel):
-    details: SubAgentResponse
-    reference: str = Field(default="", description="Textual reference to the source chunk")
-
-class AgentResponse(BaseModel):
-    """
-    Response from analyzing chunks - contains knowledge items and any errors
-    """
-    knowledge_list: List[Knowledge] = Field(default_factory=list, description="List of extracted knowledge items")
-    errors: List[str] = Field(default_factory=list, description="List of error messages if any")
+class ChunkKnowledge(BaseModel):
+    knowledge_objects: ChunkAnalysisResponse = Field(..., description="Knowledge objects extracted from the chunk")
+    reference: int = Field(default=0, description="Index of the chunk in the document")

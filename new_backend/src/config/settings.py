@@ -17,6 +17,9 @@ from functools import cached_property
 # Load .env from project root (new_backend/)
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 class Settings(BaseSettings):
+    # App variables
+    namespace: str | None = None
+
     # Storage container
     storage_connection_string: str | None = None
     storage_key: str | None = None

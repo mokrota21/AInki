@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Search, Settings, BookOpen, Flame, Headphones, Plus } from 'lucide-react'
-import { fetchUserBooks, addBook, getBookUrl } from '../services/api'
+import { Search, Settings, BookOpen, Flame, Headphones, Plus, RefreshCw, Brain } from 'lucide-react'
+import { fetchUserBooks, addBook, getBookUrl, extractKnowledge } from '../services/api'
 import toast from 'react-hot-toast'
 import './Dashboard.css'
 
@@ -8,10 +8,16 @@ function Dashboard() {
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [extracting, setExtracting] = useState({}) // Track which books are extracting knowledge
   const [selectedBook, setSelectedBook] = useState(null)
   const fileInputRef = useRef(null)
+  const hasLoadedRef = useRef(false) // Guard against StrictMode double-invocation
 
   useEffect(() => {
+    // Prevent double-invocation in React 18 StrictMode (dev only)
+    if (hasLoadedRef.current) return
+    hasLoadedRef.current = true
+    
     loadBooks()
   }, [])
 
@@ -36,11 +42,20 @@ function Dashboard() {
     const file = e.target.files[0]
     if (!file) return
 
+    // Prevent multiple simultaneous uploads
+    if (uploading) {
+      toast.error('Please wait for the current upload to complete')
+      return
+    }
+
     setUploading(true)
     try {
-      await addBook(file)
-      toast.success('Book added successfully!')
-      loadBooks()
+      const response = await addBook(file)
+      toast.success(response.message || 'Book processing started in background!')
+      // Refresh books list after a short delay to see the new book
+      setTimeout(() => {
+        loadBooks()
+      }, 1000)
     } catch (error) {
       toast.error('Failed to add book: ' + (error.response?.data?.detail || error.message))
     } finally {
@@ -49,6 +64,24 @@ function Dashboard() {
         fileInputRef.current.value = ''
       }
     }
+  }
+
+  const handleExtractKnowledge = async (e, book) => {
+    e.stopPropagation() // Prevent book card click
+    
+    setExtracting(prev => ({ ...prev, [book.doc_id]: true }))
+    try {
+      const response = await extractKnowledge(book.doc_id)
+      toast.success(response.message || 'Knowledge extraction started!')
+    } catch (error) {
+      toast.error('Failed to extract knowledge: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setExtracting(prev => ({ ...prev, [book.doc_id]: false }))
+    }
+  }
+
+  const handleRefresh = () => {
+    loadBooks()
   }
 
   const handleBookClick = (book) => {
@@ -105,14 +138,24 @@ function Dashboard() {
         <div className="library-panel">
           <div className="panel-header">
             <h2>Your Library</h2>
-            <button 
-              className="add-book-btn"
-              onClick={handleAddBook}
-              disabled={uploading}
-            >
-              <Plus size={18} />
-              Add Book
-            </button>
+            <div className="panel-header-actions">
+              <button 
+                className="refresh-btn"
+                onClick={handleRefresh}
+                disabled={loading}
+                title="Refresh books list"
+              >
+                <RefreshCw size={18} />
+              </button>
+              <button 
+                className="add-book-btn"
+                onClick={handleAddBook}
+                disabled={uploading}
+              >
+                <Plus size={18} />
+                Add Book
+              </button>
+            </div>
             <input
               ref={fileInputRef}
               type="file"
@@ -143,48 +186,60 @@ function Dashboard() {
                   <div
                     key={book.doc_id}
                     className={`book-card book-card-${color}`}
-                    onClick={() => handleBookClick(book)}
                   >
-                    <div className="book-icon">
-                      <BookOpen size={24} />
-                    </div>
-                    <div className="book-info">
-                      <h3 className="book-title">{book.file_name.replace(/\.[^/.]+$/, '')}</h3>
-                      <p className="book-author">Author Name</p>
-                      <div className="book-progress">
-                        <div className="progress-label">Reading Progress</div>
-                        <div className="progress-bar">
-                          <div
-                            className="progress-fill"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                        <div className="progress-stats">
-                          <span>{concepts.learned}/{concepts.total} concepts</span>
-                          <span className="progress-date">{date}</span>
+                    <div className="book-card-content" onClick={() => handleBookClick(book)}>
+                      <div className="book-icon">
+                        <BookOpen size={24} />
+                      </div>
+                      <div className="book-info">
+                        <h3 className="book-title">{book.file_name.replace(/\.[^/.]+$/, '')}</h3>
+                        <p className="book-author">Author Name</p>
+                        <div className="book-progress">
+                          <div className="progress-label">Reading Progress</div>
+                          <div className="progress-bar">
+                            <div
+                              className="progress-fill"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                          <div className="progress-stats">
+                            <span>{concepts.learned}/{concepts.total} concepts</span>
+                            <span className="progress-date">{date}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="book-mastery">
-                      <div className="mastery-circle">
-                        <svg className="mastery-svg" viewBox="0 0 100 100">
-                          <circle
-                            className="mastery-bg"
-                            cx="50"
-                            cy="50"
-                            r="45"
-                          />
-                          <circle
-                            className="mastery-progress"
-                            cx="50"
-                            cy="50"
-                            r="45"
-                            strokeDasharray={`${mastery * 2.827} 283`}
-                          />
-                        </svg>
-                        <div className="mastery-text">{mastery}%</div>
+                      <div className="book-mastery">
+                        <div className="mastery-circle">
+                          <svg className="mastery-svg" viewBox="0 0 100 100">
+                            <circle
+                              className="mastery-bg"
+                              cx="50"
+                              cy="50"
+                              r="45"
+                            />
+                            <circle
+                              className="mastery-progress"
+                              cx="50"
+                              cy="50"
+                              r="45"
+                              strokeDasharray={`${mastery * 2.827} 283`}
+                            />
+                          </svg>
+                          <div className="mastery-text">{mastery}%</div>
+                        </div>
+                        <div className="mastery-label">Mastery</div>
                       </div>
-                      <div className="mastery-label">Mastery</div>
+                    </div>
+                    <div className="book-actions">
+                      <button
+                        className="extract-knowledge-btn"
+                        onClick={(e) => handleExtractKnowledge(e, book)}
+                        disabled={extracting[book.doc_id]}
+                        title="Extract knowledge from this book"
+                      >
+                        <Brain size={16} />
+                        {extracting[book.doc_id] ? 'Extracting...' : 'Extract Knowledge'}
+                      </button>
                     </div>
                   </div>
                 )

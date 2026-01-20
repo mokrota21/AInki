@@ -2136,3 +2136,824 @@ Response headers:
 2026-01-19 21:18:26,847 - uvicorn.error - INFO - Application shutdown complete.
 2026-01-19 21:18:26,849 - uvicorn.error - INFO - Finished server process [3380]
 2026-01-19 21:18:27,232 - uvicorn.error - INFO - Stopping reloader process [49100]
+2026-01-20 20:34:02,879 - tables.base - INFO - Initialized table users
+2026-01-20 20:34:02,913 - tables.base - INFO - Initialized table repetitions
+2026-01-20 20:34:02,948 - tables.base - INFO - Initialized table docs
+2026-01-20 20:34:02,968 - tables.base - INFO - Initialized table chunks
+2026-01-20 20:34:02,994 - tables.base - INFO - Initialized table docs_metadata
+2026-01-20 20:34:03,012 - tables.base - INFO - Initialized table knowledge
+2026-01-20 20:34:03,032 - tables.base - INFO - Initialized table task_status
+2026-01-20 20:37:31,131 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd7bc8a4a-f63f-11f0-9d22-1ad779d53847'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:37:31,447 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'b078578a-c01e-0044-254c-8a825f000000'
+    'x-ms-client-request-id': 'd7bc8a4a-f63f-11f0-9d22-1ad779d53847'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 20 Jan 2026 20:37:31 GMT'
+2026-01-20 20:37:31,448 - book_processing - INFO - Reading file...
+2026-01-20 20:37:31,451 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '1365492'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'd7ed5cb0-f63f-11f0-9d22-1ad779d53847'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2026-01-20 20:37:32,205 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:37:31 GMT'
+2026-01-20 20:37:32,207 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/30fa9b6d-30d1-4b69-9ecb-1883d0b2c34e?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'd7ed5cb0-f63f-11f0-9d22-1ad779d53847'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:37:32,275 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '5'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:37:31 GMT'
+2026-01-20 20:37:37,277 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/30fa9b6d-30d1-4b69-9ecb-1883d0b2c34e?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'd7ed5cb0-f63f-11f0-9d22-1ad779d53847'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:37:37,526 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '220123'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:37:36 GMT'
+2026-01-20 20:37:37,605 - book_processing - INFO - Success!
+2026-01-20 20:37:37,606 - book_processing - INFO - Chunking file content...
+2026-01-20 20:37:37,606 - book_processing - INFO - Success!
+2026-01-20 20:37:37,606 - book_processing - INFO - Uploading file to storage...
+2026-01-20 20:37:37,607 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '1365492'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'db98b9c2-f63f-11f0-9d22-1ad779d53847'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2026-01-20 20:37:38,421 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 20 Jan 2026 20:37:38 GMT'
+    'ETag': '"0x8DE5863C07D097A"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4ca50428-d01e-003a-574c-8a1218000000'
+    'x-ms-client-request-id': 'db98b9c2-f63f-11f0-9d22-1ad779d53847'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:37:37 GMT'
+2026-01-20 20:37:38,422 - book_processing - INFO - Success!
+2026-01-20 20:37:38,423 - book_processing - INFO - Updating docs database...
+2026-01-20 20:37:39,124 - book_processing - ERROR - Failed to save docs: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__0': UUID('ef26a416-09eb-40e8-b5c0-571441c1e0fd'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__0': 'water bill.pdf', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__0': 0, 'doc_id__0': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__1': UUID('9583e46f-3b2b-4e6d-9505-e71da5961f5c'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__1': 'water bill.pdf', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__1': 1, 'doc_id__1': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__2': UUID('c7b7f1dd-c263-495b-96df-35a1d65c0c3e'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__2': 'water bill.pdf', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__2': 2, 'doc_id__2': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__3': UUID('a909b683-dbdf-4d0a-8181-6d93fec897a6'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__3': 'water bill.pdf', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__3': 3, 'doc_id__3': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 126, in step_save_docs
+    session.commit()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__0': UUID('ef26a416-09eb-40e8-b5c0-571441c1e0fd'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__0': 'water bill.pdf', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__0': 0, 'doc_id__0': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__1': UUID('9583e46f-3b2b-4e6d-9505-e71da5961f5c'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__1': 'water bill.pdf', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__1': 1, 'doc_id__1': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__2': UUID('c7b7f1dd-c263-495b-96df-35a1d65c0c3e'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__2': 'water bill.pdf', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__2': 2, 'doc_id__2': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__3': UUID('a909b683-dbdf-4d0a-8181-6d93fec897a6'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__3': 'water bill.pdf', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__3': 3, 'doc_id__3': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-20 20:37:39,181 - book_processing - ERROR - Failed to add book: 500: Failed to save document pages: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__0': UUID('ef26a416-09eb-40e8-b5c0-571441c1e0fd'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__0': 'water bill.pdf', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__0': 0, 'doc_id__0': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__1': UUID('9583e46f-3b2b-4e6d-9505-e71da5961f5c'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__1': 'water bill.pdf', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__1': 1, 'doc_id__1': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__2': UUID('c7b7f1dd-c263-495b-96df-35a1d65c0c3e'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__2': 'water bill.pdf', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__2': 2, 'doc_id__2': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__3': UUID('a909b683-dbdf-4d0a-8181-6d93fec897a6'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__3': 'water bill.pdf', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__3': 3, 'doc_id__3': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 126, in step_save_docs
+    session.commit()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__0': UUID('ef26a416-09eb-40e8-b5c0-571441c1e0fd'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__0': 'water bill.pdf', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__0': 0, 'doc_id__0': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__1': UUID('9583e46f-3b2b-4e6d-9505-e71da5961f5c'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__1': 'water bill.pdf', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__1': 1, 'doc_id__1': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__2': UUID('c7b7f1dd-c263-495b-96df-35a1d65c0c3e'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__2': 'water bill.pdf', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__2': 2, 'doc_id__2': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__3': UUID('a909b683-dbdf-4d0a-8181-6d93fec897a6'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__3': 'water bill.pdf', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__3': 3, 'doc_id__3': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 367, in add_book_background
+    await step_save_docs(doc_id, user_id, pages, book.filename, reader.name)
+  File "/app/src/workflows/book_processing.py", line 130, in step_save_docs
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 500: Failed to save document pages: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__0': UUID('ef26a416-09eb-40e8-b5c0-571441c1e0fd'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__0': 'water bill.pdf', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__0': 0, 'doc_id__0': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__1': UUID('9583e46f-3b2b-4e6d-9505-e71da5961f5c'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__1': 'water bill.pdf', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__1': 1, 'doc_id__1': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__2': UUID('c7b7f1dd-c263-495b-96df-35a1d65c0c3e'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__2': 'water bill.pdf', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__2': 2, 'doc_id__2': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43'), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'id__3': UUID('a909b683-dbdf-4d0a-8181-6d93fec897a6'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947552), 'file_name__3': 'water bill.pdf', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 33, 51, 947597), 'page_no__3': 3, 'doc_id__3': UUID('f0f7fbd7-a8ca-4ff0-9d27-4eb402e7fd43')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-20 20:44:15,379 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'c8afe9d8-f640-11f0-82ce-1ad779d53847'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:44:15,639 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'c9fc95ca-201e-005c-634d-8a5d38000000'
+    'x-ms-client-request-id': 'c8afe9d8-f640-11f0-82ce-1ad779d53847'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 20 Jan 2026 20:44:15 GMT'
+2026-01-20 20:44:16,108 - book_processing - INFO - Reading file...
+2026-01-20 20:44:16,110 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '1365492'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'c91f75b4-f640-11f0-82ce-1ad779d53847'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2026-01-20 20:44:16,933 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:44:17 GMT'
+2026-01-20 20:44:16,934 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/ab59e347-7b4f-4416-b873-e9d48b7088d7?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'c91f75b4-f640-11f0-82ce-1ad779d53847'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:44:16,990 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '5'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:44:17 GMT'
+2026-01-20 20:44:22,142 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/ab59e347-7b4f-4416-b873-e9d48b7088d7?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': 'c91f75b4-f640-11f0-82ce-1ad779d53847'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:44:22,314 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '220123'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:44:22 GMT'
+2026-01-20 20:44:22,405 - book_processing - INFO - Success!
+2026-01-20 20:44:22,406 - book_processing - INFO - Chunking file content...
+2026-01-20 20:44:22,406 - book_processing - INFO - Success!
+2026-01-20 20:44:22,406 - book_processing - INFO - Uploading file to storage...
+2026-01-20 20:44:22,407 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '1365492'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'cce03d82-f640-11f0-82ce-1ad779d53847'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2026-01-20 20:44:23,212 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 20 Jan 2026 20:44:23 GMT'
+    'ETag': '"0x8DE5864B1C063D3"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '6e409953-201e-0073-104d-8a50f3000000'
+    'x-ms-client-request-id': 'cce03d82-f640-11f0-82ce-1ad779d53847'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:44:23 GMT'
+2026-01-20 20:44:23,213 - book_processing - INFO - Success!
+2026-01-20 20:44:23,214 - book_processing - INFO - Updating docs database...
+2026-01-20 20:44:23,567 - book_processing - ERROR - Failed to save docs: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'file_name__0': 'water bill.pdf', 'created_at__0': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__0': 0, 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__0': UUID('888d1e09-120d-4bb5-952b-cd4f1c2b9dc4'), 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'doc_id__0': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__0': 'DocIntelligence', 'file_name__1': 'water bill.pdf', 'created_at__1': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__1': 1, 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__1': UUID('d0d8ce52-bb74-4c43-9dc4-b7a01ebce7cb'), 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'doc_id__1': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__1': 'DocIntelligence', 'file_name__2': 'water bill.pdf', 'created_at__2': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__2': 2, 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__2': UUID('b5d262d8-16a1-479e-a96c-95d06c96b824'), 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'doc_id__2': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__2': 'DocIntelligence', 'file_name__3': 'water bill.pdf', 'created_at__3': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__3': 3, 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__3': UUID('c23a002b-0905-4cac-99bf-031e384d0940'), 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'doc_id__3': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__3': 'DocIntelligence'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 157, in step_save_docs
+    session.commit()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'file_name__0': 'water bill.pdf', 'created_at__0': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__0': 0, 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__0': UUID('888d1e09-120d-4bb5-952b-cd4f1c2b9dc4'), 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'doc_id__0': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__0': 'DocIntelligence', 'file_name__1': 'water bill.pdf', 'created_at__1': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__1': 1, 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__1': UUID('d0d8ce52-bb74-4c43-9dc4-b7a01ebce7cb'), 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'doc_id__1': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__1': 'DocIntelligence', 'file_name__2': 'water bill.pdf', 'created_at__2': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__2': 2, 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__2': UUID('b5d262d8-16a1-479e-a96c-95d06c96b824'), 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'doc_id__2': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__2': 'DocIntelligence', 'file_name__3': 'water bill.pdf', 'created_at__3': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__3': 3, 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__3': UUID('c23a002b-0905-4cac-99bf-031e384d0940'), 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'doc_id__3': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__3': 'DocIntelligence'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-20 20:44:23,690 - book_processing - ERROR - Failed to add book: 409: File 'water bill.pdf' already exists for this user. Use force=True to overwrite.
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 157, in step_save_docs
+    session.commit()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'file_name__0': 'water bill.pdf', 'created_at__0': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__0': 0, 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__0': UUID('888d1e09-120d-4bb5-952b-cd4f1c2b9dc4'), 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'doc_id__0': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__0': 'DocIntelligence', 'file_name__1': 'water bill.pdf', 'created_at__1': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__1': 1, 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__1': UUID('d0d8ce52-bb74-4c43-9dc4-b7a01ebce7cb'), 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'doc_id__1': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__1': 'DocIntelligence', 'file_name__2': 'water bill.pdf', 'created_at__2': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__2': 2, 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__2': UUID('b5d262d8-16a1-479e-a96c-95d06c96b824'), 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'doc_id__2': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__2': 'DocIntelligence', 'file_name__3': 'water bill.pdf', 'created_at__3': datetime.datetime(2026, 1, 20, 20, 43, 55, 131272), 'page_no__3': 3, 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 43, 55, 131320), 'id__3': UUID('c23a002b-0905-4cac-99bf-031e384d0940'), 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'doc_id__3': UUID('3e3b0255-596c-400b-9784-0d51e8e2f971'), 'filereader__3': 'DocIntelligence'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 432, in add_book_background
+    await step_save_docs(doc_id, user_id, pages, filename, reader.name, force)
+  File "/app/src/workflows/book_processing.py", line 164, in step_save_docs
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 409: File 'water bill.pdf' already exists for this user. Use force=True to overwrite.
+2026-01-20 20:47:24,466 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '39642734-f641-11f0-9395-3eb4fe43d5bd'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:47:24,743 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'f1998b4d-c01e-0054-414d-8a4737000000'
+    'x-ms-client-request-id': '39642734-f641-11f0-9395-3eb4fe43d5bd'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 20 Jan 2026 20:47:24 GMT'
+2026-01-20 20:47:25,163 - book_processing - INFO - Reading file...
+2026-01-20 20:47:25,165 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com//documentintelligence/documentModels/prebuilt-layout:analyze?api-version=REDACTED&outputContentFormat=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Length': '1365492'
+    'content-type': 'application/octet-stream'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '39ceeb8c-f641-11f0-9395-3eb4fe43d5bd'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+A body is sent with the request
+2026-01-20 20:47:26,128 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 202
+Response headers:
+    'Content-Length': '0'
+    'Operation-Location': 'REDACTED'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:47:26 GMT'
+2026-01-20 20:47:26,132 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/ec5c8c8c-9c53-4924-ace0-451b27fb59cb?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '39ceeb8c-f641-11f0-9395-3eb4fe43d5bd'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:47:26,200 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '106'
+    'Content-Type': 'application/json; charset=utf-8'
+    'retry-after': '5'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:47:26 GMT'
+2026-01-20 20:47:31,202 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://cog-documentintelligence-ainki-dev.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-layout/analyzeResults/ec5c8c8c-9c53-4924-ace0-451b27fb59cb?api-version=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-client-request-id': '39ceeb8c-f641-11f0-9395-3eb4fe43d5bd'
+    'User-Agent': 'azsdk-python-ai-documentintelligence/1.0.2 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'Ocp-Apim-Subscription-Key': 'REDACTED'
+No body was attached to the request
+2026-01-20 20:47:31,417 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '220123'
+    'Content-Type': 'application/json; charset=utf-8'
+    'x-envoy-upstream-service-time': 'REDACTED'
+    'apim-request-id': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:47:31 GMT'
+2026-01-20 20:47:31,566 - book_processing - INFO - Success!
+2026-01-20 20:47:31,567 - book_processing - INFO - Chunking file content...
+2026-01-20 20:47:31,567 - book_processing - INFO - Success!
+2026-01-20 20:47:31,568 - book_processing - INFO - Uploading file to storage...
+2026-01-20 20:47:31,569 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '1365492'
+    'x-ms-blob-type': 'REDACTED'
+    'If-None-Match': '*'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '3da001f6-f641-11f0-9395-3eb4fe43d5bd'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2026-01-20 20:47:32,237 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Tue, 20 Jan 2026 20:47:32 GMT'
+    'ETag': '"0x8DE586522638253"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '3f09103c-201e-0001-1f4d-8a57bc000000'
+    'x-ms-client-request-id': '3da001f6-f641-11f0-9395-3eb4fe43d5bd'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 20 Jan 2026 20:47:31 GMT'
+2026-01-20 20:47:32,238 - book_processing - INFO - Success!
+2026-01-20 20:47:32,239 - book_processing - INFO - Updating docs database...
+2026-01-20 20:47:32,640 - book_processing - ERROR - Failed to save docs: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'doc_id__0': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__0': 0, 'file_name__0': 'water bill.pdf', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__0': UUID('f2101479-4aa0-4493-b6c9-37024266a1d7'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'doc_id__1': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__1': 1, 'file_name__1': 'water bill.pdf', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__1': UUID('024805ed-f826-42e6-ab18-28c9247018af'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'doc_id__2': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__2': 2, 'file_name__2': 'water bill.pdf', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__2': UUID('3cbeeb0a-abba-4538-811d-650353226fc8'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'doc_id__3': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__3': 3, 'file_name__3': 'water bill.pdf', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__3': UUID('01b94569-9251-40c5-bb4b-8169a6fe4acd'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 157, in step_save_docs
+    session.commit()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'doc_id__0': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__0': 0, 'file_name__0': 'water bill.pdf', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__0': UUID('f2101479-4aa0-4493-b6c9-37024266a1d7'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'doc_id__1': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__1': 1, 'file_name__1': 'water bill.pdf', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__1': UUID('024805ed-f826-42e6-ab18-28c9247018af'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'doc_id__2': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__2': 2, 'file_name__2': 'water bill.pdf', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__2': UUID('3cbeeb0a-abba-4538-811d-650353226fc8'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'doc_id__3': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__3': 3, 'file_name__3': 'water bill.pdf', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__3': UUID('01b94569-9251-40c5-bb4b-8169a6fe4acd'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-20 20:47:32,723 - book_processing - ERROR - Failed to add book: 409: File 'water bill.pdf' already exists for this user. Use force=True to overwrite.
+Traceback (most recent call last):
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 157, in step_save_docs
+    session.commit()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "uq_output_constraint_filereader"
+DETAIL:  Key (filereader, file_name, user_id)=(DocIntelligence, water bill.pdf, f7ef8cce-efe0-42da-849e-4971a7e5a573) already exists.
+
+[SQL: INSERT INTO docs (id, doc_id, user_id, md_content, page_no, created_at, updated_at, filereader, file_name) VALUES (%(id__0)s::UUID, %(doc_id__0)s::UUID, %(user_id__0)s::UUID, %(md_content__0)s, %(page_no__0)s, %(created_at__0)s, %(updated_at__0)s, %( ... 450 characters truncated ... ent__3)s, %(page_no__3)s, %(created_at__3)s, %(updated_at__3)s, %(filereader__3)s, %(file_name__3)s)]
+[parameters: {'doc_id__0': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__0': 0, 'file_name__0': 'water bill.pdf', 'user_id__0': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__0': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__0': UUID('f2101479-4aa0-4493-b6c9-37024266a1d7'), 'created_at__0': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__0': '<figure>\n</figure>\n\n\n# Waterschapsbelasting\n\nOnderwerp\nAanslag waterschapsbelasting 2025\n\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelyst ... (1518 characters truncated) ... r="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nwaternet.nl\n\n<!-- PageFooter="BTW NL805224014B01" -->\n<!-- PageFooter="741 - 1/4 1" -->\n', 'filereader__0': 'DocIntelligence', 'doc_id__1': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__1': 1, 'file_name__1': 'water bill.pdf', 'user_id__1': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__1': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__1': UUID('024805ed-f826-42e6-ab18-28c9247018af'), 'created_at__1': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__1': '\n\n\n<figure>\n</figure>\n\n\n## Waterschapsbelasting\n<!-- PageHeader="Antwoordnummer 30, 8200 VB Lelystad" -->\n\nE. Esengulov\nBijlmerplein 889 F ... (1826 characters truncated) ... am\n\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\nwaternet.nl\n\n<!-- PageFooter="741 - 2/4 1" -->\n', 'filereader__1': 'DocIntelligence', 'doc_id__2': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__2': 2, 'file_name__2': 'water bill.pdf', 'user_id__2': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__2': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__2': UUID('3cbeeb0a-abba-4538-811d-650353226fc8'), 'created_at__2': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__2': '\n\n11265849\n\nBeste E. Esengulov,\n\nWist u dat uw aanslag betalen makkelijker kan? Kies vandaag nog voor automatische incasso. Dan gaat betalen he ... (1203 characters truncated) ... jk 7 Amsterdam" -->\n<!-- PageFooter="Postbus 94127 1090 GC Amsterdam" -->\n\nKvK 41216593\nBTW NL805224014B01\n\n<!-- PageFooter="waternet.nl" -->\n', 'filereader__2': 'DocIntelligence', 'doc_id__3': UUID('1f16ee5c-9108-4f15-a73b-5ef750dae0dd'), 'page_no__3': 3, 'file_name__3': 'water bill.pdf', 'user_id__3': 'f7ef8cce-efe0-42da-849e-4971a7e5a573', 'updated_at__3': datetime.datetime(2026, 1, 20, 20, 46, 45, 97890), 'id__3': UUID('01b94569-9251-40c5-bb4b-8169a6fe4acd'), 'created_at__3': datetime.datetime(2026, 1, 20, 20, 46, 45, 97848), 'md_content__3': '\n\n\n# Waarom betaal ik waterschapsbelasting?\n\nWe leven in een mooie omgeving met veel water. Hier willen we graag van blijven genieten. Dat kan d ... (2214 characters truncated) ... PageFooter="waterschap amstel gooi en vecht" -->\n\n</figure>\n\n\n<!-- PageFooter="Voor meer informatie over uw aanslag kijk op agv.nl/kosten" -->\n', 'filereader__3': 'DocIntelligence'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 432, in add_book_background
+    await step_save_docs(doc_id, user_id, pages, filename, reader.name, force)
+  File "/app/src/workflows/book_processing.py", line 164, in step_save_docs
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 409: File 'water bill.pdf' already exists for this user. Use force=True to overwrite.

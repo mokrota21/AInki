@@ -6,6 +6,6 @@ from .chunks import Chunks
 from .base import Base, after_create
 from .docs_metadata import DocsMetadata
 from .knowledge import Knowledge
-
-__all__ = ["Users", "Repetitions", "Docs", "Chunks", "Base", "DocsMetadata", "Knowledge", "after_create"]
+from .bg_tasks import TaskStatus
+__all__ = ["Users", "Repetitions", "Docs", "Chunks", "Base", "DocsMetadata", "Knowledge", "TaskStatus", "after_create"]
 

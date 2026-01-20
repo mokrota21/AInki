@@ -31,3 +31,18 @@ export async function addBook(file) {
 export function getBookUrl(filename) {
   return `${API_BASE_URL}/get-book?filename=${encodeURIComponent(filename)}`
 }
+
+// Extract knowledge from a book
+export async function extractKnowledge(docId) {
+  // FastAPI accepts query parameters in POST requests
+  const response = await api.post(`/extract-knowledge?doc_id=${docId}`)
+  return response.data
+}
+
+// Get background task status
+export async function getBackgroundTask(taskId) {
+  const response = await api.get('/get-background-task', {
+    params: { task_id: taskId }
+  })
+  return response.data
+}

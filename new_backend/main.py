@@ -1,15 +1,16 @@
-from pydoc import Doc
 from fastapi import FastAPI, UploadFile, HTTPException, status
+from fastapi import BackgroundTasks as FastAPIBackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks
+from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks, TaskStatus
 import logging
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 import uuid
 from fastapi.security import OAuth2PasswordBearer
 from io import BytesIO
+import uvicorn
 
 logger = logging.getLogger("tables.base")
 
@@ -23,6 +24,7 @@ if not logging.root.handlers:
     )
 
 app = FastAPI()
+NAMESPACE = uuid.UUID(settings.namespace)
 
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
@@ -46,23 +48,61 @@ def get_user():
 async def root():
     return {"message": "Hello World"}
 
-from src.workflows.book_processing import process_book_workflow
+from src.workflows import add_book_background, extract_knowledge_background
+
+@app.get("/get-background-task")
+async def get_background_task(task_id: uuid.UUID):
+    """
+    Returns the status of a background task.
+    """
+    engine = settings.get_pg_engine()
+    stmt = select(TaskStatus.status).where(TaskStatus.task_id == task_id)
+    with Session(engine) as session:
+        result = session.execute(stmt).mappings().first()
+        if result is None:
+            return {"message": "Background task not found", "task_id": task_id, "status": "not_found"}
+    return {
+        "message": f"Background task status is {result['status']}",
+        "task_id": task_id,
+        "status": result['status']
+    }
 
 @app.post("/add-book")
-async def add_book(book: UploadFile, force: bool = False):
+async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, force: bool = False):
     """
-    Processes file and stores it in the server.
-    Uses a modular workflow pattern with separate steps.
-    
-    Args:
-        book: The uploaded file to process and store.
-        force: Whether to overwrite existing files.
-    
-    Returns:
-        dict: Information about the stored book including doc_id.
+    Processes book and stores it in the server.
     """
-    user, user_id = get_user()
-    return await process_book_workflow(book, user_id, force)
+    task_id = uuid.uuid5(NAMESPACE, book.filename)
+    
+    # Check if this task has already been started
+    bg_task = await get_background_task(task_id)
+    if bg_task['status'] == "started":
+        return {"message": "Book processing already started!", "task_id": task_id}
+    
+    # Read file content BEFORE passing to background task
+    # UploadFile can only be read once, so we need to read it here
+    file_bytes = await book.read()
+    filename = book.filename
+    
+    _, user_id = get_user()
+    # Pass file_bytes and filename instead of UploadFile object
+    background_tasks.add_task(add_book_background, file_bytes, filename, user_id, force, task_id)
+    return {"message": "Book processing started in background", "task_id": task_id}
+
+@app.post("/extract-knowledge")
+async def extract_knowledge(doc_id: uuid.UUID, background_tasks: FastAPIBackgroundTasks):
+    """
+    Extracts knowledge from a book.
+    """
+    task_id = uuid.uuid5(NAMESPACE, str(doc_id))
+
+    # Check if this task has already been started
+    bg_task = await get_background_task(task_id)
+    if bg_task['status'] == "started":
+        return {"message": "Knowledge extraction already started!", "task_id": task_id}
+
+    background_tasks.add_task(extract_knowledge_background, doc_id, task_id)
+    return {"message": "Knowledge extraction started in background", "task_id": task_id}
 
 @app.get("/fetch-user-books")
 async def fetch_user_books():
@@ -70,6 +110,7 @@ async def fetch_user_books():
     Returns a list of metadata for all books in user's library.
     """
     engine = settings.get_pg_engine()
+    _, user_id = get_user()
     stmt = select(
         DocsMetadata.doc_id, 
         DocsMetadata.created_at, 
@@ -133,3 +174,12 @@ async def get_book(filename: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve file: {str(e)}"
         )
+
+from fastapi.responses import JSONResponse
+@app.get("/health")
+async def main_health():
+    return JSONResponse(content={"status": "ok", "service": "Main App"})
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

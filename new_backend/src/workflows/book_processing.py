@@ -63,12 +63,12 @@ async def step_read_file(file_bytes: bytes, filename: str) -> Tuple[List[str], b
     Returns:
         Tuple of (pages, file_bytes)
     """
-    logger.info("Reading file...")
+    logger.info(f"Processing {filename} with OCR...")
     try:
         reader = DefaultReader()
         file_type = filename.split('.')[-1] if '.' in filename else None
         pages = reader.get_md(file_bytes, file_type)
-        logger.info("Success!")
+        logger.info(f"OCR completed - {len(pages)} pages extracted")
         return pages, file_bytes
     except Exception as e:
         logger.error(f"Failed to read file: {e}", exc_info=True)
@@ -85,11 +85,11 @@ async def step_chunk_content(pages: List[str]) -> List[Dict]:
     Returns:
         List of chunk dictionaries
     """
-    logger.info("Chunking file content...")
+    logger.info("Chunking content...")
     try:
         chunker = DefaultChunker()
         chunks = chunker.chunk(pages)
-        logger.info("Success!")
+        logger.info(f"Created {len(chunks)} chunks")
         return chunks
     except Exception as e:
         logger.error(f"Failed to chunk file: {e}", exc_info=True)
@@ -103,12 +103,12 @@ async def step_upload_to_storage(filename: str, file_bytes: bytes, force: bool):
     """
     Step 4: Upload file to blob storage
     """
-    logger.info("Uploading file to storage...")
+    logger.info(f"Uploading to storage...")
     try:
         container_client = settings.container_client
         blob_client = container_client.get_blob_client(filename)
         blob_client.upload_blob(file_bytes, overwrite=force)
-        logger.info("Success!")
+        logger.info(f"Upload complete")
     except Exception as e:
         logger.error(f"Failed to upload file: {e}", exc_info=True)
         raise HTTPException(
@@ -128,7 +128,7 @@ async def step_save_docs(
     """
     Step 5: Save document pages to database
     """
-    logger.info("Updating docs database...")
+    logger.info(f"Saving {len(pages)} pages for: {filename}")
     try:
         engine = settings.get_pg_engine()
         with Session(engine) as session:
@@ -155,7 +155,7 @@ async def step_save_docs(
                 )
                 session.add(doc)
             session.commit()
-        logger.info("Success!")
+        logger.info(f"Successfully saved {len(pages)} pages")
     except Exception as e:
         logger.error(f"Failed to save docs: {e}", exc_info=True)
         # Check if it's a unique constraint violation
@@ -182,7 +182,7 @@ async def step_save_metadata(
     """
     Step 6: Save document metadata to database
     """
-    logger.info("Updating docs metadata database...")
+    logger.info("Saving metadata...")
     try:
         engine = settings.get_pg_engine()
         with Session(engine) as session:
@@ -207,7 +207,7 @@ async def step_save_metadata(
             )
             session.add(doc_metadata)
             session.commit()
-        logger.info("Success!")
+        logger.info("Metadata saved")
     except Exception as e:
         logger.error(f"Failed to save metadata: {e}", exc_info=True)
         # Check if it's a unique constraint violation
@@ -234,7 +234,7 @@ async def step_save_chunks(
     Returns:
         Dictionary mapping chunk content to chunk_id
     """
-    logger.info("Updating chunks database...")
+    logger.info(f"Saving {len(chunks)} chunks...")
     try:
         engine = settings.get_pg_engine()
         chunk_no = 0
@@ -258,7 +258,7 @@ async def step_save_chunks(
                 chunk_id_map[text] = chunk_row.id
                 last_page = page_no
             session.commit()
-        logger.info("Success!")
+        logger.info(f"{len(chunks)} chunks saved")
         return chunk_id_map
     except Exception as e:
         logger.error(f"Failed to save chunks: {e}", exc_info=True)
@@ -323,7 +323,7 @@ async def step_generate_knowledge(
                     total_knowledge_objects += 1
             
             session.commit()
-        logger.info(f"Success! Generated {total_knowledge_objects} knowledge items")
+        logger.info(f"Generated {total_knowledge_objects} knowledge items")
         
     except Exception as e:
         logger.error(f"Failed to generate knowledge: {e}", exc_info=True)
@@ -405,9 +405,9 @@ async def add_book_background(file_bytes: bytes, filename: str, user_id: uuid.UU
         force: Whether to overwrite existing files
         task_id: Task ID for tracking
     """
+    logger.info(f"Task {task_id} - Starting book processing for: {filename}")
+    
     try:
-        # Step 0: Update task
-        await update_task(task_id, "started")
 
         reader = DefaultReader()
         chunker = DefaultChunker()

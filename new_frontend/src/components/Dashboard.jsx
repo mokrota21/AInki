@@ -11,13 +11,8 @@ function Dashboard() {
   const [extracting, setExtracting] = useState({}) // Track which books are extracting knowledge
   const [selectedBook, setSelectedBook] = useState(null)
   const fileInputRef = useRef(null)
-  const hasLoadedRef = useRef(false) // Guard against StrictMode double-invocation
 
   useEffect(() => {
-    // Prevent double-invocation in React 18 StrictMode (dev only)
-    if (hasLoadedRef.current) return
-    hasLoadedRef.current = true
-    
     loadBooks()
   }, [])
 

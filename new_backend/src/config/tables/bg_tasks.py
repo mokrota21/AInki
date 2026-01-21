@@ -6,6 +6,9 @@ from datetime import datetime
 
 class TaskStatus(Base):
     __tablename__ = "task_status"
+    __table_args__ = (
+        UniqueConstraint("task_id", name="uq_task_status_task_id"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, server_default=func.gen_random_uuid())
     task_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)

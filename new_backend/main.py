@@ -4,9 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks, TaskStatus
+from src.workflows import add_book_background, extract_knowledge_background, create_task
 import logging
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, update
 import uuid
 from fastapi.security import OAuth2PasswordBearer
 from io import BytesIO
@@ -48,7 +49,6 @@ def get_user():
 async def root():
     return {"message": "Hello World"}
 
-from src.workflows import add_book_background, extract_knowledge_background
 
 @app.get("/get-background-task")
 async def get_background_task(task_id: uuid.UUID):
@@ -56,9 +56,13 @@ async def get_background_task(task_id: uuid.UUID):
     Returns the status of a background task.
     """
     engine = settings.get_pg_engine()
-    stmt = select(TaskStatus.status).where(TaskStatus.task_id == task_id)
+    stmt = select(TaskStatus.status).where(TaskStatus.task_id == task_id).with_for_update(nowait=True)
     with Session(engine) as session:
-        result = session.execute(stmt).mappings().first()
+        try:
+            result = session.execute(stmt).mappings().first()
+        except Exception as e:
+            logger.error(f"Background task locked", exc_info=True)
+            return {"message": "Background task locked", "task_id": task_id, "status": "started"}
         if result is None:
             return {"message": "Background task not found", "task_id": task_id, "status": "not_found"}
     return {
@@ -73,11 +77,26 @@ async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, f
     Processes book and stores it in the server.
     """
     task_id = uuid.uuid5(NAMESPACE, book.filename)
+    await create_task(task_id, "created")
     
-    # Check if this task has already been started
-    bg_task = await get_background_task(task_id)
-    if bg_task['status'] == "started":
-        return {"message": "Book processing already started!", "task_id": task_id}
+    engine = settings.get_pg_engine()
+    with Session(engine) as session:
+        stmt = (
+            update(TaskStatus)
+            .where(
+                TaskStatus.task_id == task_id,
+                TaskStatus.status != "started"  # Only update if still "created"
+            )
+            .values(status="started")
+        )
+        try:
+            result = session.execute(stmt)
+            session.commit()
+            if result.rowcount == 0:
+                return {"message": "Book processing already started!", "task_id": task_id}
+        except Exception as e:
+            logger.error(f"Failed to update task: {e}", exc_info=True)
+            return {"message": "Book processing already started!", "task_id": task_id}
     
     # Read file content BEFORE passing to background task
     # UploadFile can only be read once, so we need to read it here
@@ -87,6 +106,8 @@ async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, f
     _, user_id = get_user()
     # Pass file_bytes and filename instead of UploadFile object
     background_tasks.add_task(add_book_background, file_bytes, filename, user_id, force, task_id)
+    
+    logger.info(f"Task {task_id} - Book processing started in background")
     return {"message": "Book processing started in background", "task_id": task_id}
 
 @app.post("/extract-knowledge")

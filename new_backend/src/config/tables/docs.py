@@ -8,7 +8,7 @@ class Docs(Base):
     __tablename__ = "docs"
     __table_args__ = (
         CheckConstraint("page_no >= 0", name="non_negative_page"),
-        UniqueConstraint("filereader", "file_name", "user_id", name="uq_docs_filereader")
+        UniqueConstraint("filereader", "file_name", "user_id", "page_no", name="uq_docs_filereader")
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, server_default=func.gen_random_uuid())

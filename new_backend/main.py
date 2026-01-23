@@ -198,8 +198,7 @@ async def get_book(filename: str):
 @app.get("/get-book-questions")
 async def get_book_questions(doc_id: uuid.UUID, page_no: int):
     """
-    Returns a list of questions for a given book up to the current page.
-    Joins Knowledge with Chunks to filter by page_no.
+    Returns a list of questions for a given book and page.
     """
     engine = settings.get_pg_engine()
     with Session(engine) as session:

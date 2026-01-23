@@ -287,7 +287,7 @@ async def step_generate_knowledge(
     logger.info("Generating knowledge from chunks...")
     try:
         # Extract chunk texts and create references
-        chunk_texts = [chunk['text'] for chunk in chunks]
+        chunk_texts = [chunk['md_content'] for chunk in chunks]
         chunk_references = [chunk['chunk_no'] for chunk in chunks]  # Use text as reference to map back
         
         # Analyze chunks in parallel
@@ -311,13 +311,13 @@ async def step_generate_knowledge(
                     logger.warning(f"Could not find chunk_no for reference")
                     continue
 
-                knowledge_objects = knowledge_item.knowledge_objects
-                for knowledge_object in knowledge_objects:
+                chunk_analysis = knowledge_item.knowledge_objects
+                for question in chunk_analysis.questions:
                     knowledge_row = Knowledge(
                         doc_id=doc_id,
                         chunk_no=chunk_no,
-                        knowledge_name=knowledge_object.knowledge_object,
-                        knowledge_question=knowledge_object.question
+                        knowledge_name=question.knowledge_object,
+                        knowledge_question=question.question
                     )
                     session.add(knowledge_row)
                     total_knowledge_objects += 1
@@ -339,7 +339,8 @@ async def _get_chunks(doc_id: uuid.UUID):
     try:
         engine = settings.get_pg_engine()
         with Session(engine) as session:
-            chunks = session.query(Chunks).filter(Chunks.doc_id == doc_id).all()
+            stmt = select(*Chunks.__table__.columns).limit(10).where(Chunks.doc_id == doc_id)
+            chunks = session.execute(stmt).mappings().all()
             return chunks
     except Exception as e:
         logger.error(f"Failed to get chunks: {e}", exc_info=True)
@@ -376,12 +377,10 @@ async def extract_knowledge_background(doc_id: uuid.UUID, task_id: uuid.UUID = N
     Extracts knowledge from a book.
     """
     try:
-        # Step 0: Update task
-        await update_task(task_id, "started")
         # Step 1: Get chunks
         chunks = await _get_chunks(doc_id)
         # Step 2: Filter out processed chunks
-        chunks = await _filter_processed_chunks(chunks)
+        chunks = await _filter_processed_chunks(chunks, doc_id)
         # Step 2: Generate knowledge
         await step_generate_knowledge(doc_id, chunks)
         # Step 3: Update task

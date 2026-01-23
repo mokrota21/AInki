@@ -3,7 +3,7 @@ from fastapi import BackgroundTasks as FastAPIBackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks, TaskStatus
+from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks, TaskStatus, Knowledge
 from src.workflows import add_book_background, extract_knowledge_background, create_task
 import logging
 from sqlalchemy.orm import Session
@@ -45,38 +45,11 @@ user_id = "f7ef8cce-efe0-42da-849e-4971a7e5a573"
 def get_user():
     return user, user_id
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/get-background-task")
-async def get_background_task(task_id: uuid.UUID):
+async def lock_the_task(task_id: uuid.UUID):
     """
-    Returns the status of a background task.
+    Locks the task so that only one instance of the task can run at a time.
+    Atomically handles creation of the task if it doesn't exist.
     """
-    engine = settings.get_pg_engine()
-    stmt = select(TaskStatus.status).where(TaskStatus.task_id == task_id).with_for_update(nowait=True)
-    with Session(engine) as session:
-        try:
-            result = session.execute(stmt).mappings().first()
-        except Exception as e:
-            logger.error(f"Background task locked", exc_info=True)
-            return {"message": "Background task locked", "task_id": task_id, "status": "started"}
-        if result is None:
-            return {"message": "Background task not found", "task_id": task_id, "status": "not_found"}
-    return {
-        "message": f"Background task status is {result['status']}",
-        "task_id": task_id,
-        "status": result['status']
-    }
-
-@app.post("/add-book")
-async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, force: bool = False):
-    """
-    Processes book and stores it in the server.
-    """
-    task_id = uuid.uuid5(NAMESPACE, book.filename)
     await create_task(task_id, "created")
     
     engine = settings.get_pg_engine()
@@ -93,11 +66,32 @@ async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, f
             result = session.execute(stmt)
             session.commit()
             if result.rowcount == 0:
-                return {"message": "Book processing already started!", "task_id": task_id}
+                return {"message": "Task already locked!", "status": "locked" } # It means task is already running and we should not proceed
         except Exception as e:
             logger.error(f"Failed to update task: {e}", exc_info=True)
-            return {"message": "Book processing already started!", "task_id": task_id}
-    
+            return {"message": "Failed to lock task!", "status": "error"} # It means there was an error. Ideally raise an error and check out what is wrong
+    return {"message": "Task locked successfully!", "status": "success"} # It means task was locked succesfully and we can proceed
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.post("/add-book")
+async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, force: bool = False):
+    """
+    Processes book and stores it in the server.
+    """
+    task_id = uuid.uuid5(NAMESPACE, book.filename)
+    response = await lock_the_task(task_id)
+    if response['status'] == "locked":
+        return {"message": response['message'], "task_id": task_id}
+    elif response['status'] == "error":
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=response['message'])
+    elif response['status'] == "success":
+        pass
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Unexpected response from lock_the_task")
     # Read file content BEFORE passing to background task
     # UploadFile can only be read once, so we need to read it here
     file_bytes = await book.read()
@@ -108,7 +102,7 @@ async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, f
     background_tasks.add_task(add_book_background, file_bytes, filename, user_id, force, task_id)
     
     logger.info(f"Task {task_id} - Book processing started in background")
-    return {"message": "Book processing started in background", "task_id": task_id}
+    return {"message": response['message'], "task_id": task_id}
 
 @app.post("/extract-knowledge")
 async def extract_knowledge(doc_id: uuid.UUID, background_tasks: FastAPIBackgroundTasks):
@@ -117,13 +111,18 @@ async def extract_knowledge(doc_id: uuid.UUID, background_tasks: FastAPIBackgrou
     """
     task_id = uuid.uuid5(NAMESPACE, str(doc_id))
 
-    # Check if this task has already been started
-    bg_task = await get_background_task(task_id)
-    if bg_task['status'] == "started":
-        return {"message": "Knowledge extraction already started!", "task_id": task_id}
+    response = await lock_the_task(task_id)
+    if response['status'] == "locked":
+        return {"message": response['message'], "task_id": task_id}
+    elif response['status'] == "error":
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=response['message'])
+    elif response['status'] == "success":
+        pass
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Unexpected response from lock_the_task")
 
     background_tasks.add_task(extract_knowledge_background, doc_id, task_id)
-    return {"message": "Knowledge extraction started in background", "task_id": task_id}
+    return {"message": response['message'], "task_id": task_id}
 
 @app.get("/fetch-user-books")
 async def fetch_user_books():
@@ -195,6 +194,34 @@ async def get_book(filename: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve file: {str(e)}"
         )
+
+@app.get("/get-book-questions")
+async def get_book_questions(doc_id: uuid.UUID, page_no: int):
+    """
+    Returns a list of questions for a given book up to the current page.
+    Joins Knowledge with Chunks to filter by page_no.
+    """
+    engine = settings.get_pg_engine()
+    with Session(engine) as session:
+        # Join Knowledge with Chunks to filter by page_no
+        stmt = (
+            select(
+                Knowledge.knowledge_id,
+                Knowledge.knowledge_name,
+                Knowledge.knowledge_question,
+                Knowledge.chunk_no,
+                Chunks.page_no
+            )
+            .join(Chunks, Knowledge.chunk_no == Chunks.chunk_no)
+            .where(
+                Knowledge.doc_id == doc_id,
+                Chunks.doc_id == doc_id,
+                Chunks.page_no <= page_no
+            )
+        )
+        result = session.execute(stmt).mappings().all()
+        questions = [dict(row) for row in result]
+    return questions
 
 from fastapi.responses import JSONResponse
 @app.get("/health")

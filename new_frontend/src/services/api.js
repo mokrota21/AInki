@@ -46,3 +46,11 @@ export async function getBackgroundTask(taskId) {
   })
   return response.data
 }
+
+// Get book questions for a specific page
+export async function getBookQuestions(docId, pageNo) {
+  const response = await api.get('/get-book-questions', {
+    params: { doc_id: docId, page_no: pageNo }
+  })
+  return response.data
+}

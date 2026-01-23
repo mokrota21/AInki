@@ -6019,3 +6019,453 @@ Response headers:
 2026-01-21 21:44:02,674 - book_processing - INFO - Success!
 2026-01-21 21:44:02,675 - book_processing - INFO - Updating chunks database...
 2026-01-21 21:44:03,750 - book_processing - INFO - Success!
+2026-01-23 11:01:56,516 - book_processing - ERROR - Failed to extract knowledge: _filter_processed_chunks() missing 1 required positional argument: 'doc_id'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 382, in extract_knowledge_background
+    chunks = await _filter_processed_chunks(chunks)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: _filter_processed_chunks() missing 1 required positional argument: 'doc_id'
+2026-01-23 12:25:38,671 - book_processing - ERROR - Failed to filter processed chunks: 'Chunks' object is not subscriptable
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 357, in _filter_processed_chunks
+    chunk_nos = [chunk['chunk_no'] for chunk in chunks]
+                 ~~~~~^^^^^^^^^^^^
+TypeError: 'Chunks' object is not subscriptable
+2026-01-23 12:25:38,675 - book_processing - ERROR - Failed to extract knowledge: 500: Failed to filter processed chunks: 'Chunks' object is not subscriptable
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 357, in _filter_processed_chunks
+    chunk_nos = [chunk['chunk_no'] for chunk in chunks]
+                 ~~~~~^^^^^^^^^^^^
+TypeError: 'Chunks' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 382, in extract_knowledge_background
+    chunks = await _filter_processed_chunks(chunks, doc_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/workflows/book_processing.py", line 369, in _filter_processed_chunks
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 500: Failed to filter processed chunks: 'Chunks' object is not subscriptable
+2026-01-23 12:27:48,183 - book_processing - ERROR - Failed to get chunks: 'Query' object has no attribute 'mappings'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 342, in _get_chunks
+    chunks = session.query(Chunks).filter(Chunks.doc_id == doc_id).mappings().all()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Query' object has no attribute 'mappings'
+2026-01-23 12:27:48,189 - book_processing - ERROR - Failed to extract knowledge: 500: Failed to get chunks: 'Query' object has no attribute 'mappings'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 342, in _get_chunks
+    chunks = session.query(Chunks).filter(Chunks.doc_id == doc_id).mappings().all()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Query' object has no attribute 'mappings'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 380, in extract_knowledge_background
+    chunks = await _get_chunks(doc_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/workflows/book_processing.py", line 346, in _get_chunks
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 500: Failed to get chunks: 'Query' object has no attribute 'mappings'
+2026-01-23 12:30:05,939 - book_processing - ERROR - Failed to filter processed chunks: 'chunk_no'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 358, in _filter_processed_chunks
+    chunk_nos = [chunk['chunk_no'] for chunk in chunks]
+                 ~~~~~^^^^^^^^^^^^
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 57, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl_mapping
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 63, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 203, in _key_not_found
+    self._key_fallback(key, None)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 138, in _key_fallback
+    raise KeyError(key) from err
+KeyError: 'chunk_no'
+2026-01-23 12:30:05,950 - book_processing - ERROR - Failed to extract knowledge: 500: Failed to filter processed chunks: 'chunk_no'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 358, in _filter_processed_chunks
+    chunk_nos = [chunk['chunk_no'] for chunk in chunks]
+                 ~~~~~^^^^^^^^^^^^
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 57, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl_mapping
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 63, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 203, in _key_not_found
+    self._key_fallback(key, None)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 138, in _key_fallback
+    raise KeyError(key) from err
+KeyError: 'chunk_no'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 383, in extract_knowledge_background
+    chunks = await _filter_processed_chunks(chunks, doc_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/workflows/book_processing.py", line 370, in _filter_processed_chunks
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 500: Failed to filter processed chunks: 'chunk_no'
+2026-01-23 12:32:48,078 - book_processing - INFO - Found: [{'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f135c0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f135f0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13620>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13650>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13680>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f136b0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f136e0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13710>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13740>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13770>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f137a0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13800>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13860>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f138c0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13920>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13980>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f139e0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13a40>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13aa0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13b00>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13b60>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13bc0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13c20>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13c80>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13ce0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13d40>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13da0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13e00>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13e60>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13ec0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13f20>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13f80>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f13fe0>}, {'Chunks': <src.config.tables.chunks.Chunks object at 0x7f56f6f28080>}]
+2026-01-23 12:32:48,431 - book_processing - ERROR - Failed to filter processed chunks: 'chunk_no'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 358, in _filter_processed_chunks
+    chunk_nos = [chunk['chunk_no'] for chunk in chunks]
+                 ~~~~~^^^^^^^^^^^^
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 57, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl_mapping
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 63, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 203, in _key_not_found
+    self._key_fallback(key, None)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 138, in _key_fallback
+    raise KeyError(key) from err
+KeyError: 'chunk_no'
+2026-01-23 12:32:48,440 - book_processing - ERROR - Failed to extract knowledge: 500: Failed to filter processed chunks: 'chunk_no'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 358, in _filter_processed_chunks
+    chunk_nos = [chunk['chunk_no'] for chunk in chunks]
+                 ~~~~~^^^^^^^^^^^^
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 57, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl_mapping
+  File "lib/sqlalchemy/cyextension/resultproxy.pyx", line 63, in sqlalchemy.cyextension.resultproxy.BaseRow._get_by_key_impl
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 203, in _key_not_found
+    self._key_fallback(key, None)
+  File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/result.py", line 138, in _key_fallback
+    raise KeyError(key) from err
+KeyError: 'chunk_no'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 384, in extract_knowledge_background
+    chunks = await _filter_processed_chunks(chunks, doc_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/src/workflows/book_processing.py", line 370, in _filter_processed_chunks
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 500: Failed to filter processed chunks: 'chunk_no'
+2026-01-23 12:38:29,149 - book_processing - INFO - Generating knowledge from chunks...
+2026-01-23 12:38:29,150 - llm_agent - INFO - Processing batch 1: chunks 0 to 9
+2026-01-23 12:40:51,686 - llm_agent - INFO - Processing batch 2: chunks 10 to 19
+2026-01-23 12:42:37,412 - llm_agent - INFO - Processing batch 3: chunks 20 to 29
+2026-01-23 12:44:21,944 - llm_agent - INFO - Processing batch 4: chunks 30 to 33
+2026-01-23 12:45:14,655 - llm_agent - INFO - Completed processing 34 chunks. Found 34 knowledge items
+2026-01-23 12:45:15,183 - book_processing - ERROR - Failed to generate knowledge: 'tuple' object has no attribute 'knowledge_object'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 319, in step_generate_knowledge
+    knowledge_name=knowledge_object.knowledge_object,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'tuple' object has no attribute 'knowledge_object'
+2026-01-23 12:45:15,188 - book_processing - ERROR - Failed to extract knowledge: 500: Failed to generate knowledge: 'tuple' object has no attribute 'knowledge_object'
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 319, in step_generate_knowledge
+    knowledge_name=knowledge_object.knowledge_object,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'tuple' object has no attribute 'knowledge_object'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/src/workflows/book_processing.py", line 385, in extract_knowledge_background
+    await step_generate_knowledge(doc_id, chunks)
+  File "/app/src/workflows/book_processing.py", line 330, in step_generate_knowledge
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 500: Failed to generate knowledge: 'tuple' object has no attribute 'knowledge_object'
+2026-01-23 12:54:11,221 - book_processing - INFO - Generating knowledge from chunks...
+2026-01-23 12:54:11,221 - llm_agent - INFO - Processing batch 1: chunks 0 to 9
+2026-01-23 12:55:33,815 - llm_agent - INFO - Completed processing 10 chunks. Found 10 knowledge items
+2026-01-23 12:55:34,474 - book_processing - INFO - Generated 80 knowledge items
+2026-01-23 12:59:03,048 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4ae1605a-f85b-11f0-83ec-7611564f3fd3'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 12:59:03,882 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e95213e6-f01e-0002-1168-8cb6d8000000'
+    'x-ms-client-request-id': '4ae1605a-f85b-11f0-83ec-7611564f3fd3'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 12:59:03 GMT'
+2026-01-23 12:59:03,883 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4b60c67e-f85b-11f0-83ec-7611564f3fd3'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 12:59:04,748 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e952140e-f01e-0002-3068-8cb6d8000000'
+    'x-ms-client-request-id': '4b60c67e-f85b-11f0-83ec-7611564f3fd3'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 12:59:03 GMT'
+2026-01-23 12:59:07,853 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4dbea026-f85b-11f0-83ec-7611564f3fd3'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 12:59:08,587 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '66e16689-301e-0050-4368-8cca30000000'
+    'x-ms-client-request-id': '4dbea026-f85b-11f0-83ec-7611564f3fd3'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 12:59:07 GMT'
+2026-01-23 12:59:08,589 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4e2ed5d0-f85b-11f0-83ec-7611564f3fd3'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 12:59:08,690 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '66e16696-301e-0050-4e68-8cca30000000'
+    'x-ms-client-request-id': '4e2ed5d0-f85b-11f0-83ec-7611564f3fd3'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 12:59:07 GMT'
+2026-01-23 13:14:06,723 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '65831262-f85d-11f0-bec6-b216fe09cbce'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 13:14:07,026 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '76ca9cb2-f01e-0070-746a-8cb197000000'
+    'x-ms-client-request-id': '65831262-f85d-11f0-bec6-b216fe09cbce'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 13:14:06 GMT'
+2026-01-23 13:14:07,027 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '65b1a352-f85d-11f0-bec6-b216fe09cbce'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 13:14:07,104 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '76ca9cc7-f01e-0070-026a-8cb197000000'
+    'x-ms-client-request-id': '65b1a352-f85d-11f0-bec6-b216fe09cbce'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 13:14:06 GMT'
+2026-01-23 13:14:07,516 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '65fc55dc-f85d-11f0-bec6-b216fe09cbce'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 13:14:07,734 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '58b3713e-a01e-0030-286a-8cb6af000000'
+    'x-ms-client-request-id': '65fc55dc-f85d-11f0-bec6-b216fe09cbce'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 13:14:07 GMT'
+2026-01-23 13:14:07,735 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '661d9fe4-f85d-11f0-bec6-b216fe09cbce'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 13:14:07,825 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '58b3714b-a01e-0030-336a-8cb6af000000'
+    'x-ms-client-request-id': '661d9fe4-f85d-11f0-bec6-b216fe09cbce'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 13:14:07 GMT'
+2026-01-23 13:30:35,205 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'b2b1b050-f85f-11f0-bdb8-fe7e03d9ff9b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 13:30:35,473 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0cbfe40d-801e-0027-4c6c-8c1fa4000000'
+    'x-ms-client-request-id': 'b2b1b050-f85f-11f0-bdb8-fe7e03d9ff9b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'x-ms-access-tier': 'REDACTED'
+    'x-ms-access-tier-inferred': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 13:30:34 GMT'
+2026-01-23 13:30:35,474 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/water%20bill.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.12.12 (Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.41)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'b2dab068-f85f-11f0-bdb8-fe7e03d9ff9b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-23 13:30:35,567 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '1365492'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Wed, 21 Jan 2026 21:44:02 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE593631258E26"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0cbfe42d-801e-0027-656c-8c1fa4000000'
+    'x-ms-client-request-id': 'b2dab068-f85f-11f0-bdb8-fe7e03d9ff9b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 23 Jan 2026 13:30:34 GMT'

@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Search, Settings, BookOpen, Flame, Headphones, Plus, RefreshCw, Brain } from 'lucide-react'
-import { fetchUserBooks, addBook, getBookUrl, extractKnowledge } from '../services/api'
+import { fetchUserBooks, addBook, extractKnowledge } from '../services/api'
 import toast from 'react-hot-toast'
 import './Dashboard.css'
 
 function Dashboard() {
+  const navigate = useNavigate()
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [extracting, setExtracting] = useState({}) // Track which books are extracting knowledge
-  const [selectedBook, setSelectedBook] = useState(null)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -80,8 +81,8 @@ function Dashboard() {
   }
 
   const handleBookClick = (book) => {
-    const fileUrl = getBookUrl(book.file_name)
-    setSelectedBook({ ...book, url: fileUrl })
+    // Navigate to the book reader page
+    navigate(`/read/${book.doc_id}/${encodeURIComponent(book.file_name)}`)
   }
 
   const getBookColor = (index) => {
@@ -295,19 +296,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Book Viewer Modal */}
-      {selectedBook && (
-        <div className="book-modal" onClick={() => setSelectedBook(null)}>
-          <div className="book-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setSelectedBook(null)}>×</button>
-            <iframe
-              src={selectedBook.url}
-              className="book-iframe"
-              title={selectedBook.file_name}
-            />
-          </div>
-        </div>
-      )}
     </div>
   )
 }

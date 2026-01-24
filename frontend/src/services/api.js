@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-// Use Vite's injected env; fallback to proxy path
-const API_BASE_URL = (import.meta.env && import.meta.env.VITE_API_BASE_URL) || '/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,79 +9,49 @@ export const api = axios.create({
   },
 })
 
-// Add request interceptor to include auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-// Add response interceptor to handle auth errors
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
-  }
-)
-
-// Convenience helpers
-export async function fetchFileContent(docId) {
-  // Backend implemented as GET /api/file_content?doc_id=ID
-  const response = await api.get(`/file_content`, { params: { doc_id: docId } })
+// Fetch user books
+export async function fetchUserBooks() {
+  const response = await api.get('/fetch-user-books')
   return response.data
 }
 
-// Track reading progress - supports both MD and PDF views
-export async function trackPage({ docId, chunkEnd, chunkStart, pageNumber, readerType = 'md' }) {
-  if (readerType === 'md') {
-    // For markdown: send both start and end chunk indexes
-    return api.post(`/track`, {
-      doc_id: docId,
-      track_element_end_idx: [chunkStart, chunkEnd],
-      frontend_reader_type: 'md'
-    })
-  } else {
-    // For PDF: send only page number
-    return api.post(`/track`, {
-      doc_id: docId,
-      track_element_end_idx: pageNumber,
-      frontend_reader_type: 'pdf'
-    })
-  }
-}
-
-// Quiz generation endpoints
-export async function getQuizParameters() {
-  return api.post('/extract_objects_parameter')
-}
-
-export async function getPriceApproximation(docId, promptKey = "general_textbook_prompt", modelName = "gpt-5-nano") {
-  return api.post(`/price_approximation?doc_id=${docId}&prompt_key=${promptKey}&model_name=${modelName}`)
-}
-
-export async function extractObjects(docId, promptKey = "general_textbook_prompt", additionalParams = {}) {
-  const queryParams = new URLSearchParams({
-    doc_id: docId,
-    prompt_key: promptKey,
-    kwargs: '', // FastAPI requires this parameter due to **kwargs in the function signature
-    ...additionalParams
+// Add book
+export async function addBook(file, force = false) {
+  const formData = new FormData()
+  formData.append('book', file)
+  formData.append('force', force)
+  const response = await api.post('/add-book', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
-  return api.post(`/extract_objects?${queryParams}`)
+  return response.data
 }
 
-// Test endpoint for all items
-export async function getAllItems(docId = null) {
-  const params = docId ? { doc_id: docId } : {}
-  return api.get('/all_items', { params })
+// Get book file
+export function getBookUrl(filename) {
+  return `${API_BASE_URL}/get-book?filename=${encodeURIComponent(filename)}`
+}
+
+// Extract knowledge from a book
+export async function extractKnowledge(docId) {
+  // FastAPI accepts query parameters in POST requests
+  const response = await api.post(`/extract-knowledge?doc_id=${docId}`)
+  return response.data
+}
+
+// Get background task status
+export async function getBackgroundTask(taskId) {
+  const response = await api.get('/get-background-task', {
+    params: { task_id: taskId }
+  })
+  return response.data
+}
+
+// Get book questions for a specific page
+export async function getBookQuestions(docId, pageNo) {
+  const response = await api.get('/get-book-questions', {
+    params: { doc_id: docId, page_no: pageNo }
+  })
+  return response.data
 }

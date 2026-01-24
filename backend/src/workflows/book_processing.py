@@ -226,7 +226,8 @@ async def step_save_metadata(
 async def step_save_chunks(
     doc_id: uuid.UUID,
     chunks: List[Dict],
-    chunker_name: str
+    chunker_name: str,
+    force: bool = False
 ) -> Dict[str, uuid.UUID]:
     """
     Step 7: Save chunks to database
@@ -242,6 +243,14 @@ async def step_save_chunks(
         chunk_id_map = {}  # Maps chunk content to chunk_id
         
         with Session(engine) as session:
+            if force:
+                stmt = select(Chunks).where(
+                    Chunks.doc_id == doc_id
+                )
+                existing_chunks = session.execute(stmt).scalars().all()
+                for chunk in existing_chunks:
+                    session.delete(chunk)
+                session.flush()
             for chunk in chunks:
                 text = chunk['text']
                 page_no = chunk['page_no']

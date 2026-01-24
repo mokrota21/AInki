@@ -1,0 +1,37 @@
+2025-12-23 21:10:14,435 - tables.base - INFO - Initialized table users
+2025-12-23 21:10:14,454 - tables.base - INFO - Initialized table repetitions
+2025-12-23 21:10:14,478 - tables.base - INFO - Initialized table docs
+2025-12-23 21:11:29,046 - tables.base - INFO - Initialized table users
+2025-12-23 21:11:29,062 - tables.base - INFO - Initialized table repetitions
+2025-12-23 21:11:29,080 - tables.base - INFO - Initialized table docs
+2025-12-23 21:11:29,100 - tables.base - INFO - Initialized table chunks
+2026-01-19 21:00:43,070 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://stainkidev.blob.core.windows.net/uploads/productiestaten%20controle%20rapport%201094%202026-01-14%2020-03-45.pdf'
+Request method: 'GET'
+Request headers:
+    'x-ms-range': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.5 (Windows-11-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '89370a10-f571-11f0-82f5-88aedd4207b8'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2026-01-19 21:00:43,461 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 206
+Response headers:
+    'Content-Length': '2666'
+    'Content-Type': 'application/octet-stream'
+    'Content-Range': 'REDACTED'
+    'Last-Modified': 'Mon, 19 Jan 2026 19:51:44 GMT'
+    'Accept-Ranges': 'REDACTED'
+    'ETag': '"0x8DE57942C915581"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0e60db54-101e-0047-147e-89633b000000'
+    'x-ms-client-request-id': '89370a10-f571-11f0-82f5-88aedd4207b8'
+    'x-ms-version': 'REDACTED'
+    'x-ms-creation-time': 'REDACTED'
+    'x-ms-blob-content-md5': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-server-encrypted': 'REDACTED'
+    'Date': 'Mon, 19 Jan 2026 20:00:43 GMT'

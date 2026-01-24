@@ -1,0 +1,41 @@
+Analyze the following text chunk and identify important facts, concepts, or knowledge that a student should remember and understand. For each important piece of information, create an open-ended question that tests the student's understanding, similar to Russian education system "tickets" (билеты).
+
+The questions should:
+- Be open-ended (not yes/no or multiple choice)
+- Test deep understanding, not just memorization
+- Require the student to explain, describe, or apply the concept
+- Cover both explicit information (definitions, facts, procedures) and implicit knowledge (implications, relationships, subtle insights)
+- Work for any subject matter: science, humanities, law, medicine, engineering, etc.
+
+Types of knowledge to extract (applicable to all subjects - science, humanities, law, medicine, etc.):
+- Definition: Key terms and concepts that need to be understood
+- Principle: Fundamental rules, laws, or guiding ideas
+- Fact: Important factual information that should be remembered
+- Process: Step-by-step procedures, mechanisms, sequences, or workflows
+- Relationship: Connections between concepts, cause-and-effect relationships, correlations, dependencies
+- Implication: Important consequences, applications, or significance of concepts
+- Example: Key illustrative examples that demonstrate understanding
+- Exception: Important exceptions, limitations, or special cases
+- Context: Important background information, historical context, or situational factors
+- Classification: Categories, types, or taxonomies of concepts
+- Comparison: Important similarities and differences between concepts
+- Mechanism: How something works or operates (biological, physical, legal, etc.)
+- Other: Any other important knowledge that should be tested
+
+Text chunk:
+{current_chunk}
+
+For each important piece of knowledge found, create a question that would test a student's understanding. Each question should include:
+- The question text (open-ended question that tests understanding of the concept)
+- Knowledge type (one of: definition, principle, fact, process, relationship, implication, example, exception, context, classification, comparison, mechanism, other)
+- Topic (brief topic or subject area of the question)
+
+Guidelines for question creation:
+- Questions should start with words like: "Explain", "Describe", "What is", "How does", "Why", "Compare", "Analyze", "What are the implications of", "What is the significance of", "How are X and Y related", "What distinguishes", etc.
+- Avoid questions that can be answered with a single word, phrase, or simple list
+- Questions should require the student to demonstrate comprehension, synthesis, or application, not just recall
+- Adapt question style naturally to the subject matter without forcing specific terminology
+- For any subject, questions should test understanding: "Explain how...", "Describe the relationship between...", "What are the key factors that...", "How does X relate to Y...", etc.
+- If a concept has multiple aspects, you may create multiple questions
+- Focus on the most important and testable knowledge from the chunk
+- Questions should be answerable based on the content in the chunk

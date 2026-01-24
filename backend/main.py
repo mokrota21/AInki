@@ -1,551 +1,234 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Request, BackgroundTasks
+from fastapi import FastAPI, UploadFile, HTTPException, status
+from fastapi import BackgroundTasks as FastAPIBackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.exceptions import RequestValidationError
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, StreamingResponse
-from starlette.responses import FileResponse
+from fastapi.responses import StreamingResponse
+from fastapi import Form
 from pydantic import BaseModel
-from typing import List
-from src import *
-from dotenv import load_dotenv
-from datetime import datetime
-from pathlib import Path
-import uvicorn
+from src import settings, DefaultReader, FileReader, Chunker, DefaultChunker, Docs, DocsMetadata, Chunks, TaskStatus, Knowledge
+from src.workflows import add_book_background, extract_knowledge_background, create_task
 import logging
-import traceback
-from random import sample
+from sqlalchemy.orm import Session
+from sqlalchemy import select, update
+import uuid
+from fastapi.security import OAuth2PasswordBearer
 from io import BytesIO
+import uvicorn
 
-load_dotenv()
+logger = logging.getLogger("tables.base")
 
-ensure_tables_exist()
-
-app = FastAPI(title="AInki - Spaced Repetition Learning", version="1.0.0")
-context_diff = 2
-truncate_after = 100
-PENDING_QUIZ_LIMIT = 5
-NO_QUESTION_GENERATION=True
-NO_QUIZ_GENERATION=True
-NO_BOOK_PROCESSING=True
-
-# Add validation error handler to see detailed error messages
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    logger.error(f"Validation error: {exc}")
-    logger.error(f"Request body: {await request.body()}")
-    return JSONResponse(
-        status_code=422,
-        content={"detail": f"Validation error: {exc}"}
+# Configure the root logger (only if not already configured)
+if not logging.root.handlers:
+    logging.basicConfig(
+        format="{asctime} - {name} - {levelname} - {message}",
+        style="{",
+        datefmt="%Y-%m-%d %H:%M",
+        level=logging.INFO
     )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),  # Console output
-        logging.FileHandler('ainki.log')  # File output
-    ]
-)
-logger = logging.getLogger(__name__)
+app = FastAPI()
+NAMESPACE = uuid.UUID(settings.namespace)
 
-# CORS middleware for frontend communication
+# Add CORS middleware to allow frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite default port
+    allow_origins=["http://localhost:5174", "http://localhost:5173"],  # Frontend dev servers
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Mount static files for serving PDFs
-app.mount("/api/uploads", StaticFiles(directory="uploads"), name="uploads")
+# TODO: Replace with proper user authentication
+# Currently using hardcoded user for development
+# This should be replaced with JWT tokens or session-based auth
+user = "mokrota"
+user_id = "f7ef8cce-efe0-42da-849e-4971a7e5a573"
 
-readers = {
-    "DefaultReader": DefaultReader,
-    "MineruReader": MineruReader
-}
+def get_user():
+    return user, user_id
 
-security = HTTPBearer()
-
-# Pydantic models
-class UserRegister(BaseModel):
-    username: str
-    password: str
-    gmail: str
-
-class UserLogin(BaseModel):
-    username_or_gmail: str
-    password: str
-
-class PendingItem(BaseModel):
-    node_id: str
-    name: str
-    question_id: str
-    question: str
-    question_type: str
-    cognitive_focus: str
-    answer: str
-    reference: str
-    doc_id: int
-    chunk_start: int
-    chunk_end: int
-
-class TrackRequest(BaseModel):
-    doc_id: int
-    track_element_end_idx: int | List[int]
-    frontend_reader_type: str = "md"
-
-def lifespan(app: FastAPI):
-    init_graph()
-    yield
-
-# Authentication dependency
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    try:
-        userid = credentials.credentials
-        # Verify user exists (you might want to add a proper token validation here)
-        return userid
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid authentication")
-
-# Routes
-@app.post("/api/auth/register")
-def register(user_data: UserRegister):
-    try:
-        userid = insert_user(user_data.gmail, user_data.password, user_data.username)
-        logger.info(f"User registered successfully: {user_data.username}")
-        return {"userid": userid, "message": "User registered successfully"}
-    except Exception as e:
-        logger.error(f"Registration error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
-
-@app.post("/api/auth/login")
-def login(user_data: UserLogin):
-    try:
-        userid = authorize_user(user_data.password, user_data.username_or_gmail)
-        if userid is None:
-            raise HTTPException(status_code=401, detail="Invalid username or password")
-        logger.info(f"User logged in successfully: {user_data.username_or_gmail}")
-        return {"userid": userid, "message": "Login successful"}
-    except Exception as e:
-        logger.error(f"Login error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=401, detail=f"Login failed: {str(e)}")
-
-@app.get("/api/docs")
-def get_docs():
-    try:
-        docs = get_all_docs()
-        has_quiz = len(get_all_pending()) > 0
-        logger.info(f"Has quiz: {has_quiz}")
-        return {"docs": docs, "has_quiz": has_quiz}
-    except Exception as e:
-        logger.error(f"Docs error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to get docs: {str(e)}")
-
-@app.get("/api/file_content")
-def get_file_content(
-    doc_id: int
-):
-    try:
-        response = {}
-        _, response['name'], response['folder'] = list(get_doc(doc_id).values())
-        response['chunks'] = get_chunks(doc_id)
-        log_info = []
-        for chunk in response['chunks']:
-            log_info.append(chunk['content'][:50] + "..." + chunk['content'][-50:]) if len(chunk['content']) > 100 else chunk['content']
-            log_info[-1] = (log_info[-1], chunk['order_idx'])
-        return response
-    except Exception as e:
-        logger.error(f"File content error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to get file content: {str(e)}")
-
-@app.post("/api/upload")
-def upload_file(
-    file: UploadFile = File(...),
-    current_user: str = Depends(get_current_user),
-    reader: str = "DefaultReader"
-):
-    if NO_BOOK_PROCESSING:
-        return {"message": "Book processing is disabled"}
-    try:
-        reader = readers[reader]
-        logger.info(f"Uploading file: {file.filename} for user: {current_user}")
-        
-        # Process file using your existing pipeline
-
-        # Read file content
-        content, result_folder = reader().read_file(file)
-
-        doc_id = insert_doc(file, result_folder, force=True)
-        if doc_id == -1:
-            raise HTTPException(status_code=400, detail="File already exists")
-        logger.info(f"Document inserted with ID: {doc_id}")
-        
-        # Store original PDF in Azure Blob Storage using generated doc_id
-        try:
-            try:
-                file.file.seek(0)
-            except Exception:
-                pass
-            store_file(doc_id, file)
-            logger.info(f"Stored PDF in blob storage as {doc_id}.pdf")
-        except Exception as storage_err:
-            logger.error(f"Failed to store PDF in blob storage: {storage_err}")
-            raise HTTPException(status_code=500, detail="Failed to store file in storage")
-
-        chunks = DefaultChunker().chunk(content)
-        insert_doc_chunks(chunks, doc_id, DefaultReader().name)
-        logger.info(f"Created {len(chunks)} chunks")
-
-        # objects = extract_objects_from_chunks(chunks[:10], doc_id) # Limit for testing
-        # logger.info(f"Extracted {len(objects)} objects")
-        
-        # object_nodes = insert_objects(objects)
-        # for object in object_nodes: merge_repetition_state(object.element_id, RepeatState(current_user, 0))
-        # logger.info("Objects inserted successfully")
-        
-        return {
-            "message": "File processed successfully",
-            "doc_id": doc_id,
-            "chunks_count": len(chunks)
-        }
-    except Exception as e:
-        logger.error(f"Upload error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
-
-@app.get("/api/get_file")
-def get_file(doc_id: int):
-    try:
-        pdf_bytes = fet_file(doc_id)
-        return StreamingResponse(
-            BytesIO(pdf_bytes),
-            media_type="application/pdf",
-            headers={"Content-Disposition": f'inline; filename="{doc_id}.pdf"'}
+async def lock_the_task(task_id: uuid.UUID):
+    """
+    Locks the task so that only one instance of the task can run at a time.
+    Atomically handles creation of the task if it doesn't exist.
+    """
+    await create_task(task_id, "created")
+    
+    engine = settings.get_pg_engine()
+    with Session(engine) as session:
+        stmt = (
+            update(TaskStatus)
+            .where(
+                TaskStatus.task_id == task_id,
+                TaskStatus.status != "started"  # Only update if still "created"
+            )
+            .values(status="started")
         )
-    except Exception as e:
-        logger.error(f"Get file error: {str(e)}")
-        raise HTTPException(status_code=404, detail="File not found")
+        try:
+            result = session.execute(stmt)
+            session.commit()
+            if result.rowcount == 0:
+                return {"message": "Task already locked!", "status": "locked" } # It means task is already running and we should not proceed
+        except Exception as e:
+            logger.error(f"Failed to update task: {e}", exc_info=True)
+            return {"message": "Failed to lock task!", "status": "error"} # It means there was an error. Ideally raise an error and check out what is wrong
+    return {"message": "Task locked successfully!", "status": "success"} # It means task was locked succesfully and we can proceed
 
-@app.post("/api/extract_objects_parameter")
-def extract_objects_parameter():
-    return [
-        {
-            "name": "Type of prompt",
-            "type": "select",
-            "values": prompts_available,
-            "fetch_name": "prompt_key"
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.post("/add-book")
+async def add_book(book: UploadFile, background_tasks: FastAPIBackgroundTasks, force: bool = Form(False)):
+    """
+    Processes book and stores it in the server.
+    """
+    logger.info(f"Processing book: {book.filename} with force: {force}")
+    task_id = uuid.uuid5(NAMESPACE, book.filename)
+    response = await lock_the_task(task_id)
+    if response['status'] == "locked":
+        return {"message": response['message'], "task_id": task_id}
+    elif response['status'] == "error":
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=response['message'])
+    elif response['status'] == "success":
+        pass
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Unexpected response from lock_the_task")
+    # Read file content BEFORE passing to background task
+    # UploadFile can only be read once, so we need to read it here
+    file_bytes = await book.read()
+    filename = book.filename
+    
+    _, user_id = get_user()
+    # Pass file_bytes and filename instead of UploadFile object
+    background_tasks.add_task(add_book_background, file_bytes, filename, user_id, force, task_id)
+    
+    logger.info(f"Task {task_id} - Book processing started in background")
+    return {"message": response['message'], "task_id": task_id}
+
+@app.post("/extract-knowledge")
+async def extract_knowledge(doc_id: uuid.UUID, background_tasks: FastAPIBackgroundTasks):
+    """
+    Extracts knowledge from a book.
+    """
+    task_id = uuid.uuid5(NAMESPACE, str(doc_id))
+
+    response = await lock_the_task(task_id)
+    if response['status'] == "locked":
+        return {"message": response['message'], "task_id": task_id}
+    elif response['status'] == "error":
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=response['message'])
+    elif response['status'] == "success":
+        pass
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Unexpected response from lock_the_task")
+
+    background_tasks.add_task(extract_knowledge_background, doc_id, task_id)
+    return {"message": response['message'], "task_id": task_id}
+
+@app.get("/fetch-user-books")
+async def fetch_user_books():
+    """
+    Returns a list of metadata for all books in user's library.
+    """
+    engine = settings.get_pg_engine()
+    _, user_id = get_user()
+    stmt = select(
+        DocsMetadata.doc_id, 
+        DocsMetadata.created_at, 
+        DocsMetadata.pages_total,
+        DocsMetadata.file_name
+        ).where(DocsMetadata.user_id == user_id)
+    with Session(engine) as session:
+        result = session.execute(stmt).mappings().all()
+        # Convert RowMapping objects to plain dicts for JSON serialization
+        docs = [dict(row) for row in result]
+    return docs
+
+@app.get("/get-book")
+async def get_book(filename: str):
+    """
+    Returns file bytes from blob storage that can be rendered by the frontend.
+    
+    Args:
+        filename: Name of the file to retrieve from blob storage
+    
+    Returns:
+        StreamingResponse: File bytes with appropriate content type
+    """
+    try:
+        container_client = settings.container_client
+        blob_client = container_client.get_blob_client(filename)
+        
+        if not blob_client.exists():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"File '{filename}' not found"
+            )
+        
+        # Download blob as bytes
+        download_stream = blob_client.download_blob()
+        file_bytes = download_stream.readall()
+        
+        # Determine content type based on file extension
+        file_ext = filename.split('.')[-1].lower() if '.' in filename else ''
+        content_types = {
+            'pdf': 'application/pdf',
+            'png': 'image/png',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'txt': 'text/plain',
+            'md': 'text/markdown'
         }
-        ]
+        media_type = content_types.get(file_ext, 'application/octet-stream')
+        
+        # Return as StreamingResponse for frontend rendering
+        return StreamingResponse(
+            BytesIO(file_bytes),
+            media_type=media_type,
+            headers={"Content-Disposition": f'inline; filename="{filename}"'}
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to retrieve file '{filename}': {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve file: {str(e)}"
+        )
+
+@app.get("/get-book-questions")
+async def get_book_questions(doc_id: uuid.UUID, page_no: int):
+    """
+    Returns a list of questions for a given book and page.
+    """
+    engine = settings.get_pg_engine()
+    with Session(engine) as session:
+        # Join Knowledge with Chunks to filter by page_no
+        stmt = (
+            select(
+                Knowledge.knowledge_id,
+                Knowledge.knowledge_name,
+                Knowledge.knowledge_question,
+                Knowledge.chunk_no,
+                Chunks.page_no
+            )
+            .join(Chunks, Knowledge.chunk_no == Chunks.chunk_no)
+            .where(
+                Knowledge.doc_id == doc_id,
+                Chunks.doc_id == doc_id,
+                Chunks.page_no <= page_no
+            )
+        )
+        result = session.execute(stmt).mappings().all()
+        questions = [dict(row) for row in result]
+    return questions
+
+from fastapi.responses import JSONResponse
 @app.get("/health")
 async def main_health():
     return JSONResponse(content={"status": "ok", "service": "Main App"})
-#TODO: investigate why doesn't work
-@app.post("/api/price_approximation")
-def price_approx(
-    doc_id: int,
-    prompt_key: str = "general_textbook_prompt",
-    model_name: str = "gpt-5-nano"
-):
-    chunks_full = get_chunks(doc_id)
-    chunks = [chunk['content'] for chunk in chunks_full]
-    price = price_approximation(chunks, prompt_key, model_name)
-    return {"price": price}
 
-# TODO: Test this 
-@app.post("/api/extract_objects")
-def extract_objects(
-    doc_id: int,
-    prompt_key: str = "general_textbook_prompt",
-    **kwargs
-):
-    if NO_QUIZ_GENERATION:
-        return {"message": "Book processing is disabled"}
-    try:
-        chunks_full = get_chunks(doc_id)
-        chunks = [(chunk['content'], chunk['order_idx']) for chunk in chunks_full]
-        make_study_object(chunks, doc_id, prompt_key)
-        return {"message": "Book processing completed"}
-    except Exception as e:
-        logger.error(f"Extract objects error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to extract objects: {str(e)}")
-
-
-def process_track_background(current_user: str, request: TrackRequest):
-    """Background task to process page tracking without blocking the response"""
-    try:
-        logger.info(f"Processing background track - doc_id: {request.doc_id}, user: {current_user}")
-        
-        if request.frontend_reader_type == "pdf":
-            chunks_ids = chunks_in_page(request.track_element_end_idx, request.doc_id)
-        else:
-            chunks_ids = list(range(request.track_element_end_idx[0], request.track_element_end_idx[1] + 1))
-        
-        for chunk_id in chunks_ids: 
-            assign_objects(current_user, chunk_id, request.doc_id)
-        
-        logger.info(f"Background tracking completed for user {current_user}, doc {request.doc_id}")
-    except Exception as e:
-        logger.error(f"Background track error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-
-#TODO: implement in frontend logic to ask user if they have actually read the page when stayed on page less than parameter time
-@app.post("/api/track")
-def track_page(
-    request: TrackRequest,
-    background_tasks: BackgroundTasks,
-    current_user: str = Depends(get_current_user)
-):
-    logger.info(f"Received track request - doc_id: {request.doc_id}, track_element_end_idx: {request.track_element_end_idx}, frontend_reader_type: {request.frontend_reader_type}")
-    assert request.frontend_reader_type in ["md", "pdf"]
-    
-    # Add background task - this returns immediately
-    background_tasks.add_task(process_track_background, current_user, request)
-    
-    # Return immediately without waiting for processing
-    return {"message": "Page tracking started in background"}
-
-@app.get("/api/all_items", response_model=List[PendingItem])
-def get_all_items_endpoint(current_user: str = Depends(get_current_user), doc_id: int = None):
-    try:
-        logger.info(f"Getting all items for user: {current_user}, doc_id: {doc_id}")
-        pending_records = get_all_items(doc_id)
-        if len(pending_records) > PENDING_QUIZ_LIMIT:
-            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
-        logger.info(f"Sampled {len(pending_records)} pending records")
-        pending_items = []
-
-        for record in pending_records:
-            node = record["n"]
-            # Defensive doc_id filter (in case of query mismatch)
-            if doc_id is not None and node.get("doc_id") != doc_id:
-                continue
-            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
-            logger.info(f"Question type: {question_type} ({type(question_type)})")
-            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
-            try:
-                question = get_rand_review_question(node.element_id, question_nodes)
-            except Exception as e:
-                question = None
-            if question is None:
-                logger.error(f"No questions generated for node {node.element_id}")
-                continue
-            logger.info(f"Question: {question}")
-            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
-
-            pending_items.append(PendingItem(
-                node_id=node.element_id,
-                name=node["name"],
-                question_id=question.element_id,
-                question=question["question"],
-                question_type=question["type"],
-                cognitive_focus=question["cognitive_focus"],
-                answer=question["answer"],
-                reference=reference,
-                doc_id=node["doc_id"],
-                chunk_start=node["chunk_id_s"],
-                chunk_end=node["chunk_id_e"]
-            ))
-
-        logger.info(f"Returning {len(pending_items)} pending items")
-        return pending_items
-    except Exception as e:
-        logger.error(f"Pending items error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
-
-@app.get("/api/assigned", response_model=List[PendingItem])
-def get_assigned_items(current_user: str = Depends(get_current_user), doc_id: int = None):
-    try:
-        logger.info(f"Getting assigned items for user: {current_user}, doc_id: {doc_id}")
-        pending_records = get_all_assigned(current_user, doc_id)
-        if len(pending_records) > PENDING_QUIZ_LIMIT:
-            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
-        logger.info(f"Sampled {len(pending_records)} pending records")
-        pending_items = []
-
-        for record in pending_records:
-            node = record["n"]
-            # Defensive doc_id filter (in case of query mismatch)
-            if doc_id is not None and node.get("doc_id") != doc_id:
-                continue
-            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
-            logger.info(f"Question type: {question_type} ({type(question_type)})")
-            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
-            try:
-                question = get_rand_review_question(node.element_id, question_nodes)
-            except Exception as e:
-                question = None
-            if question is None:
-                logger.error(f"No questions generated for node {node.element_id}")
-                continue
-            logger.info(f"Question: {question}")
-            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
-
-            pending_items.append(PendingItem(
-                node_id=node.element_id,
-                name=node["name"],
-                question_id=question.element_id,
-                question=question["question"],
-                question_type=question["type"],
-                cognitive_focus=question["cognitive_focus"],
-                answer=question["answer"],
-                reference=reference,
-                doc_id=node["doc_id"],
-                chunk_start=node["chunk_id_s"],
-                chunk_end=node["chunk_id_e"]
-            ))
-
-        logger.info(f"Returning {len(pending_items)} pending items")
-        return pending_items
-    except Exception as e:
-        logger.error(f"Pending items error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
-
-
-@app.get("/api/pending", response_model=List[PendingItem])
-def get_pending_items(current_user: str = Depends(get_current_user), doc_id: int = None):
-    try:
-        logger.info(f"Getting pending items for user: {current_user}, doc_id: {doc_id}")
-        pending_records = get_all_pending(current_user, doc_id)
-        if len(pending_records) > PENDING_QUIZ_LIMIT:
-            pending_records = sample(pending_records, PENDING_QUIZ_LIMIT)
-        logger.info(f"Sampled {len(pending_records)} pending records")
-        pending_items = []
-
-        for record in pending_records:
-            node = record["n"]
-            # Defensive doc_id filter (in case of query mismatch)
-            if doc_id is not None and node.get("doc_id") != doc_id:
-                continue
-            question_type = sample_question_type(node.element_id) if not NO_QUESTION_GENERATION else None
-            logger.info(f"Question type: {question_type} ({type(question_type)})")
-            question_nodes = make_review_questions(node.element_id, question_type) if not NO_QUESTION_GENERATION else None
-            try:
-                question = get_rand_review_question(node.element_id, question_nodes)
-            except Exception as e:
-                question = None
-            if question is None:
-                logger.error(f"No questions generated for node {node.element_id}")
-                continue
-            logger.info(f"Question: {question}")
-            reference = chunk_maper(node["doc_id"], node["chunk_id_s"], node["chunk_id_e"])
-
-            pending_items.append(PendingItem(
-                node_id=node.element_id,
-                name=node["name"],
-                question_id=question.element_id,
-                question=question["question"],
-                question_type=question["type"],
-                cognitive_focus=question["cognitive_focus"],
-                answer=question["answer"],
-                reference=reference,
-                doc_id=node["doc_id"],
-                chunk_start=node["chunk_id_s"],
-                chunk_end=node["chunk_id_e"]
-            ))
-
-        logger.info(f"Returning {len(pending_items)} pending items")
-        return pending_items
-    except Exception as e:
-        logger.error(f"Pending items error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to get pending items: {str(e)}")
-
-@app.get("/api/total_pending")
-def get_total_pending(current_user: str = Depends(get_current_user)):
-    pending = get_all_pending(current_user)
-    return len(pending)
-
-@app.get("/api/mastery")
-def get_mastery(current_user: str = Depends(get_current_user), doc_id: int = 0):
-    return get_page_mastery(current_user, doc_id)
-
-@app.post("/api/quiz/answer")
-def submit_answer(
-    answer: QuizAnswer
-):
-    try:
-        logger.info(f"Submitting answer for node {answer.node_id}, correct: {answer.correct}")
-        
-        # Process the answer using your existing logic
-        check_answer(answer)
-        logger.info("Answer processed successfully")
-        
-        return {"message": "Answer recorded successfully"}
-    except Exception as e:
-        logger.error(f"Quiz answer error: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to submit answer: {str(e)}")
-
-@app.get("/api/health")
-def health_check():
-    return {"status": "healthy", "timestamp": datetime.now()}
-
-# Debug endpoint to see all available routes
-@app.get("/api/debug/routes")
-def debug_routes():
-    routes = []
-    for route in app.routes:
-        if hasattr(route, 'methods') and hasattr(route, 'path'):
-            routes.append({
-                "path": route.path,
-                "methods": list(route.methods)
-            })
-    return {"routes": routes}
-
-# Debug endpoint to test logging
-@app.get("/api/debug/log")
-def debug_log():
-    logger.info("Debug log test - INFO level")
-    logger.warning("Debug log test - WARNING level")
-    logger.error("Debug log test - ERROR level")
-    return {"message": "Check console and ainki.log file for logs"}
-
-# Serve built frontend (SPA) from frontend/dist at root path when available
-FRONTEND_DIST = (Path(__file__).resolve().parent.parent / "frontend" / "dist").resolve()
-INDEX_HTML = FRONTEND_DIST / "index.html"
-
-if FRONTEND_DIST.exists():
-    app.mount("/", StaticFiles(directory=str(FRONTEND_DIST), html=True), name="spa")
-else:
-    logger.warning("Frontend build directory '%s' not found. SPA assets will not be served.", FRONTEND_DIST)
-
-# Middleware-based SPA fallback so mounted StaticFiles 404s resolve to index.html
-@app.middleware("http")
-async def spa_fallback_middleware(request: Request, call_next):
-    response = await call_next(request)
-    path = request.url.path
-    if (
-        response.status_code == 404
-        and not path.startswith("/api")
-        and not path.startswith("/api/")
-        and "." not in path  # skip asset-like paths
-    ):
-        try:
-            if INDEX_HTML.exists():
-                return FileResponse(str(INDEX_HTML))
-        except Exception:
-            return response
-    return response
-
-# Global exception handler
-@app.exception_handler(Exception)
-def global_exception_handler(request, exc):
-    logger.error(f"Unhandled exception: {str(exc)}")
-    logger.error(f"Traceback: {traceback.format_exc()}")
-    return JSONResponse(
-        status_code=500,
-        content={"detail": f"Internal server error: {str(exc)}"}
-    )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

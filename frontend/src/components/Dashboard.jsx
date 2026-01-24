@@ -1,335 +1,311 @@
-import React, { useState, useRef } from 'react'
-import { Upload, FileText, Brain, Clock, CheckCircle, Plus, AlertCircle } from 'lucide-react'
-import { api } from '../services/api'
-import toast from 'react-hot-toast'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import QuizGenerationModal from './QuizGenerationModal'
+import { Search, Settings, BookOpen, Flame, Headphones, Plus, RefreshCw, Brain } from 'lucide-react'
+import { fetchUserBooks, addBook, extractKnowledge } from '../services/api'
+import toast from 'react-hot-toast'
+import './Dashboard.css'
 
 function Dashboard() {
-  const [uploading, setUploading] = useState(false)
-  const [pendingCount, setPendingCount] = useState(0)
-  const [docs, setDocs] = useState([])
-  const [docsLoading, setDocsLoading] = useState(false)
-  const [quizModalOpen, setQuizModalOpen] = useState(false)
-  const [selectedDoc, setSelectedDoc] = useState(null)
-  const fileInputRef = useRef(null)
   const navigate = useNavigate()
+  const [books, setBooks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [extracting, setExtracting] = useState({}) // Track which books are extracting knowledge
+  const [forceUpload, setForceUpload] = useState(false) // Track force upload toggle
+  const fileInputRef = useRef(null)
 
-  const handleFileUpload = async (file) => {
-    if (!file) return
-
-    setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      const response = await api.post('/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      
-      const chunksCount = response?.data?.chunks_count
-      toast.success(
-        response?.data?.message || 'Upload successful'
-      )
-      fetchDocs()
-      checkPendingItems()
-    } catch (error) {
-      toast.error('Upload failed: ' + (error.response?.data?.detail || error.message))
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      handleFileUpload(file)
-    }
-  }
-
-  const handleDrop = (e) => {
-    e.preventDefault()
-    const file = e.dataTransfer.files[0]
-    if (file) {
-      handleFileUpload(file)
-    }
-  }
-
-  const handleDragOver = (e) => {
-    e.preventDefault()
-  }
-
-  const checkPendingItems = async () => {
-    try {
-      const response = await api.get('/total_pending')
-      setPendingCount(response.data)
-    } catch (error) {
-      console.error('Failed to check pending items:', error)
-    }
-  }
-
-  const fetchDocs = async () => {
-    try {
-      setDocsLoading(true)
-      const response = await api.get('/docs')
-      const docsData = response.data?.docs || []
-      const globalHasQuiz = response.data?.has_quiz ?? false
-      
-      const normalized = docsData.map((d) => {
-        if (d && typeof d === 'object' && !Array.isArray(d)) {
-          return { 
-            id: d.id ?? d.doc_id ?? null, 
-            name: d.name ?? 'Unnamed',
-            has_quiz: globalHasQuiz, // Use global has_quiz for all docs
-            status: globalHasQuiz ? 'ready' : 'no_quiz'
-          }
-        }
-        if (Array.isArray(d)) {
-          return { 
-            id: d[0] ?? null, 
-            name: d[1] ?? 'Unnamed',
-            has_quiz: globalHasQuiz, // Use global has_quiz for all docs
-            status: globalHasQuiz ? 'ready' : 'no_quiz'
-          }
-        }
-        return { 
-          id: null, 
-          name: String(d),
-          has_quiz: globalHasQuiz, // Use global has_quiz for all docs
-          status: globalHasQuiz ? 'ready' : 'no_quiz'
-        }
-      })
-      setDocs(normalized)
-    } catch (error) {
-      console.error('Failed to fetch docs:', error)
-    } finally {
-      setDocsLoading(false)
-    }
-  }
-
-  const handleOpenDoc = (doc) => {
-    if (!doc?.id) return
-    navigate(`/docs/${doc.id}`)
-  }
-
-  const handleGenerateQuiz = (doc, e) => {
-    e.stopPropagation() // Prevent opening the document
-    setSelectedDoc(doc)
-    setQuizModalOpen(true)
-  }
-
-  const handleQuizGenerationSuccess = () => {
-    fetchDocs() // Refresh the docs list to update status
-    checkPendingItems() // Refresh pending count
-  }
-
-  const getStatusColor = (doc) => {
-    if (doc.has_quiz) return '#28a745' // Green for has quiz
-    if (doc.status === 'processing') return '#ffc107' // Yellow for processing
-    if (doc.status === 'error') return '#dc3545' // Red for error
-    return '#6c757d' // Gray for no quiz
-  }
-
-  const getStatusIcon = (doc) => {
-    if (doc.has_quiz) return <CheckCircle size={16} />
-    if (doc.status === 'processing') return <Clock size={16} />
-    if (doc.status === 'error') return <AlertCircle size={16} />
-    return null
-  }
-
-  const getStatusText = (doc) => {
-    if (doc.has_quiz) return 'Quiz Ready'
-    if (doc.status === 'processing') return 'Generating Quiz...'
-    if (doc.status === 'error') return 'Generation Failed'
-    return 'No Quiz'
-  }
-
-  React.useEffect(() => {
-    fetchDocs()
-    checkPendingItems()
-    const interval = setInterval(checkPendingItems, 60000) // Check every minute
-    return () => clearInterval(interval)
+  useEffect(() => {
+    loadBooks()
   }, [])
 
+  const loadBooks = async () => {
+    try {
+      setLoading(true)
+      const data = await fetchUserBooks()
+      // Backend now returns plain dicts, so we can use them directly
+      setBooks(data)
+    } catch (error) {
+      toast.error('Failed to load books: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddBook = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Prevent multiple simultaneous uploads
+    if (uploading) {
+      toast.error('Please wait for the current upload to complete')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const response = await addBook(file, forceUpload)
+      toast.success(response.message || 'Book processing started in background!')
+      // Refresh books list after a short delay to see the new book
+      setTimeout(() => {
+        loadBooks()
+      }, 1000)
+    } catch (error) {
+      toast.error('Failed to add book: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const handleExtractKnowledge = async (e, book) => {
+    e.stopPropagation() // Prevent book card click
+
+    setExtracting(prev => ({ ...prev, [book.doc_id]: true }))
+    try {
+      const response = await extractKnowledge(book.doc_id)
+      toast.success(response.message || 'Knowledge extraction started!')
+    } catch (error) {
+      toast.error('Failed to extract knowledge: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setExtracting(prev => ({ ...prev, [book.doc_id]: false }))
+    }
+  }
+
+  const handleRefresh = () => {
+    loadBooks()
+  }
+
+  const handleBookClick = (book) => {
+    // Navigate to the book reader page
+    navigate(`/read/${book.doc_id}/${encodeURIComponent(book.file_name)}`)
+  }
+
+  const getBookColor = (index) => {
+    const colors = ['orange', 'green', 'blue']
+    return colors[index % colors.length]
+  }
+
+  const calculateProgress = (book) => {
+    // Dummy progress calculation - replace with real data later
+    return Math.floor(Math.random() * 60 + 20) // 20-80%
+  }
+
+  const calculateMastery = (book) => {
+    // Dummy mastery calculation - replace with real data later
+    return Math.floor(Math.random() * 40 + 40) // 40-80%
+  }
+
+  const calculateConcepts = (book) => {
+    // Dummy concept calculation - replace with real data later
+    const total = book.pages_total * 3
+    const learned = Math.floor(total * (calculateProgress(book) / 100))
+    return { learned, total }
+  }
+
   return (
-    <div className="container">
-      <div style={{ marginTop: '2rem' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', textAlign: 'center' }}>
-          Welcome to AInki
-        </h1>
-        <p style={{ textAlign: 'center', color: '#6c757d', marginBottom: '3rem' }}>
-          Upload your documents and start learning through spaced repetition
-        </p>
-
-        {/* Upload Section */}
-        <div className="card">
-          <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Upload size={24} />
-            Upload Document
-          </h2>
-          
-          <div
-            className={`upload-area ${uploading ? 'uploading' : ''}`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onClick={() => fileInputRef.current?.click()}
-            style={{ cursor: uploading ? 'not-allowed' : 'pointer' }}
-          >
-            {uploading ? (
-              <div>
-                <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
-                <p>Processing your document...</p>
-              </div>
-            ) : (
-              <div>
-                <Upload size={48} style={{ color: '#667eea', marginBottom: '1rem' }} />
-                <h3>Drop your file here or click to browse</h3>
-                <p style={{ color: '#6c757d', marginTop: '0.5rem' }}>
-                  Supported formats: PDF, TXT, DOCX
-                </p>
-              </div>
-            )}
-          </div>
-          
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={handleFileSelect}
-            style={{ display: 'none' }}
-            accept=".pdf,.txt,.docx"
-            disabled={uploading}
-          />
-        </div>
-
-        {/* Stats Section */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
-          <div className="card" style={{ textAlign: 'center' }}>
-            <FileText size={32} style={{ color: '#28a745', marginBottom: '1rem' }} />
-            <h3>Documents Processed</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#28a745' }}>{docs.length}</p>
-          </div>
-          
-          <div className="card" style={{ textAlign: 'center' }}>
-            <Brain size={32} style={{ color: '#667eea', marginBottom: '1rem' }} />
-            <h3>Knowledge Objects</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#667eea' }}>0</p>
-          </div>
-          
-          <div className="card" style={{ textAlign: 'center' }}>
-            <Clock size={32} style={{ color: '#ffc107', marginBottom: '1rem' }} />
-            <h3>Pending Reviews</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ffc107' }}>{pendingCount}</p>
-          </div>
-          
-          <div className="card" style={{ textAlign: 'center' }}>
-            <CheckCircle size={32} style={{ color: '#17a2b8', marginBottom: '1rem' }} />
-            <h3>Completed Reviews</h3>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#17a2b8' }}>0</p>
+    <div className="dashboard">
+      {/* Header */}
+      <header className="dashboard-header">
+        <div className="header-left">
+          <div className="logo">
+            <BookOpen className="logo-icon" />
+            <span className="logo-text">LearnFlow</span>
           </div>
         </div>
+        <div className="header-right">
+          <div className="search-bar">
+            <Search className="search-icon" size={20} />
+            <input type="text" placeholder="Search books..." />
+          </div>
+          <button className="settings-btn">
+            <Settings size={20} />
+          </button>
+        </div>
+      </header>
 
-        {/* Docs Gallery */}
-        <div className="card" style={{ marginTop: '2rem' }}>
-          <h2 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FileText size={24} />
-            Your Documents
-          </h2>
-          {docsLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
-              <div className="spinner"></div>
+      {/* Main Content */}
+      <div className="dashboard-content">
+        {/* Left Panel - Your Library */}
+        <div className="library-panel">
+          <div className="panel-header">
+            <h2>Your Library</h2>
+            <div className="panel-header-actions">
+              <button
+                className="refresh-btn"
+                onClick={handleRefresh}
+                disabled={loading}
+                title="Refresh books list"
+              >
+                <RefreshCw size={18} />
+              </button>
+              <label className="force-toggle" title="Force re-upload even if book exists">
+                <input
+                  type="checkbox"
+                  checked={forceUpload}
+                  onChange={(e) => setForceUpload(e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label">Force</span>
+              </label>
+              <button
+                className="add-book-btn"
+                onClick={handleAddBook}
+                disabled={uploading}
+              >
+                <Plus size={18} />
+                Add Book
+              </button>
             </div>
-          ) : docs.length === 0 ? (
-            <p style={{ color: '#6c757d' }}>No documents yet. Upload one to get started.</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.txt,.md"
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+          </div>
+
+          {loading ? (
+            <div className="loading">Loading books...</div>
+          ) : books.length === 0 ? (
+            <div className="empty-state">No books yet. Add your first book!</div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
-              {docs.map((doc, index) => (
-                <div
-                  key={doc.id != null ? `doc-${doc.id}` : `doc-${doc.name}-${index}`}
-                  className="card"
-                  style={{ 
-                    padding: '1rem', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '0.75rem', 
-                    cursor: 'pointer',
-                    position: 'relative',
-                    border: `2px solid ${getStatusColor(doc)}`,
-                    borderRadius: '12px'
-                  }}
-                  onClick={() => handleOpenDoc(doc)}
-                >
-                  <FileText size={20} style={{ color: '#667eea' }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ 
-                      overflow: 'hidden', 
-                      textOverflow: 'ellipsis', 
-                      whiteSpace: 'nowrap',
-                      fontWeight: '500',
-                      marginBottom: '0.25rem'
-                    }}>
-                      {doc.name}
+            <div className="books-list">
+              {books.map((book, index) => {
+                const color = getBookColor(index)
+                const progress = calculateProgress(book)
+                const mastery = calculateMastery(book)
+                const concepts = calculateConcepts(book)
+                const date = new Date(book.created_at).toLocaleDateString('en-US', {
+                  month: 'numeric',
+                  day: 'numeric',
+                  year: 'numeric'
+                })
+
+                return (
+                  <div
+                    key={book.doc_id}
+                    className={`book-card book-card-${color}`}
+                  >
+                    <div className="book-card-content" onClick={() => handleBookClick(book)}>
+                      <div className="book-icon">
+                        <BookOpen size={24} />
+                      </div>
+                      <div className="book-info">
+                        <h3 className="book-title">{book.file_name.replace(/\.[^/.]+$/, '')}</h3>
+                        <p className="book-author">Author Name</p>
+                        <div className="book-progress">
+                          <div className="progress-label">Reading Progress</div>
+                          <div className="progress-bar">
+                            <div
+                              className="progress-fill"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                          <div className="progress-stats">
+                            <span>{concepts.learned}/{concepts.total} concepts</span>
+                            <span className="progress-date">{date}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="book-mastery">
+                        <div className="mastery-circle">
+                          <svg className="mastery-svg" viewBox="0 0 100 100">
+                            <circle
+                              className="mastery-bg"
+                              cx="50"
+                              cy="50"
+                              r="45"
+                            />
+                            <circle
+                              className="mastery-progress"
+                              cx="50"
+                              cy="50"
+                              r="45"
+                              strokeDasharray={`${mastery * 2.827} 283`}
+                            />
+                          </svg>
+                          <div className="mastery-text">{mastery}%</div>
+                        </div>
+                        <div className="mastery-label">Mastery</div>
+                      </div>
                     </div>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '0.5rem',
-                      fontSize: '0.875rem',
-                      color: getStatusColor(doc)
-                    }}>
-                      {getStatusIcon(doc)}
-                      <span>{getStatusText(doc)}</span>
+                    <div className="book-actions">
+                      <button
+                        className="extract-knowledge-btn"
+                        onClick={(e) => handleExtractKnowledge(e, book)}
+                        disabled={extracting[book.doc_id]}
+                        title="Extract knowledge from this book"
+                      >
+                        <Brain size={16} />
+                        {extracting[book.doc_id] ? 'Extracting...' : 'Extract Knowledge'}
+                      </button>
                     </div>
                   </div>
-                  
-                  {/* Quiz Generation Button */}
-                  <button
-                    onClick={(e) => handleGenerateQuiz(doc, e)}
-                    className="btn btn-primary"
-                    style={{ 
-                      padding: '0.5rem',
-                      fontSize: '0.875rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      minWidth: 'auto'
-                    }}
-                    title="Generate Quiz"
-                  >
-                    <Plus size={16} />
-                    Quiz
-                  </button>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
 
-        {/* Selected Document Viewer removed; handled on dedicated page */}
-
-        {/* Quick Actions */}
-        {pendingCount > 0 && (
-          <div className="card" style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <h2 style={{ marginBottom: '1rem' }}>Ready to Review?</h2>
-            <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
-              You have {pendingCount} items ready for review
-            </p>
-            <a href="/quiz" className="btn btn-primary" style={{ fontSize: '1.1rem', padding: '1rem 2rem' }}>
-              Start Review Session
-            </a>
+        {/* Right Panel */}
+        <div className="right-panel">
+          {/* Today's Goals */}
+          <div className="goals-panel">
+            <div className="panel-header">
+              <h2>Today's Goals</h2>
+              <div className="streak-badge">
+                <Flame size={16} />
+                <span>7 day streak</span>
+              </div>
+            </div>
+            <div className="goals-content">
+              <div className="goal-item">
+                <div className="goal-icon">
+                  <BookOpen size={20} />
+                </div>
+                <div className="goal-info">
+                  <div className="goal-label">Pages Read</div>
+                  <div className="goal-progress-bar">
+                    <div className="goal-progress-fill" style={{ width: '60%' }} />
+                  </div>
+                  <div className="goal-stats">12/20</div>
+                </div>
+              </div>
+              <div className="goal-item">
+                <div className="goal-icon">
+                  <Headphones size={20} />
+                </div>
+                <div className="goal-info">
+                  <div className="goal-label">Questions Reviewed</div>
+                  <div className="goal-progress-bar">
+                    <div className="goal-progress-fill" style={{ width: '72%' }} />
+                  </div>
+                  <div className="goal-stats">18/25</div>
+                </div>
+              </div>
+            </div>
+            <div className="wip-badge">WIP</div>
           </div>
-        )}
 
-        {/* Quiz Generation Modal */}
-        <QuizGenerationModal
-          isOpen={quizModalOpen}
-          onClose={() => setQuizModalOpen(false)}
-          docId={selectedDoc?.id}
-          docName={selectedDoc?.name}
-          onSuccess={handleQuizGenerationSuccess}
-        />
+          {/* Concept Map */}
+          <div className="concept-map-panel">
+            <div className="panel-header">
+              <h2>Concept Map</h2>
+            </div>
+            <div className="concept-map-content">
+              {/* Empty div for future implementation */}
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   )
 }
